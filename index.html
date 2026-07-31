@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AKS Zero-to-Hero — from legacy VMs to containers</title>
+  <meta name="description" content="A hands-on prequel workshop that moves the Skybridge legacy estate from classic VM deployment, hand-managed config, and manual release to a clean container-based development lifecycle — the on-ramp before the AKS replatform." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="brand">
+        <span class="dot">Z2H</span>
+        AKS&nbsp;Zero-to-Hero <small>· the prequel</small>
+      </span>
+      <span class="nav-links">
+        <a href="#scenario">Scenario</a>
+        <a href="#journey">The journey</a>
+        <a href="#phases">Phases</a>
+        <a href="#outcomes">Outcomes</a>
+        <a href="#handoff">Hand-off</a>
+        <a class="cta" href="lab.html">Start the lab</a>
+        <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+      </span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- HERO -->
+    <header class="hero">
+      <div class="wrap">
+        <span class="eyebrow">Prequel · Instructor-led · L100 → L200</span>
+        <h1>From classic deployment to containers, one honest step at a time.</h1>
+        <p class="lede">
+          Before you replatform anything onto Kubernetes, you have to leave the world of
+          hand-patched VMs, snowflake config, and Friday-night releases behind. <b>AKS Zero-to-Hero</b>
+          takes the same Skybridge messaging estate — a Java socket gateway, a C/C++ parser, and PostgreSQL —
+          and walks it from a classic VM deployment to a clean, container-based development lifecycle.
+          It stops exactly where the AKS replatform picks up: your app is containerized, versioned, and
+          reproducible, ready for orchestration.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="lab.html">Start the lab →</a>
+          <a class="btn btn-ghost" href="#journey">See the before &amp; after</a>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><b>6</b><span>phases, VM → container</span></div>
+          <div class="stat"><b>~4 hr</b><span>hands-on, self-paced</span></div>
+          <div class="stat"><b>0</b><span>Kubernetes required (yet)</span></div>
+          <div class="stat"><b>1</b><span>clean hand-off to AKS</span></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- SCENARIO -->
+    <section id="scenario">
+      <div class="wrap">
+        <span class="kicker">The brief</span>
+        <h2 class="sec">The same estate, one chapter earlier</h2>
+        <p class="sec-lede">
+          Skybridge Messaging Services runs a real-time bus over persistent TCP sockets. In the main
+          workshop it lands on AKS. Here, we meet it where most real systems actually are: running on
+          RHEL VMs, scaled vertically, patched in place, released by hand. This workshop earns the right
+          to containerize by first feeling the pain the old way creates.
+        </p>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <span class="idx">TODAY · THE LEGACY ESTATE</span>
+            <h3>How it ships now</h3>
+            <p>
+              A Java 8 / Netty gateway holds long-lived sockets, a C/C++ parser decodes the wire format,
+              and PostgreSQL 11 stores routing tables and journals — all on handcrafted RHEL 7/8 hosts,
+              one HA pair per region, deployed with <code>scp</code>, <code>systemd</code>, and a runbook.
+            </p>
+            <div>
+              <span class="tag">Java 8 · Netty</span>
+              <span class="tag">C/C++ · gcc 4.8</span>
+              <span class="tag">PostgreSQL 11</span>
+              <span class="tag">RHEL 7/8 VMs</span>
+              <span class="tag">hand-edited config</span>
+            </div>
+          </div>
+          <div class="card">
+            <span class="idx">THE GOAL OF THIS PREQUEL</span>
+            <h3>Where you finish</h3>
+            <p>
+              The exact same three components, unchanged in behaviour, now packaged as immutable images,
+              configured entirely from the environment, wired together locally with Compose, versioned in
+              a registry, and built by a pipeline. No rewrite. Just a modern lifecycle.
+            </p>
+            <div>
+              <span class="tag accent">Dockerfiles</span>
+              <span class="tag accent">12-factor config</span>
+              <span class="tag accent">Compose</span>
+              <span class="tag accent">Registry + tags</span>
+              <span class="tag accent">CI build/scan/push</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note info mt-20">
+          <b>Why "containerize first, refactor later" is the right call.</b> The main workshop defends this
+          design move directly — the Java gateway and C++ parser ship in containers with <em>no source rewrite</em>.
+          This prequel is how you get there responsibly, so that when orchestration arrives, the container is a
+          known-good, reproducible artifact rather than a fresh source of surprises.
+        </div>
+      </div>
+    </section>
+
+    <!-- JOURNEY / BEFORE-AFTER -->
+    <section id="journey">
+      <div class="wrap">
+        <span class="kicker">The lift</span>
+        <h2 class="sec">Three habits change on this journey</h2>
+        <p class="sec-lede">
+          Zero-to-Hero is not really about Docker syntax. It is about replacing three legacy habits —
+          in <b>deployment</b>, <b>configuration</b>, and the <b>development lifecycle</b> — with their
+          container-native equivalents.
+        </p>
+
+        <div class="compare">
+          <div class="col before">
+            <h4><span class="pill bad">Before</span> Deployment</h4>
+            <ul>
+              <li>Artifacts copied onto a long-lived host with <code>scp</code> and a runbook</li>
+              <li>The host is a pet: patched in place, drifting from its twin</li>
+              <li>"Works on my machine" — because the machine is unique</li>
+              <li>Rollback means re-running yesterday's runbook, if you kept it</li>
+            </ul>
+          </div>
+          <div class="col after">
+            <h4><span class="pill good">After</span> Deployment</h4>
+            <ul>
+              <li>An immutable image is the unit of deployment, built once, run anywhere</li>
+              <li>Hosts are cattle; the image carries its own runtime</li>
+              <li>"Works on my machine" is the point — the machine is the image</li>
+              <li>Rollback is pointing at the previous image tag</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="compare mt-16">
+          <div class="col before">
+            <h4><span class="pill bad">Before</span> Configuration</h4>
+            <ul>
+              <li>Settings hand-edited in files on each box, secrets in plaintext</li>
+              <li>Environments diverge silently; prod is a mystery</li>
+              <li>A config change is a manual, unaudited login</li>
+            </ul>
+          </div>
+          <div class="col after">
+            <h4><span class="pill good">After</span> Configuration</h4>
+            <ul>
+              <li>Config comes from the environment (12-factor), never baked into the image</li>
+              <li>One image promotes across dev → prod; only the environment differs</li>
+              <li>Secrets are injected, not committed; config is declarative and reviewable</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="compare mt-16">
+          <div class="col before">
+            <h4><span class="pill bad">Before</span> Dev lifecycle</h4>
+            <ul>
+              <li>Build on a laptop, ship the binary, hope the deps match</li>
+              <li>Manual test, manual scan (if any), manual promotion</li>
+              <li>No provenance: which commit is in prod right now?</li>
+            </ul>
+          </div>
+          <div class="col after">
+            <h4><span class="pill good">After</span> Dev lifecycle</h4>
+            <ul>
+              <li>A pipeline builds, tests, scans, and pushes an image on every commit</li>
+              <li>Images are tagged by commit SHA — provenance is built in</li>
+              <li>The inner loop (Compose) mirrors the outer loop (registry + CI)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHASES -->
+    <section id="phases">
+      <div class="wrap">
+        <span class="kicker">The path</span>
+        <h2 class="sec">Six phases, VM to container</h2>
+        <p class="sec-lede">
+          Each phase is a short, hands-on block sliced into 10–20 minute activities. Every activity has a
+          pre-check, steps to run, a validation gate, and a post-check — the same rhythm you'll meet in the
+          AKS lab, so the muscle memory carries over.
+        </p>
+
+        <div class="phase-list">
+          <div class="phase">
+            <div class="num">0</div>
+            <div>
+              <h3>Setup &amp; the legacy baseline</h3>
+              <p>Install the toolchain, get the Skybridge sample, and honestly document how it deploys today.</p>
+            </div>
+            <div class="meta">~25 min · 2 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">1</div>
+            <div>
+              <h3>Deploy it the classic way — and feel the pain</h3>
+              <p>Stand up the app on a "VM" with systemd and a runbook. Then break it with config drift and a version skew.</p>
+            </div>
+            <div class="meta">~45 min · 3 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">2</div>
+            <div>
+              <h3>Configuration management</h3>
+              <p>From hand-edited files to declarative config: externalize settings, pull secrets out of code, adopt 12-factor.</p>
+            </div>
+            <div class="meta">~50 min · 3 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">3</div>
+            <div>
+              <h3>Containerize the components</h3>
+              <p>Write Dockerfiles for the gateway, parser, and console. Understand images, layers, and immutability.</p>
+            </div>
+            <div class="meta">~60 min · 4 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">4</div>
+            <div>
+              <h3>Compose the system &amp; publish images</h3>
+              <p>Run gateway + parser + Postgres together with Compose, then push versioned images to a registry.</p>
+            </div>
+            <div class="meta">~55 min · 3 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">5</div>
+            <div>
+              <h3>A container-based development lifecycle</h3>
+              <p>Wire a pipeline that builds, tests, scans, and pushes on every commit — then stop at the edge of orchestration.</p>
+            </div>
+            <div class="meta">~50 min · 3 activities</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OUTCOMES -->
+    <section id="outcomes">
+      <div class="wrap">
+        <span class="kicker">What you leave with</span>
+        <h2 class="sec">By the end, you can…</h2>
+        <div class="grid grid-3">
+          <div class="card">
+            <h3>Explain the tax of pets</h3>
+            <p>Articulate, from experience, why hand-managed hosts create patch fragility, config drift, and slow, risky releases.</p>
+          </div>
+          <div class="card">
+            <h3>Externalize all config</h3>
+            <p>Take a legacy app whose config lives on the box and make it read every setting from its environment — no rebuild to reconfigure.</p>
+          </div>
+          <div class="card">
+            <h3>Write a real Dockerfile</h3>
+            <p>Produce small, layer-cached, non-root images for a JVM service, a compiled C++ binary, and a static site.</p>
+          </div>
+          <div class="card">
+            <h3>Run the system locally</h3>
+            <p>Bring the whole estate up with one <code>compose up</code>, including a database and service-to-service networking.</p>
+          </div>
+          <div class="card">
+            <h3>Version like you mean it</h3>
+            <p>Tag by semantic version and by commit SHA, push to a registry, and reason about mutable vs immutable tags.</p>
+          </div>
+          <div class="card">
+            <h3>Automate the build</h3>
+            <p>Stand up CI that builds, tests, scans, and publishes an image per commit — the outer loop that GitOps will later consume.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HANDOFF -->
+    <section id="handoff">
+      <div class="wrap">
+        <span class="kicker">The boundary</span>
+        <h2 class="sec">Where Zero-to-Hero ends and the replatform begins</h2>
+        <p class="sec-lede">
+          This prequel deliberately stops before any orchestration or target architecture. Once your three
+          components are reproducible container images, configured from the environment, versioned in a
+          registry, and built by CI, you have exactly the inputs the AKS workshop assumes on day one.
+        </p>
+
+        <div class="hand-off">
+          <h3>You are here — and this is the door</h3>
+          <p>
+            The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>, opens with Day-0
+            architecture decisions, a private zone-redundant cluster, GitOps rings, and cross-region failover.
+            It assumes containers already exist. That is precisely what you just built. Everything past this
+            line — cluster design, networking, identity, the mesh — is theirs to teach, not ours.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="lab.html">Do the lab first →</a>
+            <a class="btn btn-ghost" href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Then continue to the AKS replatform ↗</a>
+          </div>
+        </div>
+
+        <div class="note warn mt-20">
+          <b>On purpose, out of scope here:</b> Kubernetes objects, cluster architecture, node pools,
+          Ingress/Gateway, service mesh, autoscaling, and DR. If a topic requires a cluster to exist, it
+          belongs to the replatform workshop that follows.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>AKS Zero-to-Hero · a prequel to <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a>.</span>
+      <span>Sample content for instructor-led training. Not production-hardened. MIT-style use.</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var saved = localStorage.getItem("z2h-theme");
+      if (saved) root.setAttribute("data-theme", saved);
+      var btn = document.getElementById("themeBtn");
+      if (btn) {
+        btn.addEventListener("click", function () {
+          var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          root.setAttribute("data-theme", next);
+          localStorage.setItem("z2h-theme", next);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
