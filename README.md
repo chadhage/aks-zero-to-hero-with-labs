@@ -8,6 +8,19 @@ classic VM deployment, hand-managed configuration, and manual release, it ends w
 running **live on a managed AKS cluster**. The AKS replatform workshop then takes that naive
 deployment and hardens it for production.
 
+## Reading before the workshop
+
+Complete the required reading before starting:
+
+- [Cloud Design Patterns — Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/patterns/)
+- [What is an Azure landing zone?](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
+- [Azure Samples: Cloud Design Patterns](https://github.com/Azure-Samples/cloud-design-patterns)
+
+Recommended reading:
+
+- [On .NET Live: Clean Architecture, Vertical Slices, and Modular Monoliths (Oh My!)](https://learn.microsoft.com/en-us/shows/on-dotnet/on-dotnet-live-clean-architecture-vertical-slices-and-modular-monoliths-oh-my)
+- [ASP.NET Core: Feature Slices for ASP.NET Core MVC](https://learn.microsoft.com/en-us/archive/msdn-magazine/2016/september/asp-net-core-feature-slices-for-asp-net-core-mvc)
+
 ## Contents
 
 | File | Purpose |
