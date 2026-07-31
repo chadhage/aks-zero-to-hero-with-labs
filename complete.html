@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AKS Zero-to-Hero — Completion</title>
-  <meta name="description" content="Workshop completion and certificate for AKS Zero-to-Hero. Earn it by completing every activity and passing each phase's knowledge check with at least 80% across activities and knowledge checks." />
+  <title>AKS Migration Foundations — Completion</title>
+  <meta name="description" content="Workshop completion status and certificate for AKS Migration Foundations, based on activity and knowledge-check results." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,12 +13,15 @@
   <nav class="nav">
     <div class="nav-inner">
       <span class="brand">
-        <span class="dot">Z2H</span>
-        AKS&nbsp;Zero-to-Hero <small>· completion</small>
+        <span class="dot">AKS</span>
+        AKS&nbsp;Migration Foundations <small>· completion</small>
       </span>
-      <span class="nav-links">
-        <a href="index.html">Overview</a>
-        <a href="lab.html">Lab guide</a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="nav-links" id="navLinks">
+        <a class="mobile-nav" href="index.html">Overview</a>
+        <a class="mobile-nav" href="lab.html">Lab guide</a>
         <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">AKS replatform ↗</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
       </span>
@@ -29,11 +32,11 @@
     <header class="hero hero-lab">
       <div class="wrap">
         <span class="eyebrow">Completion &amp; certificate</span>
-        <h1 class="h1-lab">Did you make it all the way onto AKS?</h1>
+        <h1 class="h1-lab">Workshop completion status</h1>
         <p class="lede">
-          This page reads your saved progress from the lab and checks the bar: <b>every activity complete</b>,
-          <b>every phase's knowledge check passed</b> (a measured lift of at least 10 points, or demonstrated
-          mastery), and at least <b>80%</b> across both activities and knowledge checks.
+          This page reads saved lab progress and applies the completion criteria: at least <b>80% of activities</b>,
+          <b>every phase's knowledge check passed</b> (an increase of at least 10 points or a qualifying baseline
+          score), and an average knowledge-check score of at least <b>80%</b>.
         </p>
       </div>
     </header>
@@ -47,7 +50,7 @@
 
   <footer>
     <div class="wrap">
-      <span>AKS Zero-to-Hero · completion · a prequel to <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
+      <span>AKS Migration Foundations · completion · an introduction to <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
       <span>Progress is saved in this browser only.</span>
     </div>
   </footer>
@@ -63,6 +66,23 @@
         root.setAttribute("data-theme", next);
         localStorage.setItem("z2h-theme", next);
       });
+
+      var navToggle = document.getElementById("navToggle");
+      var navLinks = document.getElementById("navLinks");
+      if (navToggle && navLinks) {
+        navToggle.addEventListener("click", function () {
+          var open = navLinks.classList.toggle("open");
+          navToggle.classList.toggle("open", open);
+          navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        navLinks.addEventListener("click", function (e) {
+          if (e.target.closest("a")) {
+            navLinks.classList.remove("open");
+            navToggle.classList.remove("open");
+            navToggle.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
 
       function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
       var prog = load("z2h-progress");
@@ -97,7 +117,7 @@
         return '<div class="score-grid">'
           + '<div class="score"><b>' + actPct + '%</b><span>Activities (' + actDone + '/' + actTotal + ')</span></div>'
           + '<div class="score"><b>' + avgPost + '%</b><span>Avg knowledge check</span></div>'
-          + '<div class="score"><b>' + phasesPassed + '/' + phases.length + '</b><span>Phases mastered</span></div>'
+          + '<div class="score"><b>' + phasesPassed + '/' + phases.length + '</b><span>Phases passed</span></div>'
           + '<div class="score"><b>' + points + '</b><span>Total points</span></div>'
           + '</div>';
       }
@@ -106,24 +126,24 @@
         var savedName = localStorage.getItem("z2h-name") || "";
         el.innerHTML =
           '<div class="cert">'
-          + '<div class="seal">🏆</div>'
+          + '<div class="seal">✓</div>'
           + '<span class="eyebrow">Certificate of completion</span>'
-          + '<h2>AKS Zero-to-Hero — complete</h2>'
+          + '<h2>AKS Migration Foundations — complete</h2>'
           + '<p class="cert-lede">This certifies that</p>'
           + '<input class="name-input no-print" id="nameInput" type="text" maxlength="60" placeholder="Type your name" value="' + savedName.replace(/"/g, "&quot;") + '" aria-label="Your name" />'
           + '<div class="who" id="whoLine">' + (savedName || "\u2014") + '</div>'
-          + '<p class="cert-lede">took the Skybridge estate the whole way — <b>classic → containers → Kubernetes → AKS</b> — '
-          + 'completing every activity and demonstrating a measured knowledge lift on every phase.</p>'
+          + '<p class="cert-lede">completed the Skybridge migration sequence — <b>classic → containers → Kubernetes → AKS</b> — '
+          + 'and met the activity and knowledge-check criteria.</p>'
           + scoreGrid()
-          + '<p class="meta">Issued ' + today + ' · Measurement: post-check minus baseline on the same question set, ≥' + THRESH + '-point lift or demonstrated mastery per phase.</p>'
+          + '<p class="meta">Issued ' + today + ' · Measurement: post-check minus baseline on the same question set, ≥' + THRESH + '-point increase or a qualifying baseline score per phase.</p>'
           + '<div class="hero-cta no-print" style="justify-content:center;margin-top:8px">'
-          + '<a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Suggested next: Replatforming to AKS ↗</a>'
+          + '<a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Next workshop: Replatforming to AKS ↗</a>'
           + '<button class="btn btn-ghost" id="printBtn" type="button">Save / print certificate</button>'
           + '</div>'
           + '</div>'
-          + '<div class="note good mt-20"><b>What\'s next.</b> You landed a working deployment on AKS. The '
+          + '<div class="note good mt-20"><b>Next workshop.</b> The workload is deployed on AKS. The '
           + '<a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a> '
-          + 'workshop is your suggested next activity — it hardens this naive deployment into production: Day-0 architecture, a private '
+          + 'workshop covers production configuration: Day-0 architecture, a private '
           + 'zone-redundant cluster, workload identity, the Istio mesh, GitOps rings, autoscaling, and cross-region failover.</div>';
 
         var nameInput = document.getElementById("nameInput");
@@ -143,16 +163,16 @@
         var anyData = actDone > 0 || postCount > 0;
         el.innerHTML =
           '<div class="hand-off">'
-          + '<h3>' + (anyData ? "Almost there — not quite 80% yet" : "No progress found in this browser yet") + '</h3>'
+          + '<h3>' + (anyData ? "Completion criteria not yet met" : "No progress found in this browser") + '</h3>'
           + '<p>' + (anyData
-            ? "You\u2019re on your way. Here\u2019s exactly what still stands between you and the certificate. Progress is saved per-browser, so finish on the same device you started on."
-            : "Head to the lab, take each phase\u2019s baseline knowledge check, work the activities, then take the post-check. Come back here to claim your certificate.")
+            ? "The checklist shows the remaining requirements. Progress is saved per browser, so continue on the same device."
+            : "Go to the lab, take each phase\u2019s baseline knowledge check, complete the activities, and then take the post-check.")
           + '</p>'
           + scoreGrid()
           + '<ul class="checklist">'
           + row(actPct >= GATE, "Complete at least 80% of activities", actPct + "% of " + actTotal)
           + row(avgPost >= GATE, "Average at least 80% on knowledge checks", (postCount ? avgPost + "%" : "not started"))
-          + row(kcAllPassed, "Pass every phase knowledge check (≥" + THRESH + "-point lift or mastery)", phasesPassed + "/" + phases.length + " passed")
+          + row(kcAllPassed, "Pass every phase knowledge check (≥" + THRESH + "-point increase or qualifying baseline)", phasesPassed + "/" + phases.length + " passed")
           + '</ul>'
           + '<div class="hero-cta"><a class="btn btn-primary" href="lab.html">Back to the lab →</a>'
           + '<a class="btn btn-ghost" href="index.html">Overview</a></div>'

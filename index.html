@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AKS Zero-to-Hero — from legacy VMs to AKS</title>
-  <meta name="description" content="A hands-on prequel workshop that moves the Skybridge legacy estate from classic VM deployment, hand-managed config, and manual release all the way onto AKS — classic to containers to Kubernetes to AKS — the on-ramp before the production replatform." />
+  <title>AKS Migration Foundations — from legacy VMs to AKS</title>
+  <meta name="description" content="A workshop that moves the Skybridge legacy estate from classic VM deployment, hand-managed configuration, and manual release to AKS through containers and Kubernetes." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,17 +13,21 @@
   <nav class="nav">
     <div class="nav-inner">
       <span class="brand">
-        <span class="dot">Z2H</span>
-        AKS&nbsp;Zero-to-Hero <small>· the prequel</small>
+        <span class="dot">AKS</span>
+        AKS&nbsp;Migration Foundations <small>· introductory workshop</small>
       </span>
-      <span class="nav-links">
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="nav-links" id="navLinks">
+        <a href="#modes">Modes</a>
         <a href="#reading">Reading</a>
         <a href="#scenario">Scenario</a>
         <a href="#journey">The journey</a>
         <a href="#phases">Phases</a>
         <a href="#outcomes">Outcomes</a>
         <a href="#handoff">Hand-off</a>
-        <a class="cta" href="lab.html">Start the lab</a>
+        <a class="cta mobile-nav" href="#modes">Choose a mode</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
       </span>
     </div>
@@ -33,28 +37,61 @@
     <!-- HERO -->
     <header class="hero">
       <div class="wrap">
-        <span class="eyebrow">Prequel · Instructor-led · L100 → L300</span>
-        <h1>From classic servers to AKS, one honest step at a time.</h1>
+        <span class="eyebrow">Self-paced or instructor-led · L100 → L300</span>
+        <h1>From classic servers to AKS.</h1>
         <p class="lede">
-          Before a team can run a production platform on Kubernetes, it has to leave hand-patched VMs,
-          snowflake config, and Friday-night releases behind. <b>AKS Zero-to-Hero</b> takes the Skybridge
-          messaging estate — a Java socket gateway, a C/C++ parser, and PostgreSQL — and walks it the whole way:
-          <b>classic → containers → Kubernetes → AKS</b>. You finish with the workload running live on a
-          managed AKS cluster. The production replatform workshop then takes that naive deployment and hardens it.
+          <b>AKS Migration Foundations</b> moves the Skybridge messaging estate — a Java socket gateway,
+          a C/C++ parser, and PostgreSQL — from manually managed VMs through
+          <b>classic → containers → Kubernetes → AKS</b>. The workshop ends with the workload running on a
+          managed AKS cluster. The production replatform workshop then covers production architecture.
         </p>
         <div class="hero-cta">
-          <a class="btn btn-primary" href="lab.html">Start the lab →</a>
+          <a class="btn btn-primary" href="#modes">Choose a delivery mode →</a>
           <a class="btn btn-ghost" href="#journey">See the before &amp; after</a>
         </div>
 
         <div class="stat-row">
+          <div class="stat"><b>2</b><span>delivery modes</span></div>
+          <div class="stat"><b>~7 hr</b><span>instructor-led</span></div>
+          <div class="stat"><b>~12–14 hr</b><span>self-paced</span></div>
           <div class="stat"><b>8</b><span>phases, servers → AKS</span></div>
-          <div class="stat"><b>~7 hr</b><span>hands-on, self-paced</span></div>
-          <div class="stat"><b>2</b><span>clusters: local + AKS</span></div>
-          <div class="stat"><b>1</b><span>live landing on AKS</span></div>
         </div>
       </div>
     </header>
+
+    <!-- MODES -->
+    <section id="modes">
+      <div class="wrap">
+        <span class="kicker">Delivery modes</span>
+        <h2 class="sec">Choose how you will complete the workshop</h2>
+        <p class="sec-lede">
+          Both modes use the same activities, validation steps, progress tracking, and knowledge checks.
+          The selected mode is saved in this browser and can be changed from the lab guide.
+        </p>
+
+        <div class="grid grid-2 mode-grid">
+          <div class="card mode-card">
+            <span class="idx">INDEPENDENT · ~12–14 HOURS</span>
+            <h3>Self-paced</h3>
+            <p>
+              Work through each phase independently. Participant instructions, checks, and reference links
+              remain visible; trainer talk tracks and demo cues stay hidden. Plan 12–14 hours — the hands-on
+              activities plus the required reading, knowledge checks, and reflection.
+            </p>
+            <a class="btn btn-primary" href="lab.html?mode=self">Start self-paced →</a>
+          </div>
+          <div class="card mode-card">
+            <span class="idx">COHORT · ~7 HOURS</span>
+            <h3>Instructor-led</h3>
+            <p>
+              Use the same lab with trainer framing. Each phase includes an instructor-only talk track,
+              discussion prompt, or demo cue to support cohort delivery. Plan about 7 hours of guided hands-on activity.
+            </p>
+            <a class="btn btn-primary" href="lab.html?mode=led">Start instructor-led →</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- READING -->
     <section id="reading">
@@ -62,7 +99,9 @@
         <span class="kicker">Before you begin</span>
         <h2 class="sec">Workshop reading</h2>
         <p class="sec-lede">
-          Complete the required reading before starting the workshop. The recommended articles provide
+          Complete the required reading before starting the workshop — it orients you to the cloud-native
+          patterns and Azure end-state concepts (such as landing zones) that frame this journey, some of which
+          are configured only in the follow-on replatform workshop. The recommended articles provide
           additional context for organizing application architecture around cohesive features and modules.
         </p>
 
@@ -95,9 +134,8 @@
         <h2 class="sec">The same estate, one chapter earlier</h2>
         <p class="sec-lede">
           Skybridge Messaging Services runs a real-time bus over persistent TCP sockets. In the main
-          workshop it runs in production on AKS. Here, we meet it where most real systems actually are: running on
-          RHEL VMs, scaled vertically, patched in place, released by hand — and we carry it, step by honest step,
-          onto a live AKS cluster.
+          workshop it runs in production on AKS. This workshop starts with the system on RHEL VMs, scaled
+          vertically, patched in place, and released manually, then moves it to an AKS cluster.
         </p>
 
         <div class="grid grid-2">
@@ -121,25 +159,24 @@
             <span class="idx">THE GOAL OF THIS PREQUEL</span>
             <h3>Where you finish</h3>
             <p>
-              The exact same three components, unchanged in behaviour, now packaged as immutable images,
-              configured from the environment, orchestrated by Kubernetes, and finally running live on a
-              managed <b>AKS</b> cluster behind a load balancer. No rewrite. Just the whole modern path.
+              The same three components, unchanged in behaviour, are packaged as immutable images,
+              configured from the environment, orchestrated by Kubernetes, and run on a managed <b>AKS</b>
+              cluster behind a load balancer. The application source is not rewritten.
             </p>
             <div>
               <span class="tag accent">Dockerfiles</span>
               <span class="tag accent">12-factor config</span>
               <span class="tag accent">Deployments + Services</span>
               <span class="tag accent">ConfigMaps + Secrets</span>
-              <span class="tag accent">Live on AKS</span>
+              <span class="tag accent">Deployed on AKS</span>
             </div>
           </div>
         </div>
 
         <div class="note info mt-20">
-          <b>Why "containerize first, refactor later" is the right call.</b> The main workshop defends this
-          design move directly — the Java gateway and C++ parser ship in containers with <em>no source rewrite</em>.
-          This prequel is how you get there responsibly, so that when orchestration arrives, the container is a
-          known-good, reproducible artifact rather than a fresh source of surprises.
+          <b>Containerize before refactoring.</b> The Java gateway and C++ parser are packaged in containers
+          with <em>no source rewrite</em>. This establishes reproducible artifacts before Kubernetes orchestration
+          is introduced.
         </div>
       </div>
     </section>
@@ -150,7 +187,7 @@
         <span class="kicker">The lift</span>
         <h2 class="sec">Four habits change on this journey</h2>
         <p class="sec-lede">
-          Zero-to-Hero is not really about Docker or kubectl syntax. It is about replacing four legacy habits —
+          The workshop covers changes in four operational areas —
           in <b>deployment</b>, <b>configuration</b>, the <b>development lifecycle</b>, and <b>operations</b> —
           with their cloud-native equivalents, ending on a cluster Azure runs for you.
         </p>
@@ -160,7 +197,7 @@
             <h4><span class="pill bad">Before</span> Deployment</h4>
             <ul>
               <li>Artifacts copied onto a long-lived host with <code>scp</code> and a runbook</li>
-              <li>The host is a pet: patched in place, drifting from its twin</li>
+              <li>The host is maintained in place and can drift from its peer</li>
               <li>"Works on my machine" — because the machine is unique</li>
               <li>Rollback means re-running yesterday's runbook, if you kept it</li>
             </ul>
@@ -169,7 +206,7 @@
             <h4><span class="pill good">After</span> Deployment</h4>
             <ul>
               <li>An immutable image is the unit of deployment, built once, run anywhere</li>
-              <li>Hosts are cattle; the image carries its own runtime</li>
+              <li>Hosts are replaceable; the image carries its own runtime</li>
               <li>"Works on my machine" is the point — the machine is the image</li>
               <li>Rollback is pointing at the previous image tag</li>
             </ul>
@@ -181,7 +218,7 @@
             <h4><span class="pill bad">Before</span> Configuration</h4>
             <ul>
               <li>Settings hand-edited in files on each box, secrets in plaintext</li>
-              <li>Environments diverge silently; prod is a mystery</li>
+              <li>Environment differences are difficult to track</li>
               <li>A config change is a manual, unaudited login</li>
             </ul>
           </div>
@@ -243,7 +280,7 @@
         <p class="sec-lede">
           Each phase is a short, hands-on block sliced into 15–20 minute activities. Every activity has a
           pre-check, steps to run, a validation gate, and a post-check — the same rhythm you'll meet in the
-          replatform lab, so the muscle memory carries over.
+          replatform lab, so the process remains consistent.
         </p>
 
         <div class="phase-list">
@@ -251,14 +288,14 @@
             <div class="num">0</div>
             <div>
               <h3>Setup &amp; the legacy baseline</h3>
-              <p>Install the toolchain, get the Skybridge sample, and honestly document how it deploys today.</p>
+              <p>Install the toolchain, get the Skybridge sample, and document how it deploys today.</p>
             </div>
             <div class="meta">~25 min · 2 activities</div>
           </div>
           <div class="phase">
             <div class="num">1</div>
             <div>
-              <h3>Deploy it the classic way — and feel the pain</h3>
+              <h3>Deploy it using the existing process</h3>
               <p>Stand up the app on a "VM" with systemd and a runbook. Then break it with config drift and a version skew.</p>
             </div>
             <div class="meta">~45 min · 3 activities</div>
@@ -306,8 +343,8 @@
           <div class="phase">
             <div class="num">7</div>
             <div>
-              <h3>Land on AKS (managed Kubernetes)</h3>
-              <p>Provision AKS, push images to ACR, deploy the same manifests, expose them, and bring the workload up live.</p>
+              <h3>Deploy to AKS (managed Kubernetes)</h3>
+              <p>Provision AKS, push images to ACR, deploy the same manifests, and expose the workload.</p>
             </div>
             <div class="meta">~73 min · 4 activities</div>
           </div>
@@ -322,7 +359,7 @@
         <h2 class="sec">By the end, you can…</h2>
         <div class="grid grid-3">
           <div class="card">
-            <h3>Explain the tax of pets</h3>
+            <h3>Explain the cost of manually managed hosts</h3>
             <p>Articulate, from experience, why hand-managed hosts create patch fragility, config drift, and slow, risky releases.</p>
           </div>
           <div class="card">
@@ -330,7 +367,7 @@
             <p>Take a legacy app whose config lives on the box and make it read every setting from its environment — no rebuild to reconfigure.</p>
           </div>
           <div class="card">
-            <h3>Write a real Dockerfile</h3>
+            <h3>Write production-oriented Dockerfiles</h3>
             <p>Produce small, layer-cached, non-root images for a JVM service, a compiled C++ binary, and a static site.</p>
           </div>
           <div class="card">
@@ -338,7 +375,7 @@
             <p>Bring the whole estate up with one <code>compose up</code>, including a database and service-to-service networking.</p>
           </div>
           <div class="card">
-            <h3>Version like you mean it</h3>
+            <h3>Apply traceable image versions</h3>
             <p>Tag by semantic version and by commit SHA, push to a registry, and reason about mutable vs immutable tags.</p>
           </div>
           <div class="card">
@@ -351,7 +388,7 @@
           </div>
           <div class="card">
             <h3>Land it on AKS</h3>
-            <p>Provision a managed cluster, push images to ACR, deploy the same manifests, and serve real traffic on an AKS load balancer.</p>
+            <p>Provision a managed cluster, push images to ACR, deploy the same manifests, and serve traffic through an AKS load balancer.</p>
           </div>
         </div>
       </div>
@@ -361,21 +398,20 @@
     <section id="handoff">
       <div class="wrap">
         <span class="kicker">The boundary</span>
-        <h2 class="sec">Where Zero-to-Hero ends and the replatform begins</h2>
+        <h2 class="sec">Where this workshop ends and the replatform begins</h2>
         <p class="sec-lede">
-          This prequel lands you on AKS: the same three components run live on a managed cluster, pulled from
-          ACR, built by CI. What it deliberately does <em>not</em> do is make that cluster production-grade.
-          A public, single-pool, hand-applied deployment is exactly the naive starting point the replatform
-          workshop assumes on day one.
+          This workshop deploys the three components to a managed cluster using images built by CI and pulled
+          from ACR. It does <em>not</em> configure the cluster for production. The following replatform workshop
+          starts from a public, single-pool, manually applied deployment.
         </p>
 
         <div class="hand-off">
-          <h3>You've landed on AKS — and this is the door</h3>
+          <h3>The workload is deployed to AKS</h3>
           <p>
             The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>, takes your working
             deployment and re-architects it for production: Day-0 decisions, a private zone-redundant cluster,
             workload identity, the Istio mesh, GitOps rings with gated promotion, autoscaling, and cross-region
-            failover. It assumes a workload already runs on AKS. That is precisely what you just built.
+            failover. It assumes a workload already runs on AKS, as configured in this workshop.
           </p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="lab.html">Do the lab first →</a>
@@ -386,7 +422,7 @@
         <div class="note warn mt-20">
           <b>Owned by the replatform, not here:</b> Day-0 cluster architecture, a private API server,
           availability zones, workload identity, service mesh, GitOps rings, cluster/pod autoscaling, and DR.
-          Zero-to-Hero gets you running on AKS; the replatform makes running on AKS <em>production</em>.
+          This workshop deploys the workload to AKS; the replatform workshop adds production configuration.
         </div>
       </div>
     </section>
@@ -394,8 +430,8 @@
 
   <footer>
     <div class="wrap">
-      <span>AKS Zero-to-Hero · a prequel to <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a>.</span>
-      <span>Sample content for instructor-led training. Not production-hardened. MIT-style use.</span>
+      <span>AKS Migration Foundations · an introduction to <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a>.</span>
+      <span>Sample content for instructor-led training. Not configured for production. MIT-style use.</span>
     </div>
   </footer>
 
@@ -410,6 +446,22 @@
           var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
           root.setAttribute("data-theme", next);
           localStorage.setItem("z2h-theme", next);
+        });
+      }
+      var navToggle = document.getElementById("navToggle");
+      var navLinks = document.getElementById("navLinks");
+      if (navToggle && navLinks) {
+        navToggle.addEventListener("click", function () {
+          var open = navLinks.classList.toggle("open");
+          navToggle.classList.toggle("open", open);
+          navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        navLinks.addEventListener("click", function (e) {
+          if (e.target.closest("a")) {
+            navLinks.classList.remove("open");
+            navToggle.classList.remove("open");
+            navToggle.setAttribute("aria-expanded", "false");
+          }
         });
       }
     })();

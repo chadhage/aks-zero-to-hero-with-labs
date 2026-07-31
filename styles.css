@@ -1,5 +1,5 @@
-/* AKS Zero-to-Hero — shared theme
-   Prequel to "Replatforming a Real-Time Messaging System to AKS" (Skybridge -> AKS)
+/* AKS Migration Foundations — shared theme
+  Introduction to "Replatforming a Real-Time Messaging System to AKS" (Skybridge -> AKS)
    Self-contained, no external dependencies. Dark default with a light toggle. */
 
 :root {
@@ -91,7 +91,7 @@ a:hover { text-decoration: underline; }
 }
 .nav-inner {
   max-width: var(--maxw); margin: 0 auto; padding: 12px 22px;
-  display: flex; align-items: center; gap: 18px;
+  display: flex; align-items: center; gap: 18px; position: relative;
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.01em; }
 .brand .dot {
@@ -115,6 +115,20 @@ a:hover { text-decoration: underline; }
   display: inline-flex; align-items: center; justify-content: center;
 }
 .theme-btn:hover { border-color: var(--accent); }
+
+.nav-toggle {
+  display: none; margin-left: auto; width: 38px; height: 34px; padding: 0;
+  flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 9px; cursor: pointer;
+}
+.nav-toggle:hover { border-color: var(--accent); }
+.nav-toggle span {
+  display: block; width: 17px; height: 2px; border-radius: 2px; background: var(--text);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.nav-toggle.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
 /* ---------- Hero ---------- */
 .hero { padding: 72px 0 40px; position: relative; overflow: hidden; }
@@ -169,6 +183,10 @@ h2.sec { font-size: clamp(24px, 3.4vw, 34px); letter-spacing: -0.02em; margin: 8
 .card h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: -0.01em; }
 .card p { margin: 0; color: var(--text-dim); font-size: 14.5px; }
 .card .idx { color: var(--text-faint); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; }
+.mode-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 220px; }
+.mode-card h3 { margin-top: 8px; }
+.mode-card p { flex: 1; }
+.mode-card .btn { margin-top: 22px; }
 .tag {
   display: inline-block; font-size: 11px; font-weight: 600; color: var(--text-dim);
   background: var(--bg-elev-2); border: 1px solid var(--border-soft);
@@ -232,12 +250,17 @@ pre code { background: none; border: none; padding: 0; }
   background: var(--bg-elev); border: 1px solid var(--border-soft); border-radius: 999px;
   padding: 7px 10px; margin: 0 0 8px;
 }
+.mode-label {
+  color: var(--text-faint); font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; padding-left: 4px;
+}
 .seg { display: inline-flex; background: var(--bg-elev-2); border-radius: 999px; padding: 3px; }
 .seg button {
   border: none; background: transparent; color: var(--text-dim); font-weight: 600; font-size: 13px;
   padding: 6px 14px; border-radius: 999px; cursor: pointer;
 }
 .seg button.active { background: var(--accent); color: #fff; }
+.seg button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 .progress-txt { margin-left: auto; color: var(--text-faint); font-size: 13px; font-weight: 600; }
 
 .phase-block { margin: 36px 0; }
@@ -327,8 +350,46 @@ footer a { color: var(--text-dim); }
   .stat-row { grid-template-columns: repeat(2, 1fr); }
   .phase { grid-template-columns: 44px 1fr; }
   .phase .meta { grid-column: 2; text-align: left; }
-  .nav-links { display: none; }
-  .nav-links.compact { display: flex; }
+  .nav-toggle { display: inline-flex; }
+  .nav-links {
+    position: absolute; top: calc(100% + 1px); left: 0; right: 0; margin-left: 0;
+    flex-direction: column; align-items: stretch; gap: 2px; padding: 10px 22px 16px;
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); box-shadow: var(--shadow); display: none;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { display: block; padding: 10px 12px; }
+  .nav-links .theme-btn { align-self: flex-start; margin-top: 6px; }
+}
+
+@media (max-width: 600px) {
+  .wrap { padding-inline: 16px; }
+  .nav-inner { padding-inline: 16px; flex-wrap: wrap; gap: 8px; }
+  .brand { min-width: 0; }
+  .brand small { display: none; }
+  .nav-links { padding-inline: 16px; }
+  .hero { padding-top: 48px; }
+  .hero-cta .btn { flex: 1 1 100%; justify-content: center; }
+  .stat-row { gap: 10px; margin-top: 32px; }
+  .stat { padding: 14px; }
+  section { padding-block: 40px; }
+  .card, .compare .col { padding: 18px; }
+  .mode-bar { border-radius: var(--radius); }
+  .progress-txt { flex-basis: 100%; margin-left: 0; text-align: center; }
+  .phase-head .count { flex-basis: 100%; margin-left: 0; }
+  .activity > summary {
+    display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px 10px; padding: 14px 16px;
+  }
+  .activity > summary::after { grid-column: 3; grid-row: 1 / span 2; align-self: center; }
+  .activity .atitle { align-self: center; }
+  .activity .atime { grid-column: 2; margin-left: 0; padding-right: 0; }
+  .activity .body { padding: 4px 16px 16px; }
+  .kc, .hand-off { padding: 16px; }
+  .checklist li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 4px 10px; align-items: start; }
+  .checklist .val2 { grid-column: 2; white-space: normal; }
+  .name-input { width: 100%; min-width: 0; }
+  .cert { padding: 24px 16px; }
 }
 
 /* ---------- Instructor-led talk tracks ---------- */

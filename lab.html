@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AKS Zero-to-Hero — Lab guide</title>
-  <meta name="description" content="Participant activity guide: move the Skybridge estate from classic VM deployment and hand-managed config to a container-based development lifecycle. Six phases, each activity with a pre-check, steps, validation, and post-check." />
+  <title>AKS Migration Foundations — Lab guide</title>
+  <meta name="description" content="Participant activity guide: move the Skybridge estate from classic VM deployment and hand-managed config to a container-based development lifecycle. Eight phases, each activity with a pre-check, steps, validation, and post-check." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,11 +13,14 @@
   <nav class="nav">
     <div class="nav-inner">
       <span class="brand">
-        <span class="dot">Z2H</span>
-        AKS&nbsp;Zero-to-Hero <small>· lab guide</small>
+        <span class="dot">AKS</span>
+        AKS&nbsp;Migration Foundations <small>· lab guide</small>
       </span>
-      <span class="nav-links">
-        <a href="index.html">Overview</a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="nav-links" id="navLinks">
+        <a class="mobile-nav" href="index.html">Overview</a>
         <a href="#p0">Phase 0</a>
         <a href="#p1">Phase 1</a>
         <a href="#p2">Phase 2</a>
@@ -26,7 +29,7 @@
         <a href="#p5">Phase 5</a>
         <a href="#p6">Phase 6</a>
         <a href="#p7">Phase 7</a>
-        <a href="complete.html">Finish ✓</a>
+        <a class="mobile-nav" href="complete.html">Finish ✓</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
       </span>
     </div>
@@ -36,13 +39,13 @@
     <header class="hero hero-lab">
       <div class="wrap">
         <span class="eyebrow">Participant activity guide</span>
-        <h1 class="h1-lab">Lab — from a hand-deployed VM all the way onto AKS</h1>
+        <h1 class="h1-lab">Lab — from a hand-deployed VM to AKS</h1>
         <p class="lede">
           The journey from classic servers to AKS, sliced into 10–20 minute activities across eight phases:
           <b>classic → containerize → Kubernetes → AKS</b>. Each activity has a
           <b>pre-check</b> (baseline what you know), the <b>steps</b> to run, a <b>validation</b> gate, and a
-          <b>post-check</b> (prove the lift landed). Every phase also has a scored <b>knowledge check</b> — a
-          baseline quiz before, and a measured quiz after that proves your understanding actually lifted.
+          <b>post-check</b> (validate the result). Every phase also has a scored <b>knowledge check</b> — a
+          baseline quiz before and a measured quiz after to record changes in understanding.
           Earn points as you go, and switch to <b>Instructor-led</b> for trainer talk tracks and demo cues.
         </p>
 
@@ -52,18 +55,18 @@
         </div>
 
         <div class="mode-bar">
-          <div class="seg" role="group" aria-label="Pacing">
-            <button class="active" data-mode="self">Self-paced</button>
-            <button data-mode="led">Instructor-led</button>
+          <span class="mode-label">Mode</span>
+          <div class="seg" role="group" aria-label="Delivery mode">
+            <button class="active" type="button" data-mode="self" aria-pressed="true">Self-paced</button>
+            <button type="button" data-mode="led" aria-pressed="false">Instructor-led</button>
           </div>
           <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">26</span> activities · <span id="pct">0%</span> ·
             <span class="pts" id="ptsCount">0</span> pts ·
             <a href="#" id="resetBtn">Reset</a></span>
         </div>
-        <div class="note info">
-          Progress, quiz results, and points are saved in this browser only. Self-paced times assume a trainer
-          has already framed the phase — working solo, roughly double them. Take each phase's baseline knowledge
-          check first, work the activities, then take the post-check to measure your lift.
+        <div class="note info" id="modeHelp" aria-live="polite">
+          Self-paced mode: plan 12–14 hours — the hands-on activities plus the required reading, knowledge checks, and reflection.
+          Follow each participant step, validation, and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.
         </div>
       </div>
     </header>
@@ -74,7 +77,7 @@
       <section id="p0" class="phase-block first">
         <div class="phase-head">
           <h2>Phase 0 — Setup &amp; the legacy baseline</h2>
-          <span class="sub">Get the tools, get the sample, and be honest about how it ships today.</span>
+          <span class="sub">Get the tools, get the sample, and document how it ships today.</span>
           <span class="count" data-phase="0">0/2</span>
         </div>
 
@@ -87,7 +90,7 @@
           </summary>
           <div class="body">
             <div class="step-block precheck">
-              <h5>◆ Pre-check — baseline, be honest: Confident / Fuzzy / No idea</h5>
+              <h5>◆ Pre-check — baseline: Confident / Fuzzy / No idea</h5>
               <ul>
                 <li>What is the difference between a container <em>image</em> and a running <em>container</em>?</li>
                 <li>What does a container runtime give you that a plain OS process does not?</li>
@@ -105,11 +108,11 @@
 docker run --rm hello-world
 docker run --rm -d -p 8080:80 nginx   <span class="cmt"># open http://localhost:8080</span>
 echo 'FROM alpine' &gt; Dockerfile.test
-docker build -t z2h-check:1 -f Dockerfile.test .</code></pre>
+docker build -t aks-foundations-check:1 -f Dockerfile.test .</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p><code>hello-world</code> prints its greeting, nginx serves on <code>:8080</code>, and <code>z2h-check:1</code> appears in <code>docker images</code>.</p>
+              <p><code>hello-world</code> prints its greeting, nginx serves on <code>:8080</code>, and <code>aks-foundations-check:1</code> appears in <code>docker images</code>.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check — if not "Confident" on every line, flag it before moving on</h5>
@@ -135,7 +138,7 @@ docker build -t z2h-check:1 -f Dockerfile.test .</code></pre>
               <ul>
                 <li>Name three ways a long-lived, hand-patched host drifts from its supposed twin.</li>
                 <li>What is a "runbook", and why is a runbook a liability as well as an asset?</li>
-                <li>What does "snowflake server" mean, and why is it hard to reproduce one?</li>
+                <li>Why is a manually configured server difficult to reproduce?</li>
               </ul>
             </div>
             <div class="step-block do">
@@ -156,9 +159,9 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Which single manual step would hurt most if the one person who knows it were unavailable?</li>
+                <li>Which manual step creates the greatest continuity risk if its owner is unavailable?</li>
                 <li>If you had to stand up an identical host from scratch today, what could you not reproduce?</li>
-                <li>Which pain does the board actually care about — patch fragility, idle capacity, or slow release?</li>
+                <li>Which concern has the highest business impact — patch reliability, idle capacity, or release time?</li>
               </ul>
             </div>
           </div>
@@ -169,10 +172,10 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
       <section id="p1" class="phase-block">
         <div class="phase-head">
           <h2>Phase 1 — Deploy it the classic way</h2>
-          <span class="sub">Stand it up like it's 2014, then break it the way real systems break.</span>
+          <span class="sub">Deploy with the existing process, then introduce a representative configuration failure.</span>
           <span class="count" data-phase="1">0/3</span>
         </div>
-        <div class="success-banner">◎ Milestone — you can feel, not just recite, why the old way hurts</div>
+        <div class="success-banner">Checkpoint — identify the limitations of the existing deployment process</div>
 
         <!-- 1.1 -->
         <details class="activity" id="a1-1">
@@ -185,7 +188,7 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What does <code>systemd</code> actually manage, and what does it not manage?</li>
+                <li>What does <code>systemd</code> manage, and what does it not manage?</li>
                 <li>When you copy a JAR onto a host and start it, what carries the runtime version — the host or the artifact?</li>
                 <li>Why is "it started on my box" weak evidence that it will start on the next box?</li>
               </ul>
@@ -205,7 +208,7 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>The gateway answers on <code>:4561</code> from your host, and you drove it entirely from the runbook — counting every manual command you typed.</p>
+              <p>The gateway answers on <code>:4561</code> from your host. Record each manual command required by the runbook.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
@@ -237,7 +240,7 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Stand up a second "VM" from the same runbook, but let a real-world slip happen (a different package version, a hand-edited timeout, a missing env line).</li>
+                <li>Stand up a second "VM" from the same runbook with one configuration difference (a different package version, a hand-edited timeout, or a missing environment variable).</li>
                 <li>Point the same smoke test at both hosts.</li>
                 <li>Record the divergent behaviour and trace it back to the config difference.</li>
               </ol>
@@ -272,7 +275,7 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>In a copy-the-binary deployment, what exactly do you roll <em>back to</em>?</li>
+                <li>In a copy-the-binary deployment, what artifact and state do you roll <em>back to</em>?</li>
                 <li>Why is "keep the old JAR next to the new one" a fragile rollback plan?</li>
                 <li>What state, besides the binary, might a rollback need to also revert?</li>
               </ul>
@@ -281,13 +284,13 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
               <h5>▶ Do</h5>
               <ol>
                 <li>Deploy a "bad" build of the gateway onto host 1 by following the runbook's upgrade path.</li>
-                <li>Now roll back to the previous build — using only what the runbook and the host actually preserved.</li>
+                <li>Roll back to the previous build using only what the runbook and host preserved.</li>
                 <li>Time it, from "we need to roll back" to "traffic is healthy again".</li>
               </ol>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>You have a wall-clock rollback number, and an honest note on whether the rollback was clean or left residue (stale config, half-applied migration, orphaned process).</p>
+              <p>Record the rollback duration and whether it left stale configuration, a partially applied migration, or an orphaned process.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
@@ -343,7 +346,7 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
               <ul>
                 <li>How many secrets are currently in plaintext on a host or in the repo?</li>
                 <li>Which settings differ between dev and prod, and how do you know today?</li>
-                <li>Which "constant" is actually an accident waiting to become per-environment?</li>
+                <li>Which current constant is likely to vary by environment?</li>
               </ul>
             </div>
           </div>
@@ -414,7 +417,7 @@ DB_DSN='postgres://app@db:5432/skybridge' ./run-gateway.sh</code></pre>
                 <li>Add a pre-commit secret scan so a credential can't slip back in.</li>
               </ol>
 <pre><code>git ls-files | xargs grep -nE 'password=|secret=|BEGIN .*PRIVATE KEY' || echo 'clean'</code></pre>
-              <div class="note warn"><b>Boundary note:</b> a real platform stores these in a managed secret store and injects them at deploy time. Setting that up is the AKS workshop's job — here you only prove the secret is <em>not</em> in the artifact.</div>
+              <div class="note warn"><b>Boundary note:</b> a production platform stores these in a managed secret store and injects them at deploy time. The replatform workshop covers that configuration; here, verify the secret is <em>not</em> in the artifact.</div>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -439,7 +442,7 @@ DB_DSN='postgres://app@db:5432/skybridge' ./run-gateway.sh</code></pre>
           <span class="sub">One Dockerfile per component. Small, reproducible, non-root, immutable.</span>
           <span class="count" data-phase="3">0/4</span>
         </div>
-        <div class="success-banner">◎ Milestone — the estate now runs from images, not from a runbook</div>
+        <div class="success-banner">Checkpoint — the estate runs from images rather than a runbook</div>
 
         <!-- 3.1 -->
         <details class="activity" id="a3-1">
@@ -476,7 +479,7 @@ docker run --rm -p 4561:4561 \
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>How much smaller is the runtime image than a naive single-stage build?</li>
+                <li>How much smaller is the runtime image than the single-stage build?</li>
                 <li>Which layer rebuilt when you changed one line of code — and which stayed cached?</li>
                 <li>What did the container carry that the "VM" made you install by hand in 1.1?</li>
               </ul>
@@ -504,7 +507,7 @@ docker run --rm -p 4561:4561 \
               <h5>▶ Do</h5>
               <ol>
                 <li>Write a multi-stage Dockerfile: a build stage with the C++ toolchain, a minimal runtime stage with just the binary and its required libs.</li>
-                <li>Verify the binary actually runs on the slim base (link errors show up here, not in the build stage).</li>
+                <li>Verify the binary runs on the slim base (link errors appear here, not in the build stage).</li>
                 <li>Expose the parser's HTTP port and read its config from the environment.</li>
               </ol>
 <pre><code>docker build -t parser-cpp:0.1.0 apps/parser-cpp/
@@ -580,7 +583,7 @@ docker run --rm -p 3000:80 -e API_BASE=http://localhost:8080 ops-console:0.1.0
               <h5>◆ Pre-check</h5>
               <ul>
                 <li>What kinds of files should a <code>.dockerignore</code> keep out of the build context, and why?</li>
-                <li>What does an image vulnerability scan actually inspect?</li>
+                <li>What does an image vulnerability scan inspect?</li>
                 <li>Why is a smaller image a security property, not just a speed one?</li>
               </ul>
             </div>
@@ -617,7 +620,7 @@ docker image ls | grep -E 'gateway-java|parser-cpp|ops-console'</code></pre>
           <span class="sub">Run the whole estate locally with one command, then version and push it.</span>
           <span class="count" data-phase="4">0/3</span>
         </div>
-        <div class="success-banner">◎ Milestone — one <code>compose up</code> brings the estate to life</div>
+        <div class="success-banner">Checkpoint — one <code>compose up</code> starts the estate</div>
 
         <!-- 4.1 -->
         <details class="activity" id="a4-1">
@@ -724,7 +727,7 @@ docker image inspect gateway-java:0.1.0 --format '{{index .RepoDigests 0}}'</cod
               <ol>
                 <li>Log in to a registry (any OCI registry — a local one, GHCR, Docker Hub, or an Azure Container Registry).</li>
                 <li>Push each image with both tags.</li>
-                <li>Pull them back on a clean machine (or after a local prune) to prove they're portable.</li>
+                <li>Pull them on a clean machine (or after a local prune) to validate portability.</li>
               </ol>
 <pre><code>docker login &lt;registry&gt;
 docker tag gateway-java:0.1.0 &lt;registry&gt;/gateway-java:0.1.0
@@ -755,7 +758,7 @@ docker push &lt;registry&gt;/gateway-java:sha-$SHA</code></pre>
           <span class="sub">Automate the build and close the inner/outer loop before you hand the images to an orchestrator.</span>
           <span class="count" data-phase="5">0/3</span>
         </div>
-        <div class="success-banner">◎ Milestone — every commit yields a scanned, versioned, published image</div>
+        <div class="success-banner">Checkpoint — each commit produces a scanned, versioned, published image</div>
 
         <!-- 5.1 -->
         <details class="activity" id="a5-1">
@@ -825,13 +828,13 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>You changed code and saw it live under Compose in one short cycle, using the same Dockerfile CI uses. Dev and CI cannot drift because they share the build definition.</p>
+              <p>You changed code and ran it under Compose using the same Dockerfile as CI. Sharing the build definition reduces differences between development and CI.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
                 <li>What dominated your inner-loop time, and what one change would halve it?</li>
-                <li>Why does "same Dockerfile everywhere" kill an entire class of "works in CI, not locally" bugs?</li>
+                <li>How does using the same Dockerfile reduce differences between local and CI builds?</li>
                 <li>How would you keep the inner loop fast without letting it diverge from the outer loop?</li>
               </ul>
             </div>
@@ -878,7 +881,7 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
         </details>
 
         <div class="note info">
-          <b>Turn in the road.</b> Containerization is done: reproducible images, config from the environment,
+          <b>Phase boundary.</b> Containerization is complete: reproducible images, configuration from the environment,
           a registry, and CI. Compose proved the pieces fit — but it won't self-heal, scale, or roll out safely.
           That is an orchestrator's job. Next you trade Compose for Kubernetes, then let Azure run Kubernetes for you.
         </div>
@@ -888,10 +891,10 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
       <section id="p6" class="phase-block">
         <div class="phase-head">
           <h2>Phase 6 — Kubernetes: orchestrate the containers</h2>
-          <span class="sub">Trade Compose for a real scheduler on a local cluster — self-healing, scaling, and safe rollouts.</span>
+          <span class="sub">Trade Compose for a Kubernetes scheduler on a local cluster, with reconciliation, scaling, and rolling updates.</span>
           <span class="count" data-phase="6">0/4</span>
         </div>
-        <div class="success-banner">◎ Milestone — the estate runs on Kubernetes and heals itself</div>
+        <div class="success-banner">Checkpoint — the estate runs on Kubernetes with workload reconciliation</div>
 
         <!-- 6.1 -->
         <details class="activity" id="a6-1">
@@ -926,7 +929,7 @@ kubectl get nodes -o wide</code></pre>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>What did <code>kind</code> actually create on your machine to stand up a cluster?</li>
+                <li>What did <code>kind</code> create on your machine to run the cluster?</li>
                 <li>Which file did your cluster credentials get written into?</li>
                 <li>What is the supported client/server version-skew rule you should respect?</li>
               </ul>
@@ -1003,7 +1006,7 @@ kubectl port-forward svc/gateway 4561:4561 &amp;
 <pre><code>kubectl create configmap gateway-config --from-env-file=.env.example
 kubectl apply -f k8s/
 kubectl rollout status deploy/gateway</code></pre>
-              <div class="note warn"><b>Boundary note:</b> a real platform injects these from a managed secret store (e.g. Key Vault) at deploy time. Wiring that in is the replatform workshop's job — here you only prove config lives outside the image.</div>
+              <div class="note warn"><b>Boundary note:</b> a production platform injects these from a managed secret store such as Key Vault at deploy time. The replatform workshop covers that configuration; here, verify that configuration lives outside the image.</div>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -1067,11 +1070,11 @@ kubectl rollout undo deploy/parser</code></pre>
       <!-- ============ PHASE 7 ============ -->
       <section id="p7" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 7 — Land on AKS (managed Kubernetes)</h2>
-          <span class="sub">Take the same manifests to a cluster Azure runs for you — and bring the workload up live.</span>
+          <h2>Phase 7 — Deploy to AKS (managed Kubernetes)</h2>
+          <span class="sub">Apply the same manifests to an Azure-managed cluster.</span>
           <span class="count" data-phase="7">0/4</span>
         </div>
-        <div class="success-banner">◎ Milestone — the workload is running on AKS</div>
+        <div class="success-banner">Checkpoint — the workload is running on AKS</div>
 
         <!-- 7.1 -->
         <details class="activity" id="a7-1">
@@ -1109,7 +1112,7 @@ kubectl get nodes -o wide</code></pre>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Which parts of the cluster did Azure run that you never had to install?</li>
+                <li>Which cluster components does Azure operate?</li>
                 <li>What is the supported version-skew rule between your <code>kubectl</code> and the AKS server?</li>
                 <li>Name one Day-0 default you accepted here that the replatform workshop will make you defend.</li>
               </ul>
@@ -1171,7 +1174,7 @@ az aks update -g rg-z2h -n aks-z2h --attach-acr acrz2h</code></pre>
               <h5>◆ Pre-check</h5>
               <ul>
                 <li>What does a Service of type <code>LoadBalancer</code> provision on AKS?</li>
-                <li>How does an external client's traffic actually reach a Pod?</li>
+                <li>How does an external client's traffic reach a Pod?</li>
                 <li>What is still missing between "reachable" and "production"?</li>
               </ul>
             </div>
@@ -1180,7 +1183,7 @@ az aks update -g rg-z2h -n aks-z2h --attach-acr acrz2h</code></pre>
               <ol>
                 <li>Repoint the manifests at the ACR image references.</li>
                 <li>Apply them to AKS and expose the gateway with a <code>LoadBalancer</code> Service.</li>
-                <li>Grab the external IP and smoke-test the live cluster.</li>
+                <li>Get the external IP and smoke-test the cluster.</li>
               </ol>
 <pre><code>kubectl apply -f k8s/
 kubectl get svc gateway -w        <span class="cmt"># wait for EXTERNAL-IP</span>
@@ -1206,23 +1209,23 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         <details class="activity" id="a7-4">
           <summary>
             <span class="aid">7.4</span>
-            <span class="atitle">You've landed — draw the line to the replatform</span>
+            <span class="atitle">Document the boundary with the replatform workshop</span>
             <span class="atime">~15 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What does "landed on AKS" mean versus "production-ready on AKS"?</li>
+                <li>What is the difference between "deployed on AKS" and "configured for production on AKS"?</li>
                 <li>Which of your artifacts becomes the source of truth a GitOps flow will later watch?</li>
-                <li>Why is a naive, public, single-pool cluster the right place to stop <em>this</em> workshop?</li>
+                <li>Why does this workshop stop at a public, single-pool cluster?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
                 <li>Capture the cluster and app facts (cluster name, node pool, ACR, image tags, Service IP) in <code>HANDOFF.md</code>.</li>
-                <li>List what is done (classic → container → Kubernetes → AKS, live) versus what the replatform hardens (Day-0 architecture, private API, zones, workload identity, mesh, GitOps rings, autoscaling, DR).</li>
+                <li>List what is covered here (classic → container → Kubernetes → AKS) versus what the replatform configures (Day-0 architecture, private API, zones, workload identity, mesh, GitOps rings, autoscaling, and DR).</li>
                 <li>Tear down or keep the cluster per your cost plan: <code>az group delete -n rg-z2h</code>.</li>
               </ol>
             </div>
@@ -1233,8 +1236,8 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Which legacy pain from Phase 0 is now fully resolved, and which resolve only once the cluster is hardened?</li>
-                <li>What is the first Day-0 question the replatform will ask that you now have real context for?</li>
+                <li>Which Phase 0 limitation is addressed, and which requires additional production configuration?</li>
+                <li>Which Day-0 question in the replatform workshop can you now evaluate?</li>
                 <li>If you keep the cluster running, roughly what is it costing you per day idle?</li>
               </ul>
             </div>
@@ -1242,11 +1245,11 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         </details>
 
         <div class="hand-off">
-          <h3>You've landed on AKS. Now make it production.</h3>
+          <h3>The workload is deployed on AKS. Production configuration follows.</h3>
           <p>
-            Your estate has gone classic → container → Kubernetes → AKS and is running live on a managed cluster
+            Your estate has gone from classic deployment → containers → Kubernetes → AKS and is running on a managed cluster
             from CI-built images. The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>,
-            takes this naive deployment and re-architects it for production: Day-0 decisions, a private
+            adds production architecture: Day-0 decisions, a private
             zone-redundant cluster, workload identity, the Istio mesh, GitOps rings with gated promotion,
             controlled chaos, and cross-region failover.
           </p>
@@ -1264,11 +1267,11 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           <span class="sub">Claim your completion and see whether you cleared the 80% bar.</span>
         </div>
         <div class="hand-off">
-          <h3>Prove it and collect your points</h3>
+          <h3>Complete the assessment</h3>
           <p>
             Complete every activity and pass each phase's knowledge check (a measured lift of at least
-            10 points, or demonstrated mastery). Clear 80% across activities <em>and</em> knowledge checks and
-            the completion page issues your certificate — then points you at your suggested next activity:
+            10 points, or a qualifying baseline score). Meet 80% across activities <em>and</em> knowledge checks and
+            the completion page issues your certificate, then links to the next workshop:
             the production AKS replatform.
           </p>
           <div class="hero-cta">
@@ -1283,7 +1286,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
   <footer>
     <div class="wrap">
-      <span>AKS Zero-to-Hero · lab guide · a prequel to <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
+      <span>AKS Migration Foundations · lab guide · an introduction to <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
       <span>Progress is saved in this browser only.</span>
     </div>
   </footer>
@@ -1303,6 +1306,23 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         localStorage.setItem("z2h-theme", next);
       });
 
+      var navToggle = document.getElementById("navToggle");
+      var navLinks = document.getElementById("navLinks");
+      if (navToggle && navLinks) {
+        navToggle.addEventListener("click", function () {
+          var open = navLinks.classList.toggle("open");
+          navToggle.classList.toggle("open", open);
+          navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        navLinks.addEventListener("click", function (e) {
+          if (e.target.closest("a")) {
+            navLinks.classList.remove("open");
+            navToggle.classList.remove("open");
+            navToggle.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+
       // ---- Storage ----
       var K_PROG = "z2h-progress", K_MODE = "z2h-mode", K_KC = "z2h-kc", K_META = "z2h-meta";
       function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
@@ -1321,12 +1341,12 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             "They are two words for the same thing",
             "A container is built at compile time; an image at runtime"], a: 1,
             why: "An image is a read-only, layered artifact; a container is a runnable instance created from it." },
-          { q: "A \u201Csnowflake server\u201D is problematic mainly because:", options: [
+          { q: "A manually configured server is difficult to reproduce mainly because:", options: [
             "It uses too much disk",
             "Its exact state was reached by hand and cannot be reliably reproduced",
             "It cannot run containers",
             "It has no runbook"], a: 1,
-            why: "Snowflakes accumulate manual, undocumented change, so rebuilding an identical host is unreliable." },
+            why: "Manual, undocumented changes make rebuilding an equivalent host unreliable." },
           { q: "\u201CBuild once, run anywhere\u201D holds only if:", options: [
             "Every host has the same public IP",
             "The image carries its own runtime and dependencies, not the host",
@@ -1352,7 +1372,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             "Accumulated, undocumented change that no one can reproduce",
             "It cannot be monitored",
             "It runs systemd"], a: 1,
-            why: "Pets accumulate manual drift, creating fragility and irreproducibility." }
+            why: "Long-lived hosts accumulate manual drift, making their state difficult to reproduce." }
         ]},
         "2": { topic: "Configuration & 12-factor", questions: [
           { q: "The 12-factor \u201Cconfig in the environment\u201D rule means:", options: [
@@ -1452,7 +1472,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             "Only base64-encoded, not encrypted",
             "Stored inside the image",
             "Never mountable"], a: 1,
-            why: "Secrets are base64-encoded at rest by default unless encryption-at-rest is enabled." }
+            why: "A Kubernetes Secret is only base64-encoded at the object level, not encrypted; enable encryption-at-rest to protect it. On AKS, etcd is encrypted at rest by the platform." }
         ]},
         "7": { topic: "Landing on AKS", questions: [
           { q: "Compared with a local kind cluster, AKS additionally operates:", options: [
@@ -1478,32 +1498,50 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
       // ---- Facilitator talk tracks (shown only in Instructor-led mode) ----
       var LED = {
-        "0": "<span class=\"tt-label\">Talk track</span> Open by asking who has inherited a \u201Csnowflake\u201D server nobody dares reboot. <b>Demo cue:</b> run <code>docker run hello-world</code> live and narrate image-pull vs container-run. Timebox the baseline check to ~3 min and do <b>not</b> reveal answers yet.",
-        "1": "<span class=\"tt-label\">Talk track</span> Make the pain visceral \u2014 deploy the classic way, then introduce drift live and let the room predict the failure. <b>Demo cue:</b> change a config on one \u201Chost\u201D only, run the smoke test, and watch it fail.",
+        "0": "<span class=\"tt-label\">Talk track</span> Ask whether participants have managed a server with undocumented configuration. <b>Demo cue:</b> run <code>docker run hello-world</code> and explain image pull versus container run. Timebox the baseline check to ~3 min and do <b>not</b> reveal answers yet.",
+        "1": "<span class=\"tt-label\">Talk track</span> Deploy with the existing process, introduce configuration drift, and ask participants to predict the failure. <b>Demo cue:</b> change configuration on one \u201Chost\u201D only, run the smoke test, and observe the failure.",
         "2": "<span class=\"tt-label\">Talk track</span> Frame 12-factor as \u201Cone artifact, many environments.\u201D <b>Demo cue:</b> show the same image reading two different <code>.env</code> files and behaving differently with no rebuild.",
-        "3": "<span class=\"tt-label\">Talk track</span> Emphasize multi-stage = small, non-root = safe. <b>Demo cue:</b> <code>docker history</code> a fat build-stage image next to the slim final image and compare sizes.",
-        "4": "<span class=\"tt-label\">Talk track</span> Compose is the inner loop; the registry is the seam to the outer loop. <b>Demo cue:</b> <code>docker compose up</code>, trace a message end to end, then push a SHA-tagged image and show the tag.",
-        "5": "<span class=\"tt-label\">Talk track</span> CI is the outer loop that GitOps later consumes. <b>Demo cue:</b> open a trivial PR and watch the pipeline build, scan, and tag by SHA. Land the \u201Crun contract\u201D as the bridge to orchestration.",
-        "6": "<span class=\"tt-label\">Talk track</span> This is the turn in the road \u2014 Compose can't self-heal. <b>Demo cue:</b> <code>kubectl delete pod</code> and let the room watch it come back, then scale to 3 and roll a bad tag back in one command.",
+        "3": "<span class=\"tt-label\">Talk track</span> Explain that multi-stage builds reduce runtime image size and non-root execution limits privileges. <b>Demo cue:</b> use <code>docker history</code> to compare the build-stage and runtime images.",
+        "4": "<span class=\"tt-label\">Talk track</span> Compose supports local development; the registry supplies images to CI and deployment systems. <b>Demo cue:</b> run <code>docker compose up</code>, trace a message end to end, then push and display a SHA-tagged image.",
+        "5": "<span class=\"tt-label\">Talk track</span> CI produces the artifacts that a later GitOps process consumes. <b>Demo cue:</b> open a one-line PR and observe the pipeline build, scan, and tag by SHA. Explain how the run contract supplies inputs to orchestration.",
+        "6": "<span class=\"tt-label\">Talk track</span> Compose does not provide workload reconciliation. <b>Demo cue:</b> run <code>kubectl delete pod</code>, observe replacement, then scale to 3 and roll back an invalid tag.",
         "7": "<span class=\"tt-label\">Talk track</span> Same manifests, a cluster Azure runs for you. <b>Demo cue:</b> <code>az aks create</code> is slow \u2014 cover ACR-attach and LoadBalancer concepts while it provisions, then hit the external IP together as a cohort."
       };
 
-      // ---- Instructor-led mode ----
-      var mode = localStorage.getItem(K_MODE) || "self";
-      function applyMode() {
+      // ---- Delivery mode ----
+      var requestedMode = new URLSearchParams(window.location.search).get("mode");
+      var savedMode = localStorage.getItem(K_MODE);
+      var mode = (requestedMode === "self" || requestedMode === "led")
+        ? requestedMode
+        : ((savedMode === "self" || savedMode === "led") ? savedMode : "self");
+      var modeHelp = document.getElementById("modeHelp");
+      function applyMode(updateUrl) {
         body.classList.toggle("mode-led", mode === "led");
+        body.classList.toggle("mode-self", mode === "self");
         document.querySelectorAll(".seg button").forEach(function (b) {
-          b.classList.toggle("active", b.getAttribute("data-mode") === mode);
+          var active = b.getAttribute("data-mode") === mode;
+          b.classList.toggle("active", active);
+          b.setAttribute("aria-pressed", active ? "true" : "false");
         });
+        if (modeHelp) {
+          modeHelp.textContent = mode === "led"
+            ? "Instructor-led mode: plan about 7 hours of guided hands-on activity with a trainer. Phase talk tracks and demo cues are visible. Participant progress is saved in this browser only."
+            : "Self-paced mode: plan 12–14 hours — the hands-on activities plus the required reading, knowledge checks, and reflection. Follow each participant step, validation, and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.";
+        }
+        localStorage.setItem(K_MODE, mode);
+        if (updateUrl && window.history && window.history.replaceState) {
+          var url = new URL(window.location.href);
+          url.searchParams.set("mode", mode);
+          window.history.replaceState(null, "", url.toString());
+        }
       }
       document.querySelectorAll(".seg button").forEach(function (b) {
         b.addEventListener("click", function () {
           mode = b.getAttribute("data-mode");
-          localStorage.setItem(K_MODE, mode);
-          applyMode();
+          applyMode(true);
         });
       });
-      applyMode();
+      applyMode(false);
 
       // ---- Build one knowledge-check widget ----
       var postWidgets = {};
@@ -1516,14 +1554,14 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
         var head = document.createElement("div"); head.className = "kc-head";
         var badge = document.createElement("span"); badge.className = "kc-badge";
-        badge.textContent = kind === "pre" ? "Knowledge check \u00b7 baseline" : "Knowledge check \u00b7 prove the lift";
+        badge.textContent = kind === "pre" ? "Knowledge check \u00b7 baseline" : "Knowledge check \u00b7 follow-up";
         var h4 = document.createElement("h4"); h4.textContent = bank.topic;
         head.appendChild(badge); head.appendChild(h4); wrap.appendChild(head);
 
         var desc = document.createElement("p"); desc.className = "kc-desc";
         desc.textContent = kind === "pre"
           ? "Answer before you work the phase \u2014 no feedback yet. This records your baseline."
-          : "Answer after the phase. We compare against your baseline on the same questions; a gain of at least " + LIFT_THRESHOLD + " points proves the lift.";
+          : "Answer after the phase. We compare the result with your baseline on the same questions; the target increase is at least " + LIFT_THRESHOLD + " points.";
         wrap.appendChild(desc);
 
         var qEls = [];
@@ -1600,8 +1638,8 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             var verdict;
             if (passed) {
               if (lift >= LIFT_THRESHOLD) verdict = "Significant lift: +" + lift + " percentage points. Concept demonstrated.";
-              else if (pre >= 90) verdict = "Already proficient (baseline " + pre + "%). Mastery confirmed.";
-              else verdict = "Post-check " + post + "% \u2014 mastery threshold met.";
+              else if (pre >= 90) verdict = "Baseline threshold met (" + pre + "%).";
+              else verdict = "Post-check threshold met (" + post + "%).";
               html += '<div class="kc-verdict pass">\u2713 ' + verdict + '</div>';
             } else {
               verdict = "Lift of +" + lift + " pp is below the +" + LIFT_THRESHOLD + " pp bar. Review the phase and retry.";

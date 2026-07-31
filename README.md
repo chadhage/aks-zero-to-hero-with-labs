@@ -1,16 +1,24 @@
-# AKS Zero-to-Hero
+# AKS Migration Foundations
 
-A hands-on **prequel** to [Replatforming a Real-Time Messaging System to AKS](https://chadhage.github.io/aks-irl/index.html).
+An introductory workshop for [Replatforming a Real-Time Messaging System to AKS](https://chadhage.github.io/aks-irl/index.html).
 
 It takes the same **Skybridge** estate — a Java socket gateway, a C/C++ parser, and PostgreSQL —
-and walks a participant the whole way: **classic → containers → Kubernetes → AKS**. Starting from a
+and covers this sequence: **classic → containers → Kubernetes → AKS**. Starting from a
 classic VM deployment, hand-managed configuration, and manual release, it ends with the workload
-running **live on a managed AKS cluster**. The AKS replatform workshop then takes that naive
-deployment and hardens it for production.
+running on a managed AKS cluster. The AKS replatform workshop then covers production configuration.
+
+## Delivery modes
+
+The workshop offers the same activities and assessments in two modes:
+
+- **Self-paced** — independent completion in approximately 12–14 hours (the hands-on activities plus the required reading, knowledge checks, and reflection). Trainer talk tracks and demo cues are hidden.
+- **Instructor-led** — cohort delivery in approximately 7 hours of guided hands-on activity. The lab displays phase-level trainer talk tracks and demo cues.
+
+Choose a mode on the landing page or open `lab.html?mode=self` or `lab.html?mode=led` directly. The selection and participant progress are saved in the browser, and the mode can be changed from the lab guide.
 
 ## Reading before the workshop
 
-Complete the required reading before starting:
+Complete the required reading before starting. It orients you to the cloud-native patterns and Azure end-state concepts (such as landing zones) that frame this journey — some are configured only in the follow-on replatform workshop:
 
 - [Cloud Design Patterns — Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/patterns/)
 - [What is an Azure landing zone?](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
@@ -31,21 +39,21 @@ Recommended reading:
 
 ## The eight phases
 
-0. **Setup & the legacy baseline** — toolchain, sample, honest documentation of how it ships today.
-1. **Deploy it the classic way** — systemd + runbook on a "VM", then feel config drift and a painful rollback.
+0. **Setup & the legacy baseline** — toolchain, sample, and documentation of how it ships today.
+1. **Deploy it using the existing process** — systemd + runbook on a "VM", followed by a configuration-drift and rollback exercise.
 2. **Configuration management** — externalize settings to the environment (12-factor); get secrets out of source and images.
 3. **Containerize the components** — multi-stage Dockerfiles for the JVM gateway, C/C++ parser, and static console; harden and scan.
 4. **Compose the system & publish images** — run the estate locally with Compose; tag by semver + SHA; push to a registry.
 5. **A container-based development lifecycle** — CI build/test/scan/push per commit; define the run contract each image needs.
 6. **Kubernetes: orchestrate the containers** — local cluster; Deployments and Services; ConfigMaps and Secrets; self-heal, scale, roll out and roll back.
-7. **Land on AKS (managed Kubernetes)** — provision AKS; push images to ACR; deploy the same manifests; expose with a LoadBalancer; bring the workload up live.
+7. **Deploy to AKS (managed Kubernetes)** — provision AKS; push images to ACR; deploy the same manifests; expose with a LoadBalancer.
 
-## The boundary (on purpose)
+## Scope boundary
 
-Zero-to-Hero gets the workload **running on AKS**; it does not make that cluster production-grade.
-Everything that hardens a live AKS deployment — Day-0 cluster architecture, a private API server,
+This workshop gets the workload **running on AKS**; it does not configure the cluster for production.
+Production configuration — Day-0 cluster architecture, a private API server,
 availability zones, workload identity, service mesh, GitOps rings, cluster/pod autoscaling, and DR —
-is **owned by the AKS replatform workshop** that follows.
+is covered by the AKS replatform workshop that follows.
 
 ## Running it
 
@@ -57,4 +65,4 @@ python -m http.server 8000   # then open http://localhost:8000
 
 ---
 
-Instructor-led training content. Sample material, not production-hardened. MIT-style use.
+Instructor-led training content. Sample material, not configured for production. MIT-style use.
