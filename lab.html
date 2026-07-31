@@ -26,6 +26,7 @@
         <a href="#p5">Phase 5</a>
         <a href="#p6">Phase 6</a>
         <a href="#p7">Phase 7</a>
+        <a href="complete.html">Finish ✓</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
       </span>
     </div>
@@ -40,8 +41,9 @@
           The journey from classic servers to AKS, sliced into 10–20 minute activities across eight phases:
           <b>classic → containerize → Kubernetes → AKS</b>. Each activity has a
           <b>pre-check</b> (baseline what you know), the <b>steps</b> to run, a <b>validation</b> gate, and a
-          <b>post-check</b> (prove the lift landed). Work top to bottom; by the end your workload is running on
-          a managed AKS cluster.
+          <b>post-check</b> (prove the lift landed). Every phase also has a scored <b>knowledge check</b> — a
+          baseline quiz before, and a measured quiz after that proves your understanding actually lifted.
+          Earn points as you go, and switch to <b>Instructor-led</b> for trainer talk tracks and demo cues.
         </p>
 
         <div class="mode-bar">
@@ -50,11 +52,13 @@
             <button data-mode="led">Instructor-led</button>
           </div>
           <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">26</span> activities · <span id="pct">0%</span> ·
+            <span class="pts" id="ptsCount">0</span> pts ·
             <a href="#" id="resetBtn">Reset</a></span>
         </div>
         <div class="note info">
-          Progress is saved in this browser only. Self-paced times assume a trainer has already framed the
-          phase — working solo, roughly double them. Check the box on each activity as you complete it.
+          Progress, quiz results, and points are saved in this browser only. Self-paced times assume a trainer
+          has already framed the phase — working solo, roughly double them. Take each phase's baseline knowledge
+          check first, work the activities, then take the post-check to measure your lift.
         </div>
       </div>
     </header>
@@ -1248,6 +1252,27 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         </div>
       </section>
 
+      <!-- ============ FINISH ============ -->
+      <section id="finish" class="phase-block">
+        <div class="phase-head">
+          <h2>Finished the lab?</h2>
+          <span class="sub">Claim your completion and see whether you cleared the 80% bar.</span>
+        </div>
+        <div class="hand-off">
+          <h3>Prove it and collect your points</h3>
+          <p>
+            Complete every activity and pass each phase's knowledge check (a measured lift of at least
+            10 points, or demonstrated mastery). Clear 80% across activities <em>and</em> knowledge checks and
+            the completion page issues your certificate — then points you at your suggested next activity:
+            the production AKS replatform.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="complete.html">Check my completion →</a>
+            <a class="btn btn-ghost" href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Preview the AKS replatform ↗</a>
+          </div>
+        </div>
+      </section>
+
     </div>
   </main>
 
@@ -1261,8 +1286,11 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
   <script>
     (function () {
       var root = document.documentElement;
-      var saved = localStorage.getItem("z2h-theme");
-      if (saved) root.setAttribute("data-theme", saved);
+      var body = document.body;
+
+      // ---- Theme ----
+      var savedTheme = localStorage.getItem("z2h-theme");
+      if (savedTheme) root.setAttribute("data-theme", savedTheme);
       var tbtn = document.getElementById("themeBtn");
       if (tbtn) tbtn.addEventListener("click", function () {
         var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
@@ -1270,84 +1298,432 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         localStorage.setItem("z2h-theme", next);
       });
 
-      // ---- Pacing toggle (cosmetic; content is shared) ----
+      // ---- Storage ----
+      var K_PROG = "z2h-progress", K_MODE = "z2h-mode", K_KC = "z2h-kc", K_META = "z2h-meta";
+      function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
+      function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+      var prog = load(K_PROG);
+      var kc = load(K_KC);
+      var LIFT_THRESHOLD = 10;
+      function pct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
+
+      // ---- Knowledge-check question banks (one topic per phase) ----
+      var KC = {
+        "0": { topic: "Images, containers & the legacy baseline", questions: [
+          { q: "What best distinguishes a container image from a running container?", options: [
+            "An image is a running process; a container is a saved file",
+            "An image is an immutable, layered template; a container is a running instance of it",
+            "They are two words for the same thing",
+            "A container is built at compile time; an image at runtime"], a: 1,
+            why: "An image is a read-only, layered artifact; a container is a runnable instance created from it." },
+          { q: "A \u201Csnowflake server\u201D is problematic mainly because:", options: [
+            "It uses too much disk",
+            "Its exact state was reached by hand and cannot be reliably reproduced",
+            "It cannot run containers",
+            "It has no runbook"], a: 1,
+            why: "Snowflakes accumulate manual, undocumented change, so rebuilding an identical host is unreliable." },
+          { q: "\u201CBuild once, run anywhere\u201D holds only if:", options: [
+            "Every host has the same public IP",
+            "The image carries its own runtime and dependencies, not the host",
+            "You rebuild the image on each host",
+            "The app is written in Go"], a: 1,
+            why: "Portability comes from the image bundling its runtime; the host only provides the engine." }
+        ]},
+        "1": { topic: "The cost of hand-managed hosts", questions: [
+          { q: "Config drift between two \u201Cidentical\u201D hosts most directly causes:", options: [
+            "Faster deploys",
+            "\u201CWorks on one box, fails on the other\u201D inconsistencies",
+            "Lower memory usage",
+            "Immutable infrastructure"], a: 1,
+            why: "Divergent manual state makes behaviour differ between supposedly-identical hosts." },
+          { q: "With a classic runbook deploy, a rollback typically means:", options: [
+            "Pointing at a previous immutable image tag",
+            "Re-running a prior manual procedure and hoping the state matches",
+            "kubectl rollout undo",
+            "Nothing is needed"], a: 1,
+            why: "Runbook rollback re-executes manual steps with no guarantee the prior state is restored." },
+          { q: "The core liability of a long-lived, hand-patched host is:", options: [
+            "It is too cheap",
+            "Accumulated, undocumented change that no one can reproduce",
+            "It cannot be monitored",
+            "It runs systemd"], a: 1,
+            why: "Pets accumulate manual drift, creating fragility and irreproducibility." }
+        ]},
+        "2": { topic: "Configuration & 12-factor", questions: [
+          { q: "The 12-factor \u201Cconfig in the environment\u201D rule means:", options: [
+            "Bake config into the image at build time",
+            "Read config from the environment so one image runs in any environment",
+            "Store secrets in Git",
+            "Hard-code values in source"], a: 1,
+            why: "Externalized config lets a single immutable image be promoted across environments." },
+          { q: "A secret should be:", options: [
+            "Committed to the repo for convenience",
+            "Injected at runtime, never baked into the image or source",
+            "Printed in logs for debugging",
+            "Stored in the Dockerfile"], a: 1,
+            why: "Secrets are injected at runtime and kept out of images, source, and logs." },
+          { q: "If dev and prod differ only by environment, then:", options: [
+            "You must build a separate image per environment",
+            "The same image is promoted; only injected config changes",
+            "Config drift is guaranteed",
+            "You cannot use containers"], a: 1,
+            why: "Environment parity means one artifact, differing only by external config." }
+        ]},
+        "3": { topic: "Containerizing the components", questions: [
+          { q: "A multi-stage Dockerfile primarily helps by:", options: [
+            "Making images larger",
+            "Keeping build tools out of the final runtime image",
+            "Requiring root at runtime",
+            "Disabling layer caching"], a: 1,
+            why: "Build stages compile artifacts; only the slim runtime is copied to the final image." },
+          { q: "Running a container as non-root matters because:", options: [
+            "It runs faster",
+            "It reduces blast radius if the process is compromised",
+            "It is required to build",
+            "It disables networking"], a: 1,
+            why: "Least-privilege limits what an attacker gains from a compromised process." },
+          { q: "Image layer caching speeds rebuilds when:", options: [
+            "You change the base image every build",
+            "Rarely-changing steps (deps) precede frequently-changing steps (code)",
+            "You never order instructions",
+            "You use one giant RUN line"], a: 1,
+            why: "Ordering stable steps first lets the builder reuse cached layers on code-only changes." }
+        ]},
+        "4": { topic: "Compose & the registry", questions: [
+          { q: "Docker Compose lets services find each other by:", options: [
+            "Hard-coded IP addresses",
+            "Service name, via Compose-managed DNS",
+            "MAC address",
+            "Manual /etc/hosts edits"], a: 1,
+            why: "Compose provides DNS so services resolve each other by service name." },
+          { q: "Tagging an image by commit SHA gives you:", options: [
+            "A mutable, moving reference",
+            "Deterministic provenance of exactly which code is in the image",
+            "Smaller images",
+            "Automatic secrets"], a: 1,
+            why: "A SHA tag pins the image to a specific commit for traceability." },
+          { q: "The risk of relying on the latest tag in production is:", options: [
+            "It is immutable",
+            "It can silently change what runs under you",
+            "It cannot be pulled",
+            "It disables caching"], a: 1,
+            why: "latest is mutable, so the running image can change without an explicit version bump." }
+        ]},
+        "5": { topic: "The container dev lifecycle (CI)", questions: [
+          { q: "A CI pipeline that builds/tests/scans/pushes per commit primarily provides:", options: [
+            "Manual, ad-hoc releases",
+            "A repeatable outer loop with provenance and gating",
+            "A replacement for the application",
+            "Slower feedback"], a: 1,
+            why: "CI standardizes build/test/scan/push, giving repeatability and an audit trail." },
+          { q: "A container's \u201Crun contract\u201D is:", options: [
+            "The software license",
+            "What any runtime needs: image ref, ports, env, health, resources",
+            "The Dockerfile only",
+            "The commit message"], a: 1,
+            why: "The run contract is the interface an orchestrator uses to run the image." },
+          { q: "Why is the run contract independent of Compose vs Kubernetes?", options: [
+            "It isn't \u2014 it changes per tool",
+            "It describes the container's needs, which any scheduler fulfills",
+            "Only Compose can read it",
+            "Kubernetes ignores environment variables"], a: 1,
+            why: "The contract describes container requirements; the scheduler is an implementation detail." }
+        ]},
+        "6": { topic: "Kubernetes orchestration", questions: [
+          { q: "A Kubernetes Deployment gives you over a bare Pod:", options: [
+            "Nothing",
+            "Declarative replicas, self-healing, and rolling updates",
+            "A public IP by default",
+            "Persistent storage automatically"], a: 1,
+            why: "Deployments manage ReplicaSets to hold the desired count and roll out changes safely." },
+          { q: "In-cluster, two Pods find each other via:", options: [
+            "Hard-coded Pod IPs",
+            "A Service name resolved by cluster DNS",
+            "Node hostnames",
+            "Compose DNS"], a: 1,
+            why: "A Service provides a stable name/VIP; cluster DNS resolves it to healthy Pods." },
+          { q: "A Kubernetes Secret, by default, is:", options: [
+            "Encrypted end to end",
+            "Only base64-encoded, not encrypted",
+            "Stored inside the image",
+            "Never mountable"], a: 1,
+            why: "Secrets are base64-encoded at rest by default unless encryption-at-rest is enabled." }
+        ]},
+        "7": { topic: "Landing on AKS", questions: [
+          { q: "Compared with a local kind cluster, AKS additionally operates:", options: [
+            "Your laptop",
+            "The managed control plane (API server, etcd, scheduler)",
+            "Your Dockerfiles",
+            "Your Git repository"], a: 1,
+            why: "AKS runs and maintains the control plane; you manage workloads and node pools." },
+          { q: "A Service of type LoadBalancer on AKS provisions:", options: [
+            "Nothing",
+            "An Azure Load Balancer with an external IP",
+            "A private endpoint only",
+            "A new node pool"], a: 1,
+            why: "AKS integrates with Azure to create a public load balancer and external IP." },
+          { q: "For AKS nodes to pull from ACR without a pull secret, you:", options: [
+            "Make the registry public",
+            "Attach the ACR (grant the kubelet identity AcrPull)",
+            "Copy images to each node by hand",
+            "Disable RBAC"], a: 1,
+            why: "--attach-acr grants the cluster identity AcrPull so nodes pull seamlessly." }
+        ]}
+      };
+
+      // ---- Facilitator talk tracks (shown only in Instructor-led mode) ----
+      var LED = {
+        "0": "<span class=\"tt-label\">Talk track</span> Open by asking who has inherited a \u201Csnowflake\u201D server nobody dares reboot. <b>Demo cue:</b> run <code>docker run hello-world</code> live and narrate image-pull vs container-run. Timebox the baseline check to ~3 min and do <b>not</b> reveal answers yet.",
+        "1": "<span class=\"tt-label\">Talk track</span> Make the pain visceral \u2014 deploy the classic way, then introduce drift live and let the room predict the failure. <b>Demo cue:</b> change a config on one \u201Chost\u201D only, run the smoke test, and watch it fail.",
+        "2": "<span class=\"tt-label\">Talk track</span> Frame 12-factor as \u201Cone artifact, many environments.\u201D <b>Demo cue:</b> show the same image reading two different <code>.env</code> files and behaving differently with no rebuild.",
+        "3": "<span class=\"tt-label\">Talk track</span> Emphasize multi-stage = small, non-root = safe. <b>Demo cue:</b> <code>docker history</code> a fat build-stage image next to the slim final image and compare sizes.",
+        "4": "<span class=\"tt-label\">Talk track</span> Compose is the inner loop; the registry is the seam to the outer loop. <b>Demo cue:</b> <code>docker compose up</code>, trace a message end to end, then push a SHA-tagged image and show the tag.",
+        "5": "<span class=\"tt-label\">Talk track</span> CI is the outer loop that GitOps later consumes. <b>Demo cue:</b> open a trivial PR and watch the pipeline build, scan, and tag by SHA. Land the \u201Crun contract\u201D as the bridge to orchestration.",
+        "6": "<span class=\"tt-label\">Talk track</span> This is the turn in the road \u2014 Compose can't self-heal. <b>Demo cue:</b> <code>kubectl delete pod</code> and let the room watch it come back, then scale to 3 and roll a bad tag back in one command.",
+        "7": "<span class=\"tt-label\">Talk track</span> Same manifests, a cluster Azure runs for you. <b>Demo cue:</b> <code>az aks create</code> is slow \u2014 cover ACR-attach and LoadBalancer concepts while it provisions, then hit the external IP together as a cohort."
+      };
+
+      // ---- Instructor-led mode ----
+      var mode = localStorage.getItem(K_MODE) || "self";
+      function applyMode() {
+        body.classList.toggle("mode-led", mode === "led");
+        document.querySelectorAll(".seg button").forEach(function (b) {
+          b.classList.toggle("active", b.getAttribute("data-mode") === mode);
+        });
+      }
       document.querySelectorAll(".seg button").forEach(function (b) {
         b.addEventListener("click", function () {
-          document.querySelectorAll(".seg button").forEach(function (x) { x.classList.remove("active"); });
-          b.classList.add("active");
+          mode = b.getAttribute("data-mode");
+          localStorage.setItem(K_MODE, mode);
+          applyMode();
         });
       });
+      applyMode();
 
-      // ---- Progress tracking ----
-      var KEY = "z2h-progress";
-      var state = {};
-      try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { state = {}; }
+      // ---- Build one knowledge-check widget ----
+      var postWidgets = {};
+      function buildKC(phase, kind, bank) {
+        var total = bank.questions.length;
+        var wrap = document.createElement("div");
+        wrap.className = "kc kc-" + kind;
+        wrap.setAttribute("data-phase", phase);
+        wrap.setAttribute("data-kind", kind);
 
-      // Inject a labeled completion control into each activity body (kept out of
-      // <summary> so no interactive control is nested inside another).
-      Array.prototype.slice.call(document.querySelectorAll(".activity .body")).forEach(function (body) {
-        var label = document.createElement("label");
-        label.className = "done-row";
-        var box = document.createElement("input");
-        box.type = "checkbox";
-        box.className = "done";
-        var txt = document.createElement("span");
-        txt.textContent = "Mark this activity complete";
-        label.appendChild(box);
-        label.appendChild(txt);
-        body.insertBefore(label, body.firstChild);
+        var head = document.createElement("div"); head.className = "kc-head";
+        var badge = document.createElement("span"); badge.className = "kc-badge";
+        badge.textContent = kind === "pre" ? "Knowledge check \u00b7 baseline" : "Knowledge check \u00b7 prove the lift";
+        var h4 = document.createElement("h4"); h4.textContent = bank.topic;
+        head.appendChild(badge); head.appendChild(h4); wrap.appendChild(head);
+
+        var desc = document.createElement("p"); desc.className = "kc-desc";
+        desc.textContent = kind === "pre"
+          ? "Answer before you work the phase \u2014 no feedback yet. This records your baseline."
+          : "Answer after the phase. We compare against your baseline on the same questions; a gain of at least " + LIFT_THRESHOLD + " points proves the lift.";
+        wrap.appendChild(desc);
+
+        var qEls = [];
+        bank.questions.forEach(function (q, qi) {
+          var qd = document.createElement("div"); qd.className = "kc-q";
+          var qp = document.createElement("p"); qp.textContent = (qi + 1) + ". " + q.q; qd.appendChild(qp);
+          q.options.forEach(function (opt, oi) {
+            var lab = document.createElement("label"); lab.className = "kc-opt";
+            var inp = document.createElement("input"); inp.type = "radio";
+            inp.name = "kc-" + phase + "-" + kind + "-q" + qi; inp.value = oi;
+            var sp = document.createElement("span"); sp.textContent = opt;
+            lab.appendChild(inp); lab.appendChild(sp); qd.appendChild(lab);
+          });
+          var why = document.createElement("p"); why.className = "kc-why"; why.textContent = "Why: " + q.why;
+          qd.appendChild(why); wrap.appendChild(qd); qEls.push(qd);
+        });
+
+        var actions = document.createElement("div"); actions.className = "kc-actions";
+        var btn = document.createElement("button"); btn.className = "kc-btn primary"; btn.type = "button";
+        actions.appendChild(btn); wrap.appendChild(actions);
+        var result = document.createElement("div"); result.className = "kc-result"; wrap.appendChild(result);
+
+        function selected() {
+          return bank.questions.map(function (_, qi) {
+            var sel = wrap.querySelector('input[name="kc-' + phase + '-' + kind + '-q' + qi + '"]:checked');
+            return sel ? parseInt(sel.value, 10) : -1;
+          });
+        }
+        function grade(ans) { var c = 0; ans.forEach(function (a, qi) { if (a === bank.questions[qi].a) c++; }); return c; }
+        function lock() { wrap.querySelectorAll("input").forEach(function (i) { i.disabled = true; }); }
+        function reveal(ans) {
+          wrap.classList.add("revealed");
+          bank.questions.forEach(function (q, qi) {
+            qEls[qi].querySelectorAll(".kc-opt").forEach(function (lab, oi) {
+              if (oi === q.a) lab.classList.add("correct");
+              else if (oi === ans[qi]) lab.classList.add("wrong");
+            });
+          });
+        }
+        function liftRow(lbl, val, cls) {
+          return '<div class="lift-row"><span class="lbl">' + lbl + '</span>'
+            + '<span class="lift-bar ' + cls + '"><span style="width:' + val + '%"></span></span>'
+            + '<span class="lift-val">' + val + '%</span></div>';
+        }
+
+        if (kind === "pre") {
+          btn.textContent = "Submit baseline";
+          if (kc[phase] && typeof kc[phase].preCorrect === "number") {
+            lock(); btn.disabled = true; btn.textContent = "Baseline locked";
+            result.innerHTML = '<span class="kc-locked">Baseline recorded: ' + pct(kc[phase].preCorrect, total) + '% (' + kc[phase].preCorrect + '/' + total + ').</span>';
+          }
+          btn.addEventListener("click", function () {
+            var ans = selected();
+            if (ans.indexOf(-1) !== -1) { result.textContent = "Answer every question to record your baseline."; return; }
+            var c = grade(ans);
+            kc[phase] = kc[phase] || {}; kc[phase].total = total; kc[phase].preCorrect = c;
+            save(K_KC, kc); lock(); btn.disabled = true; btn.textContent = "Baseline locked";
+            result.innerHTML = '<span class="kc-locked">Baseline recorded: ' + pct(c, total) + '%. Now work the phase, then take the post-check below.</span>';
+            if (postWidgets[phase] && postWidgets[phase]._enable) postWidgets[phase]._enable();
+            renderPoints();
+          });
+        } else {
+          postWidgets[phase] = wrap;
+          btn.textContent = "Submit & measure lift";
+          function isLocked() { return !(kc[phase] && typeof kc[phase].preCorrect === "number"); }
+          wrap._enable = function () {
+            wrap.querySelectorAll("input").forEach(function (i) { i.disabled = false; });
+            btn.disabled = false; if (!result.querySelector(".lift-meter")) result.textContent = "";
+          };
+          function showResult(preC, postC, offerRetry) {
+            var pre = pct(preC, total), post = pct(postC, total), lift = post - pre;
+            var passed = lift >= LIFT_THRESHOLD || post >= 90 || pre >= 90;
+            var html = '<div class="lift-meter">' + liftRow("Baseline", pre, "pre") + liftRow("After", post, "post") + '</div>';
+            var verdict;
+            if (passed) {
+              if (lift >= LIFT_THRESHOLD) verdict = "Significant lift: +" + lift + " percentage points. Concept demonstrated.";
+              else if (pre >= 90) verdict = "Already proficient (baseline " + pre + "%). Mastery confirmed.";
+              else verdict = "Post-check " + post + "% \u2014 mastery threshold met.";
+              html += '<div class="kc-verdict pass">\u2713 ' + verdict + '</div>';
+            } else {
+              verdict = "Lift of +" + lift + " pp is below the +" + LIFT_THRESHOLD + " pp bar. Review the phase and retry.";
+              html += '<div class="kc-verdict fail">\u21BA ' + verdict + '</div>';
+            }
+            result.innerHTML = html;
+            if (offerRetry && !passed) {
+              var rb = document.createElement("button"); rb.className = "kc-btn"; rb.type = "button"; rb.textContent = "Retry post-check";
+              rb.addEventListener("click", function () {
+                wrap.classList.remove("revealed");
+                wrap.querySelectorAll(".kc-opt").forEach(function (l) { l.classList.remove("correct", "wrong"); });
+                wrap.querySelectorAll("input").forEach(function (i) { i.disabled = false; i.checked = false; });
+                btn.disabled = false; btn.textContent = "Submit & measure lift"; result.textContent = "";
+                if (kc[phase]) { delete kc[phase].postCorrect; delete kc[phase].lift; delete kc[phase].passed; save(K_KC, kc); }
+                renderPoints();
+              });
+              var box = document.createElement("div"); box.className = "kc-actions"; box.appendChild(rb); result.appendChild(box);
+            }
+          }
+          if (isLocked()) {
+            wrap.querySelectorAll("input").forEach(function (i) { i.disabled = true; });
+            btn.disabled = true;
+            result.innerHTML = '<span class="kc-locked">Complete the baseline check at the top of this phase first.</span>';
+          } else if (kc[phase] && typeof kc[phase].postCorrect === "number") {
+            lock(); btn.disabled = true; btn.textContent = "Completed"; showResult(kc[phase].preCorrect, kc[phase].postCorrect, false);
+          }
+          btn.addEventListener("click", function () {
+            if (isLocked()) return;
+            var ans = selected();
+            if (ans.indexOf(-1) !== -1) { result.textContent = "Answer every question to measure your lift."; return; }
+            var c = grade(ans); reveal(ans); lock();
+            var pre = pct(kc[phase].preCorrect, total), post = pct(c, total), lift = post - pre;
+            kc[phase].postCorrect = c; kc[phase].lift = lift;
+            kc[phase].passed = lift >= LIFT_THRESHOLD || post >= 90 || pre >= 90;
+            save(K_KC, kc); btn.textContent = "Completed";
+            showResult(kc[phase].preCorrect, c, !kc[phase].passed);
+            renderPoints();
+          });
+        }
+        return wrap;
+      }
+
+      // ---- Inject facilitator notes + knowledge checks per phase ----
+      var phaseIds = [];
+      document.querySelectorAll(".phase-block").forEach(function (sec) {
+        var countEl = sec.querySelector(".count[data-phase]");
+        if (!countEl) return;
+        var phase = countEl.getAttribute("data-phase");
+        var head = sec.querySelector(".phase-head");
+        var anchor = sec.querySelector(".success-banner") || head;
+
+        if (LED[phase]) {
+          var led = document.createElement("div"); led.className = "led-note"; led.innerHTML = LED[phase];
+          anchor.insertAdjacentElement("afterend", led); anchor = led;
+        }
+        var bank = KC[phase];
+        if (bank && bank.questions && bank.questions.length) {
+          phaseIds.push(phase);
+          anchor.insertAdjacentElement("afterend", buildKC(phase, "pre", bank));
+          var postW = buildKC(phase, "post", bank);
+          var handoff = sec.querySelector(".hand-off");
+          if (handoff) sec.insertBefore(postW, handoff); else sec.appendChild(postW);
+        }
       });
 
+      // ---- Activity completion controls ----
+      Array.prototype.slice.call(document.querySelectorAll(".activity .body")).forEach(function (bodyEl) {
+        var label = document.createElement("label"); label.className = "done-row";
+        var box = document.createElement("input"); box.type = "checkbox"; box.className = "done";
+        var txt = document.createElement("span"); txt.textContent = "Mark this activity complete";
+        label.appendChild(box); label.appendChild(txt); bodyEl.insertBefore(label, bodyEl.firstChild);
+      });
       var boxes = Array.prototype.slice.call(document.querySelectorAll("input.done"));
-
       function idFor(box) { return box.closest(".activity").id; }
+      function phaseOf(box) { var c = box.closest(".phase-block").querySelector(".count"); return c ? c.getAttribute("data-phase") : null; }
 
-      function phaseOf(box) {
-        var sec = box.closest(".phase-block");
-        var c = sec ? sec.querySelector(".count") : null;
-        return c ? c.getAttribute("data-phase") : null;
+      // ---- Points ----
+      function computePoints() {
+        var pts = 0, actDone = 0;
+        boxes.forEach(function (b) { if (b.checked) { pts += 10; actDone++; } });
+        Object.keys(kc).forEach(function (p) {
+          var r = kc[p] || {};
+          if (typeof r.preCorrect === "number") pts += 5;
+          if (typeof r.postCorrect === "number") pts += r.postCorrect * 10;
+          if (r.passed) pts += 25;
+        });
+        return { pts: pts, actDone: actDone };
+      }
+      function renderPoints() {
+        var el = document.getElementById("ptsCount");
+        if (el) el.textContent = computePoints().pts;
+        save(K_META, { actTotal: boxes.length, phases: phaseIds });
       }
 
       function render() {
-        var done = 0;
-        boxes.forEach(function (b) { if (b.checked) done++; });
+        var done = 0; boxes.forEach(function (b) { if (b.checked) done++; });
         var total = boxes.length;
         document.getElementById("doneCount").textContent = done;
         document.getElementById("totalCount").textContent = total;
         document.getElementById("pct").textContent = Math.round((done / total) * 100) + "%";
-
-        // per-phase counts
         var counts = {};
         boxes.forEach(function (b) {
-          var p = phaseOf(b);
-          if (!counts[p]) counts[p] = { done: 0, total: 0 };
-          counts[p].total++;
-          if (b.checked) counts[p].done++;
+          var p = phaseOf(b); if (!counts[p]) counts[p] = { done: 0, total: 0 };
+          counts[p].total++; if (b.checked) counts[p].done++;
         });
         document.querySelectorAll(".count[data-phase]").forEach(function (el) {
-          var p = el.getAttribute("data-phase");
-          if (counts[p]) el.textContent = counts[p].done + "/" + counts[p].total;
+          var p = el.getAttribute("data-phase"); if (counts[p]) el.textContent = counts[p].done + "/" + counts[p].total;
         });
+        renderPoints();
       }
 
       boxes.forEach(function (b) {
         var id = idFor(b);
-        if (state[id]) { b.checked = true; b.closest(".activity").classList.add("completed"); }
+        if (prog[id]) { b.checked = true; b.closest(".activity").classList.add("completed"); }
         b.addEventListener("change", function () {
-          state[id] = b.checked;
+          prog[id] = b.checked;
           b.closest(".activity").classList.toggle("completed", b.checked);
-          localStorage.setItem(KEY, JSON.stringify(state));
-          render();
+          save(K_PROG, prog); render();
         });
       });
 
       var reset = document.getElementById("resetBtn");
       if (reset) reset.addEventListener("click", function (e) {
         e.preventDefault();
-        state = {};
-        localStorage.removeItem(KEY);
-        boxes.forEach(function (b) { b.checked = false; b.closest(".activity").classList.remove("completed"); });
-        render();
+        if (!window.confirm("Reset all activity progress, knowledge-check results, and points in this browser?")) return;
+        localStorage.removeItem(K_PROG); localStorage.removeItem(K_KC); localStorage.removeItem(K_META);
+        location.reload();
       });
 
       render();

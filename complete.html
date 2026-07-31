@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AKS Zero-to-Hero — Completion</title>
+  <meta name="description" content="Workshop completion and certificate for AKS Zero-to-Hero. Earn it by completing every activity and passing each phase's knowledge check with at least 80% across activities and knowledge checks." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <span class="brand">
+        <span class="dot">Z2H</span>
+        AKS&nbsp;Zero-to-Hero <small>· completion</small>
+      </span>
+      <span class="nav-links">
+        <a href="index.html">Overview</a>
+        <a href="lab.html">Lab guide</a>
+        <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">AKS replatform ↗</a>
+        <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+      </span>
+    </div>
+  </nav>
+
+  <main id="main">
+    <header class="hero hero-lab">
+      <div class="wrap">
+        <span class="eyebrow">Completion &amp; certificate</span>
+        <h1 class="h1-lab">Did you make it all the way onto AKS?</h1>
+        <p class="lede">
+          This page reads your saved progress from the lab and checks the bar: <b>every activity complete</b>,
+          <b>every phase's knowledge check passed</b> (a measured lift of at least 10 points, or demonstrated
+          mastery), and at least <b>80%</b> across both activities and knowledge checks.
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <section id="result-sec">
+        <div id="result"><!-- rendered by JS --></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>AKS Zero-to-Hero · completion · a prequel to <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
+      <span>Progress is saved in this browser only.</span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var savedTheme = localStorage.getItem("z2h-theme");
+      if (savedTheme) root.setAttribute("data-theme", savedTheme);
+      var tbtn = document.getElementById("themeBtn");
+      if (tbtn) tbtn.addEventListener("click", function () {
+        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("z2h-theme", next);
+      });
+
+      function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
+      var prog = load("z2h-progress");
+      var kc = load("z2h-kc");
+      var meta = load("z2h-meta");
+      var GATE = 80, THRESH = 10;
+
+      var actTotal = meta.actTotal || 26;
+      var phases = (meta.phases && meta.phases.length) ? meta.phases : ["0", "1", "2", "3", "4", "5", "6", "7"];
+
+      var actDone = 0;
+      Object.keys(prog).forEach(function (k) { if (prog[k]) actDone++; });
+      var actPct = actTotal ? Math.round(actDone / actTotal * 100) : 0;
+
+      var phasesPassed = 0, postSum = 0, postCount = 0, points = 0;
+      points += actDone * 10;
+      phases.forEach(function (p) {
+        var r = kc[p] || {};
+        var total = r.total || 0;
+        if (typeof r.preCorrect === "number") points += 5;
+        if (typeof r.postCorrect === "number" && total) { points += r.postCorrect * 10; postSum += Math.round(r.postCorrect / total * 100); postCount++; }
+        if (r.passed) { points += 25; phasesPassed++; }
+      });
+      var avgPost = postCount ? Math.round(postSum / postCount) : 0;
+      var kcAllPassed = phasesPassed === phases.length;
+      var eligible = actPct >= GATE && kcAllPassed && avgPost >= GATE;
+
+      var el = document.getElementById("result");
+      var today = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+
+      function scoreGrid() {
+        return '<div class="score-grid">'
+          + '<div class="score"><b>' + actPct + '%</b><span>Activities (' + actDone + '/' + actTotal + ')</span></div>'
+          + '<div class="score"><b>' + avgPost + '%</b><span>Avg knowledge check</span></div>'
+          + '<div class="score"><b>' + phasesPassed + '/' + phases.length + '</b><span>Phases mastered</span></div>'
+          + '<div class="score"><b>' + points + '</b><span>Total points</span></div>'
+          + '</div>';
+      }
+
+      if (eligible) {
+        var savedName = localStorage.getItem("z2h-name") || "";
+        el.innerHTML =
+          '<div class="cert">'
+          + '<div class="seal">🏆</div>'
+          + '<span class="eyebrow">Certificate of completion</span>'
+          + '<h2>AKS Zero-to-Hero — complete</h2>'
+          + '<p class="cert-lede">This certifies that</p>'
+          + '<input class="name-input no-print" id="nameInput" type="text" maxlength="60" placeholder="Type your name" value="' + savedName.replace(/"/g, "&quot;") + '" aria-label="Your name" />'
+          + '<div class="who" id="whoLine">' + (savedName || "\u2014") + '</div>'
+          + '<p class="cert-lede">took the Skybridge estate the whole way — <b>classic → containers → Kubernetes → AKS</b> — '
+          + 'completing every activity and demonstrating a measured knowledge lift on every phase.</p>'
+          + scoreGrid()
+          + '<p class="meta">Issued ' + today + ' · Measurement: post-check minus baseline on the same question set, ≥' + THRESH + '-point lift or demonstrated mastery per phase.</p>'
+          + '<div class="hero-cta no-print" style="justify-content:center;margin-top:8px">'
+          + '<a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Suggested next: Replatforming to AKS ↗</a>'
+          + '<button class="btn btn-ghost" id="printBtn" type="button">Save / print certificate</button>'
+          + '</div>'
+          + '</div>'
+          + '<div class="note good mt-20"><b>What\'s next.</b> You landed a working deployment on AKS. The '
+          + '<a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a> '
+          + 'workshop is your suggested next activity — it hardens this naive deployment into production: Day-0 architecture, a private '
+          + 'zone-redundant cluster, workload identity, the Istio mesh, GitOps rings, autoscaling, and cross-region failover.</div>';
+
+        var nameInput = document.getElementById("nameInput");
+        var whoLine = document.getElementById("whoLine");
+        if (nameInput) nameInput.addEventListener("input", function () {
+          var v = nameInput.value.trim();
+          whoLine.textContent = v || "\u2014";
+          localStorage.setItem("z2h-name", v);
+        });
+        var printBtn = document.getElementById("printBtn");
+        if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
+      } else {
+        function row(ok, label, val) {
+          return '<li><span class="mark ' + (ok ? "ok" : "no") + '">' + (ok ? "✓" : "✕") + '</span>'
+            + '<span class="lbl2">' + label + '</span><span class="val2">' + val + '</span></li>';
+        }
+        var anyData = actDone > 0 || postCount > 0;
+        el.innerHTML =
+          '<div class="hand-off">'
+          + '<h3>' + (anyData ? "Almost there — not quite 80% yet" : "No progress found in this browser yet") + '</h3>'
+          + '<p>' + (anyData
+            ? "You\u2019re on your way. Here\u2019s exactly what still stands between you and the certificate. Progress is saved per-browser, so finish on the same device you started on."
+            : "Head to the lab, take each phase\u2019s baseline knowledge check, work the activities, then take the post-check. Come back here to claim your certificate.")
+          + '</p>'
+          + scoreGrid()
+          + '<ul class="checklist">'
+          + row(actPct >= GATE, "Complete at least 80% of activities", actPct + "% of " + actTotal)
+          + row(avgPost >= GATE, "Average at least 80% on knowledge checks", (postCount ? avgPost + "%" : "not started"))
+          + row(kcAllPassed, "Pass every phase knowledge check (≥" + THRESH + "-point lift or mastery)", phasesPassed + "/" + phases.length + " passed")
+          + '</ul>'
+          + '<div class="hero-cta"><a class="btn btn-primary" href="lab.html">Back to the lab →</a>'
+          + '<a class="btn btn-ghost" href="index.html">Overview</a></div>'
+          + '</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
