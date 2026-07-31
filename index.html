@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AKS Zero-to-Hero — from legacy VMs to containers</title>
-  <meta name="description" content="A hands-on prequel workshop that moves the Skybridge legacy estate from classic VM deployment, hand-managed config, and manual release to a clean container-based development lifecycle — the on-ramp before the AKS replatform." />
+  <title>AKS Zero-to-Hero — from legacy VMs to AKS</title>
+  <meta name="description" content="A hands-on prequel workshop that moves the Skybridge legacy estate from classic VM deployment, hand-managed config, and manual release all the way onto AKS — classic to containers to Kubernetes to AKS — the on-ramp before the production replatform." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -32,15 +32,14 @@
     <!-- HERO -->
     <header class="hero">
       <div class="wrap">
-        <span class="eyebrow">Prequel · Instructor-led · L100 → L200</span>
-        <h1>From classic deployment to containers, one honest step at a time.</h1>
+        <span class="eyebrow">Prequel · Instructor-led · L100 → L300</span>
+        <h1>From classic servers to AKS, one honest step at a time.</h1>
         <p class="lede">
-          Before you replatform anything onto Kubernetes, you have to leave the world of
-          hand-patched VMs, snowflake config, and Friday-night releases behind. <b>AKS Zero-to-Hero</b>
-          takes the same Skybridge messaging estate — a Java socket gateway, a C/C++ parser, and PostgreSQL —
-          and walks it from a classic VM deployment to a clean, container-based development lifecycle.
-          It stops exactly where the AKS replatform picks up: your app is containerized, versioned, and
-          reproducible, ready for orchestration.
+          Before a team can run a production platform on Kubernetes, it has to leave hand-patched VMs,
+          snowflake config, and Friday-night releases behind. <b>AKS Zero-to-Hero</b> takes the Skybridge
+          messaging estate — a Java socket gateway, a C/C++ parser, and PostgreSQL — and walks it the whole way:
+          <b>classic → containers → Kubernetes → AKS</b>. You finish with the workload running live on a
+          managed AKS cluster. The production replatform workshop then takes that naive deployment and hardens it.
         </p>
         <div class="hero-cta">
           <a class="btn btn-primary" href="lab.html">Start the lab →</a>
@@ -48,10 +47,10 @@
         </div>
 
         <div class="stat-row">
-          <div class="stat"><b>6</b><span>phases, VM → container</span></div>
-          <div class="stat"><b>~4 hr</b><span>hands-on, self-paced</span></div>
-          <div class="stat"><b>0</b><span>Kubernetes required (yet)</span></div>
-          <div class="stat"><b>1</b><span>clean hand-off to AKS</span></div>
+          <div class="stat"><b>8</b><span>phases, servers → AKS</span></div>
+          <div class="stat"><b>~7 hr</b><span>hands-on, self-paced</span></div>
+          <div class="stat"><b>2</b><span>clusters: local + AKS</span></div>
+          <div class="stat"><b>1</b><span>live landing on AKS</span></div>
         </div>
       </div>
     </header>
@@ -63,9 +62,9 @@
         <h2 class="sec">The same estate, one chapter earlier</h2>
         <p class="sec-lede">
           Skybridge Messaging Services runs a real-time bus over persistent TCP sockets. In the main
-          workshop it lands on AKS. Here, we meet it where most real systems actually are: running on
-          RHEL VMs, scaled vertically, patched in place, released by hand. This workshop earns the right
-          to containerize by first feeling the pain the old way creates.
+          workshop it runs in production on AKS. Here, we meet it where most real systems actually are: running on
+          RHEL VMs, scaled vertically, patched in place, released by hand — and we carry it, step by honest step,
+          onto a live AKS cluster.
         </p>
 
         <div class="grid grid-2">
@@ -90,15 +89,15 @@
             <h3>Where you finish</h3>
             <p>
               The exact same three components, unchanged in behaviour, now packaged as immutable images,
-              configured entirely from the environment, wired together locally with Compose, versioned in
-              a registry, and built by a pipeline. No rewrite. Just a modern lifecycle.
+              configured from the environment, orchestrated by Kubernetes, and finally running live on a
+              managed <b>AKS</b> cluster behind a load balancer. No rewrite. Just the whole modern path.
             </p>
             <div>
               <span class="tag accent">Dockerfiles</span>
               <span class="tag accent">12-factor config</span>
-              <span class="tag accent">Compose</span>
-              <span class="tag accent">Registry + tags</span>
-              <span class="tag accent">CI build/scan/push</span>
+              <span class="tag accent">Deployments + Services</span>
+              <span class="tag accent">ConfigMaps + Secrets</span>
+              <span class="tag accent">Live on AKS</span>
             </div>
           </div>
         </div>
@@ -116,11 +115,11 @@
     <section id="journey">
       <div class="wrap">
         <span class="kicker">The lift</span>
-        <h2 class="sec">Three habits change on this journey</h2>
+        <h2 class="sec">Four habits change on this journey</h2>
         <p class="sec-lede">
-          Zero-to-Hero is not really about Docker syntax. It is about replacing three legacy habits —
-          in <b>deployment</b>, <b>configuration</b>, and the <b>development lifecycle</b> — with their
-          container-native equivalents.
+          Zero-to-Hero is not really about Docker or kubectl syntax. It is about replacing four legacy habits —
+          in <b>deployment</b>, <b>configuration</b>, the <b>development lifecycle</b>, and <b>operations</b> —
+          with their cloud-native equivalents, ending on a cluster Azure runs for you.
         </p>
 
         <div class="compare">
@@ -181,6 +180,25 @@
             </ul>
           </div>
         </div>
+
+        <div class="compare mt-16">
+          <div class="col before">
+            <h4><span class="pill bad">Before</span> Operations</h4>
+            <ul>
+              <li>A handcrafted HA pair per region, failed over by hand</li>
+              <li>A crash at 3&nbsp;a.m. waits for a human to notice and restart it</li>
+              <li>Scaling means a bigger VM and a maintenance window</li>
+            </ul>
+          </div>
+          <div class="col after">
+            <h4><span class="pill good">After</span> Operations</h4>
+            <ul>
+              <li>Kubernetes reconciles desired state — it self-heals and rolls out safely</li>
+              <li>Scaling is a replica count, not a hardware order</li>
+              <li>On <b>AKS</b>, Azure runs the control plane; you run manifests, not machines</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -188,11 +206,11 @@
     <section id="phases">
       <div class="wrap">
         <span class="kicker">The path</span>
-        <h2 class="sec">Six phases, VM to container</h2>
+        <h2 class="sec">Eight phases, servers to AKS</h2>
         <p class="sec-lede">
-          Each phase is a short, hands-on block sliced into 10–20 minute activities. Every activity has a
+          Each phase is a short, hands-on block sliced into 15–20 minute activities. Every activity has a
           pre-check, steps to run, a validation gate, and a post-check — the same rhythm you'll meet in the
-          AKS lab, so the muscle memory carries over.
+          replatform lab, so the muscle memory carries over.
         </p>
 
         <div class="phase-list">
@@ -240,9 +258,25 @@
             <div class="num">5</div>
             <div>
               <h3>A container-based development lifecycle</h3>
-              <p>Wire a pipeline that builds, tests, scans, and pushes on every commit — then stop at the edge of orchestration.</p>
+              <p>Wire a pipeline that builds, tests, scans, and pushes on every commit — then write the run contract each image needs.</p>
             </div>
             <div class="meta">~50 min · 3 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">6</div>
+            <div>
+              <h3>Kubernetes: orchestrate the containers</h3>
+              <p>Trade Compose for a local cluster: Deployments, Services, ConfigMaps and Secrets, plus self-heal, scale, and rollback.</p>
+            </div>
+            <div class="meta">~68 min · 4 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">7</div>
+            <div>
+              <h3>Land on AKS (managed Kubernetes)</h3>
+              <p>Provision AKS, push images to ACR, deploy the same manifests, expose them, and bring the workload up live.</p>
+            </div>
+            <div class="meta">~73 min · 4 activities</div>
           </div>
         </div>
       </div>
@@ -278,6 +312,14 @@
             <h3>Automate the build</h3>
             <p>Stand up CI that builds, tests, scans, and publishes an image per commit — the outer loop that GitOps will later consume.</p>
           </div>
+          <div class="card">
+            <h3>Orchestrate on Kubernetes</h3>
+            <p>Turn Compose services into Deployments and Services with externalized config, and watch the cluster self-heal, scale, and roll back.</p>
+          </div>
+          <div class="card">
+            <h3>Land it on AKS</h3>
+            <p>Provision a managed cluster, push images to ACR, deploy the same manifests, and serve real traffic on an AKS load balancer.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -288,18 +330,19 @@
         <span class="kicker">The boundary</span>
         <h2 class="sec">Where Zero-to-Hero ends and the replatform begins</h2>
         <p class="sec-lede">
-          This prequel deliberately stops before any orchestration or target architecture. Once your three
-          components are reproducible container images, configured from the environment, versioned in a
-          registry, and built by CI, you have exactly the inputs the AKS workshop assumes on day one.
+          This prequel lands you on AKS: the same three components run live on a managed cluster, pulled from
+          ACR, built by CI. What it deliberately does <em>not</em> do is make that cluster production-grade.
+          A public, single-pool, hand-applied deployment is exactly the naive starting point the replatform
+          workshop assumes on day one.
         </p>
 
         <div class="hand-off">
-          <h3>You are here — and this is the door</h3>
+          <h3>You've landed on AKS — and this is the door</h3>
           <p>
-            The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>, opens with Day-0
-            architecture decisions, a private zone-redundant cluster, GitOps rings, and cross-region failover.
-            It assumes containers already exist. That is precisely what you just built. Everything past this
-            line — cluster design, networking, identity, the mesh — is theirs to teach, not ours.
+            The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>, takes your working
+            deployment and re-architects it for production: Day-0 decisions, a private zone-redundant cluster,
+            workload identity, the Istio mesh, GitOps rings with gated promotion, autoscaling, and cross-region
+            failover. It assumes a workload already runs on AKS. That is precisely what you just built.
           </p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="lab.html">Do the lab first →</a>
@@ -308,9 +351,9 @@
         </div>
 
         <div class="note warn mt-20">
-          <b>On purpose, out of scope here:</b> Kubernetes objects, cluster architecture, node pools,
-          Ingress/Gateway, service mesh, autoscaling, and DR. If a topic requires a cluster to exist, it
-          belongs to the replatform workshop that follows.
+          <b>Owned by the replatform, not here:</b> Day-0 cluster architecture, a private API server,
+          availability zones, workload identity, service mesh, GitOps rings, cluster/pod autoscaling, and DR.
+          Zero-to-Hero gets you running on AKS; the replatform makes running on AKS <em>production</em>.
         </div>
       </div>
     </section>

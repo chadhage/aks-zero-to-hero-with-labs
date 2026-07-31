@@ -24,6 +24,8 @@
         <a href="#p3">Phase 3</a>
         <a href="#p4">Phase 4</a>
         <a href="#p5">Phase 5</a>
+        <a href="#p6">Phase 6</a>
+        <a href="#p7">Phase 7</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
       </span>
     </div>
@@ -33,11 +35,13 @@
     <header class="hero hero-lab">
       <div class="wrap">
         <span class="eyebrow">Participant activity guide</span>
-        <h1 class="h1-lab">Lab — from a hand-deployed VM to a container you can trust</h1>
+        <h1 class="h1-lab">Lab — from a hand-deployed VM all the way onto AKS</h1>
         <p class="lede">
-          The move to containers, sliced into 10–20 minute activities across six phases. Each activity has a
+          The journey from classic servers to AKS, sliced into 10–20 minute activities across eight phases:
+          <b>classic → containerize → Kubernetes → AKS</b>. Each activity has a
           <b>pre-check</b> (baseline what you know), the <b>steps</b> to run, a <b>validation</b> gate, and a
-          <b>post-check</b> (prove the lift landed). Work top to bottom; nothing here needs a Kubernetes cluster.
+          <b>post-check</b> (prove the lift landed). Work top to bottom; by the end your workload is running on
+          a managed AKS cluster.
         </p>
 
         <div class="mode-bar">
@@ -45,7 +49,7 @@
             <button class="active" data-mode="self">Self-paced</button>
             <button data-mode="led">Instructor-led</button>
           </div>
-          <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">18</span> activities · <span id="pct">0%</span> ·
+          <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">26</span> activities · <span id="pct">0%</span> ·
             <a href="#" id="resetBtn">Reset</a></span>
         </div>
         <div class="note info">
@@ -739,7 +743,7 @@ docker push &lt;registry&gt;/gateway-java:sha-$SHA</code></pre>
       <section id="p5" class="phase-block">
         <div class="phase-head">
           <h2>Phase 5 — A container-based development lifecycle</h2>
-          <span class="sub">Automate the build, close the inner/outer loop, and stop at the edge of orchestration.</span>
+          <span class="sub">Automate the build and close the inner/outer loop before you hand the images to an orchestrator.</span>
           <span class="count" data-phase="5">0/3</span>
         </div>
         <div class="success-banner">◎ Milestone — every commit yields a scanned, versioned, published image</div>
@@ -829,47 +833,413 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
         <details class="activity" id="a5-3">
           <summary>
             <span class="aid">5.3</span>
-            <span class="atitle">Package the hand-off &amp; stop at the edge of orchestration</span>
+            <span class="atitle">Define the run contract each image needs</span>
             <span class="atime">~15 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What does an orchestrator need to know about each of your images to run it?</li>
-                <li>Which of your artifacts is the "source of truth" a GitOps flow will later watch?</li>
-                <li>Why is stopping <em>here</em>, before any cluster design, the right seam between the two workshops?</li>
+                <li>What does <em>any</em> orchestrator need to know to run a container: image ref, ports, env, health, resources — what else?</li>
+                <li>Why is a container's run contract independent of whether Compose or Kubernetes runs it?</li>
+                <li>What will replace Compose's service-name networking once a scheduler is in charge?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Write <code>HANDOFF.md</code>: for each component, its image name, tags, exposed ports, required env vars, and secret contract.</li>
+                <li>Write a one-page <code>RUN-CONTRACT.md</code>: for each component, its image name, tags, exposed ports, required env vars, secret contract, and health endpoint.</li>
                 <li>Confirm the registry holds current images and CI is green.</li>
-                <li>Draw the line: list what is done (containers, config, registry, CI) and what is explicitly next-workshop (cluster, networking, identity, mesh, scaling, DR).</li>
+                <li>Note which fields will map one-to-one onto an orchestrator's manifest — you're about to use them.</li>
               </ol>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p><code>HANDOFF.md</code> fully describes how to run each component from its image with only environment inputs — everything an orchestrator would ask for, and nothing about how the cluster is built.</p>
+              <p><code>RUN-CONTRACT.md</code> describes how to start each component from its image with only environment inputs — everything a scheduler will ask for next.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Could a stranger run your whole estate from the registry and your handoff doc alone? If not, what's missing?</li>
-                <li>Which single legacy pain from Phase 0 do you feel is most resolved — and which is untouched until orchestration?</li>
-                <li>What is the first Day-0 question the AKS workshop will ask that you now have context for?</li>
+                <li>Which run-contract fields will become a container spec, a Service, and a ConfigMap?</li>
+                <li>What does Compose give you that a single host never did — and what does it still <em>not</em> give you?</li>
+                <li>If a container crashed at 3&nbsp;a.m. under Compose, who restarts it? Hold that thought for Phase 6.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <div class="note info">
+          <b>Turn in the road.</b> Containerization is done: reproducible images, config from the environment,
+          a registry, and CI. Compose proved the pieces fit — but it won't self-heal, scale, or roll out safely.
+          That is an orchestrator's job. Next you trade Compose for Kubernetes, then let Azure run Kubernetes for you.
+        </div>
+      </section>
+
+      <!-- ============ PHASE 6 ============ -->
+      <section id="p6" class="phase-block">
+        <div class="phase-head">
+          <h2>Phase 6 — Kubernetes: orchestrate the containers</h2>
+          <span class="sub">Trade Compose for a real scheduler on a local cluster — self-healing, scaling, and safe rollouts.</span>
+          <span class="count" data-phase="6">0/4</span>
+        </div>
+        <div class="success-banner">◎ Milestone — the estate runs on Kubernetes and heals itself</div>
+
+        <!-- 6.1 -->
+        <details class="activity" id="a6-1">
+          <summary>
+            <span class="aid">6.1</span>
+            <span class="atitle">Stand up a local cluster and meet kubectl</span>
+            <span class="atime">~15 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>What are the two halves of a Kubernetes cluster — control plane vs nodes — and what does each do?</li>
+                <li>What is <code>kubectl</code>, and where does it read the cluster address and credentials from?</li>
+                <li>What is a "context" in a kubeconfig?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Create a throwaway local cluster with <code>kind</code> (or minikube / k3d).</li>
+                <li>Confirm the node is Ready and inspect your current context.</li>
+              </ol>
+<pre><code>kind create cluster --name z2h
+kubectl config current-context
+kubectl get nodes -o wide</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p><code>kubectl get nodes</code> shows at least one <code>Ready</code> node, and your context points at the local cluster.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>What did <code>kind</code> actually create on your machine to stand up a cluster?</li>
+                <li>Which file did your cluster credentials get written into?</li>
+                <li>What is the supported client/server version-skew rule you should respect?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 6.2 -->
+        <details class="activity" id="a6-2">
+          <summary>
+            <span class="aid">6.2</span>
+            <span class="atitle">Translate Compose into Deployments and Services</span>
+            <span class="atime">~20 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>What is the difference between a Pod, a Deployment, and a Service?</li>
+                <li>How do two Pods find each other without hard-coding IPs?</li>
+                <li>What does a Deployment give you that a bare Pod does not?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Write a Deployment + Service for the gateway and the parser, plus a dev-grade Deployment + Service + volume for Postgres.</li>
+                <li>Reference the images from your registry (from Phase 4).</li>
+                <li>Apply everything, watch the Pods come up, and smoke-test through the in-cluster Service.</li>
+              </ol>
+<pre><code>kubectl apply -f k8s/
+kubectl get pods,svc
+kubectl port-forward svc/gateway 4561:4561 &amp;
+./scripts/smoke.sh 127.0.0.1 4561</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p>All Pods are <code>Running</code>, and a message travels client → gateway → parser → Postgres through in-cluster Service DNS.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Which Service type did you use, and how would traffic reach it from outside the cluster?</li>
+                <li>What replaced Compose's service-name networking?</li>
+                <li>Why is a Deployment the right controller for the gateway and parser at this stage?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 6.3 -->
+        <details class="activity" id="a6-3">
+          <summary>
+            <span class="aid">6.3</span>
+            <span class="atitle">Externalize config with ConfigMaps and Secrets</span>
+            <span class="atime">~15 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>How does your 12-factor config from Phase 2 map onto a ConfigMap and a Secret?</li>
+                <li>Why is a Kubernetes Secret <em>not</em> the same thing as "encrypted"?</li>
+                <li>Where should these values ultimately come from in production?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Move per-environment settings into a ConfigMap and credentials into a Secret.</li>
+                <li>Reference them from the Deployments via <code>envFrom</code> / <code>valueFrom</code>.</li>
+                <li>Change one value and roll the Deployment — no image rebuild.</li>
+              </ol>
+<pre><code>kubectl create configmap gateway-config --from-env-file=.env.example
+kubectl apply -f k8s/
+kubectl rollout status deploy/gateway</code></pre>
+              <div class="note warn"><b>Boundary note:</b> a real platform injects these from a managed secret store (e.g. Key Vault) at deploy time. Wiring that in is the replatform workshop's job — here you only prove config lives outside the image.</div>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p>Pods read every setting from the ConfigMap/Secret, and changing a value plus rolling the Deployment takes effect with no rebuild.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Run <code>base64 -d</code> on a Secret value — what does that tell you about its protection?</li>
+                <li>Which settings stayed constant across environments, and which varied?</li>
+                <li>What would inject these from a managed secret store instead of a base64 blob?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 6.4 -->
+        <details class="activity" id="a6-4">
+          <summary>
+            <span class="aid">6.4</span>
+            <span class="atitle">Self-heal, scale, roll out, and roll back</span>
+            <span class="atime">~18 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>What does "reconcile to desired state" mean in practice?</li>
+                <li>What does a rolling update do to Pods, one at a time?</li>
+                <li>What is the difference between a readiness probe and a liveness probe?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Delete a parser Pod and watch the Deployment replace it.</li>
+                <li>Scale the parser to 3 replicas.</li>
+                <li>Roll out a new image tag, then roll the Deployment back.</li>
+              </ol>
+<pre><code>kubectl delete pod -l app=parser          <span class="cmt"># watch it self-heal</span>
+kubectl scale deploy/parser --replicas=3
+kubectl set image deploy/parser parser=&lt;registry&gt;/parser-cpp:sha-$SHA
+kubectl rollout undo deploy/parser</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p>The killed Pod is replaced automatically, the replica count changes on demand, and a rollout can be undone in a single command.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Compare this rollback to your hand-run rollback in 1.3 — what changed about speed and confidence?</li>
+                <li>What did the controller do that no runbook could?</li>
+                <li>Why do probes have to be right <em>before</em> you trust a rolling update?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- ============ PHASE 7 ============ -->
+      <section id="p7" class="phase-block">
+        <div class="phase-head">
+          <h2>Phase 7 — Land on AKS (managed Kubernetes)</h2>
+          <span class="sub">Take the same manifests to a cluster Azure runs for you — and bring the workload up live.</span>
+          <span class="count" data-phase="7">0/4</span>
+        </div>
+        <div class="success-banner">◎ Milestone — the workload is running on AKS</div>
+
+        <!-- 7.1 -->
+        <details class="activity" id="a7-1">
+          <summary>
+            <span class="aid">7.1</span>
+            <span class="atitle">Provision a basic AKS cluster and connect kubectl</span>
+            <span class="atime">~20 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>What does AKS operate on your behalf that you ran yourself with <code>kind</code>?</li>
+                <li>What is a node pool?</li>
+                <li>What does <code>az aks get-credentials</code> write, and where?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Create a resource group and a small AKS cluster.</li>
+                <li>Merge its credentials into your kubeconfig.</li>
+                <li>Confirm the nodes are Ready and your context now points at AKS.</li>
+              </ol>
+<pre><code>az group create -n rg-z2h -l eastus
+az aks create -g rg-z2h -n aks-z2h --node-count 2 --generate-ssh-keys
+az aks get-credentials -g rg-z2h -n aks-z2h
+kubectl get nodes -o wide</code></pre>
+              <div class="note warn"><b>Cost note:</b> an AKS cluster bills while it runs. Note the resource group so you can <code>az group delete -n rg-z2h</code> when you're done (see 7.4).</div>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p><code>kubectl get nodes</code> against AKS returns Ready nodes, and your current context is the AKS cluster.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Which parts of the cluster did Azure run that you never had to install?</li>
+                <li>What is the supported version-skew rule between your <code>kubectl</code> and the AKS server?</li>
+                <li>Name one Day-0 default you accepted here that the replatform workshop will make you defend.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 7.2 -->
+        <details class="activity" id="a7-2">
+          <summary>
+            <span class="aid">7.2</span>
+            <span class="atitle">Push images to ACR and let AKS pull them</span>
+            <span class="atime">~18 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>Why put images in Azure Container Registry rather than a public registry?</li>
+                <li>Why does the kubelet need <code>AcrPull</code> permission on the registry?</li>
+                <li>What has to change in your manifests when the registry changes?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Create (or reuse) an ACR.</li>
+                <li>Build and push the three images to it — <code>az acr build</code> does both server-side.</li>
+                <li>Attach the ACR to the cluster so nodes can pull without a pull secret.</li>
+              </ol>
+<pre><code>az acr create -g rg-z2h -n acrz2h --sku Basic
+az acr build -r acrz2h -t gateway-java:0.1.0 apps/gateway-java/
+az aks update -g rg-z2h -n aks-z2h --attach-acr acrz2h</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p>All three images exist in ACR and the cluster can pull them — no <code>ImagePullBackOff</code>.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>A Pod is stuck <code>ImagePullBackOff</code> — what are the two most likely AKS-side causes?</li>
+                <li>How does pulling by digest differ from pulling by tag?</li>
+                <li>Where should CVE scanning sit relative to this push — before, after, or both?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 7.3 -->
+        <details class="activity" id="a7-3">
+          <summary>
+            <span class="aid">7.3</span>
+            <span class="atitle">Deploy the workload to AKS and expose it</span>
+            <span class="atime">~20 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>What does a Service of type <code>LoadBalancer</code> provision on AKS?</li>
+                <li>How does an external client's traffic actually reach a Pod?</li>
+                <li>What is still missing between "reachable" and "production"?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Repoint the manifests at the ACR image references.</li>
+                <li>Apply them to AKS and expose the gateway with a <code>LoadBalancer</code> Service.</li>
+                <li>Grab the external IP and smoke-test the live cluster.</li>
+              </ol>
+<pre><code>kubectl apply -f k8s/
+kubectl get svc gateway -w        <span class="cmt"># wait for EXTERNAL-IP</span>
+IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+./scripts/smoke.sh $IP 4561</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p>The app answers on the AKS load-balancer IP, and a message travels end to end on the managed cluster.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>How many hops did traffic take from client to Pod?</li>
+                <li>What did AKS provision in Azure when you asked for a <code>LoadBalancer</code> Service?</li>
+                <li>Name three things about this deployment that are explicitly not production-ready yet.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 7.4 -->
+        <details class="activity" id="a7-4">
+          <summary>
+            <span class="aid">7.4</span>
+            <span class="atitle">You've landed — draw the line to the replatform</span>
+            <span class="atime">~15 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>What does "landed on AKS" mean versus "production-ready on AKS"?</li>
+                <li>Which of your artifacts becomes the source of truth a GitOps flow will later watch?</li>
+                <li>Why is a naive, public, single-pool cluster the right place to stop <em>this</em> workshop?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Capture the cluster and app facts (cluster name, node pool, ACR, image tags, Service IP) in <code>HANDOFF.md</code>.</li>
+                <li>List what is done (classic → container → Kubernetes → AKS, live) versus what the replatform hardens (Day-0 architecture, private API, zones, workload identity, mesh, GitOps rings, autoscaling, DR).</li>
+                <li>Tear down or keep the cluster per your cost plan: <code>az group delete -n rg-z2h</code>.</li>
+              </ol>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p><code>HANDOFF.md</code> shows the workload running on AKS from CI-built images, with a clear list separating "done here" from "next workshop".</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Which legacy pain from Phase 0 is now fully resolved, and which resolve only once the cluster is hardened?</li>
+                <li>What is the first Day-0 question the replatform will ask that you now have real context for?</li>
+                <li>If you keep the cluster running, roughly what is it costing you per day idle?</li>
               </ul>
             </div>
           </div>
         </details>
 
         <div class="hand-off">
-          <h3>Finished? This is the door to the replatform.</h3>
+          <h3>You've landed on AKS. Now make it production.</h3>
           <p>
-            Your three components are reproducible images, configured from the environment, versioned in a
-            registry, and built by CI — the exact inputs the AKS workshop assumes on day one. Everything past
-            this line (cluster architecture, networking, identity, the mesh, autoscaling, DR) is taught there.
+            Your estate has gone classic → container → Kubernetes → AKS and is running live on a managed cluster
+            from CI-built images. The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>,
+            takes this naive deployment and re-architects it for production: Day-0 decisions, a private
+            zone-redundant cluster, workload identity, the Istio mesh, GitOps rings with gated promotion,
+            controlled chaos, and cross-region failover.
           </p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Continue: Replatforming to AKS ↗</a>
