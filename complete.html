@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AKS Migration Foundations — Completion</title>
-  <meta name="description" content="Workshop completion status and certificate for AKS Migration Foundations, based on activity and knowledge-check results." />
+  <title>Containerization and AKS Workshop — Completion</title>
+  <meta name="description" content="Completion status for the containerization and AKS workshop, based on activity and knowledge-check results." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,7 +14,7 @@
     <div class="nav-inner">
       <span class="brand">
         <span class="dot">AKS</span>
-        AKS&nbsp;Migration Foundations <small>· completion</small>
+        Containerization to AKS <small>· completion</small>
       </span>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
@@ -31,7 +31,7 @@
   <main id="main">
     <header class="hero hero-lab">
       <div class="wrap">
-        <span class="eyebrow">Completion &amp; certificate</span>
+        <span class="eyebrow">Completion criteria</span>
         <h1 class="h1-lab">Workshop completion status</h1>
         <p class="lede">
           This page reads saved lab progress and applies the completion criteria: at least <b>80% of activities</b>,
@@ -50,7 +50,7 @@
 
   <footer>
     <div class="wrap">
-      <span>AKS Migration Foundations · completion · an introduction to <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
+      <span>Containerization and AKS Workshop · completion status · prerequisite for <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
       <span>Progress is saved in this browser only.</span>
     </div>
   </footer>
@@ -85,13 +85,13 @@
       }
 
       function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
-      var prog = load("z2h-progress");
-      var kc = load("z2h-kc");
-      var meta = load("z2h-meta");
+      var prog = load("z2h-v2-progress");
+      var kc = load("z2h-v2-kc");
+      var meta = load("z2h-v2-meta");
       var GATE = 80, THRESH = 10;
 
-      var actTotal = meta.actTotal || 26;
-      var phases = (meta.phases && meta.phases.length) ? meta.phases : ["0", "1", "2", "3", "4", "5", "6", "7"];
+      var actTotal = meta.actTotal || 29;
+      var phases = (meta.phases && meta.phases.length) ? meta.phases : ["0", "1", "2", "3", "4", "5", "6", "7", "8"];
 
       var actDone = 0;
       Object.keys(prog).forEach(function (k) { if (prog[k]) actDone++; });
@@ -127,18 +127,18 @@
         el.innerHTML =
           '<div class="cert">'
           + '<div class="seal">✓</div>'
-          + '<span class="eyebrow">Certificate of completion</span>'
-          + '<h2>AKS Migration Foundations — complete</h2>'
-          + '<p class="cert-lede">This certifies that</p>'
+          + '<span class="eyebrow">Completion record</span>'
+          + '<h2>Containerization and AKS Workshop</h2>'
+          + '<p class="cert-lede">Participant</p>'
           + '<input class="name-input no-print" id="nameInput" type="text" maxlength="60" placeholder="Type your name" value="' + savedName.replace(/"/g, "&quot;") + '" aria-label="Your name" />'
           + '<div class="who" id="whoLine">' + (savedName || "\u2014") + '</div>'
-          + '<p class="cert-lede">completed the Skybridge migration sequence — <b>classic → containers → Kubernetes → AKS</b> — '
-          + 'and met the activity and knowledge-check criteria.</p>'
+          + '<p class="cert-lede">Met the activity and knowledge-check criteria for <b>container contract → image → registry → Kubernetes → AKS → operations</b>, '
+          + 'including observation, diagnosis, and measurement of a configuration change on AKS.</p>'
           + scoreGrid()
           + '<p class="meta">Issued ' + today + ' · Measurement: post-check minus baseline on the same question set, ≥' + THRESH + '-point increase or a qualifying baseline score per phase.</p>'
           + '<div class="hero-cta no-print" style="justify-content:center;margin-top:8px">'
           + '<a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Next workshop: Replatforming to AKS ↗</a>'
-          + '<button class="btn btn-ghost" id="printBtn" type="button">Save / print certificate</button>'
+          + '<button class="btn btn-ghost" id="printBtn" type="button">Save / print record</button>'
           + '</div>'
           + '</div>'
           + '<div class="note good mt-20"><b>Next workshop.</b> The workload is deployed on AKS. The '

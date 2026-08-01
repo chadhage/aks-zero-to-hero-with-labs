@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AKS Migration Foundations — Lab guide</title>
-  <meta name="description" content="Participant activity guide: move the Skybridge estate from classic VM deployment and hand-managed config to a container-based development lifecycle. Eight phases, each activity with a pre-check, steps, validation, and post-check." />
+  <title>Containerization and AKS Workshop — Lab guide</title>
+  <meta name="description" content="Starting with code-complete Java and C++ software, build, register, deploy, observe, diagnose, and optimize containers locally, on Kubernetes, and on AKS." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,7 +14,7 @@
     <div class="nav-inner">
       <span class="brand">
         <span class="dot">AKS</span>
-        AKS&nbsp;Migration Foundations <small>· lab guide</small>
+        Containerization to AKS <small>· lab guide</small>
       </span>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
@@ -29,6 +29,7 @@
         <a href="#p5">Phase 5</a>
         <a href="#p6">Phase 6</a>
         <a href="#p7">Phase 7</a>
+        <a href="#p8">Phase 8</a>
         <a class="mobile-nav" href="complete.html">Finish ✓</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
       </span>
@@ -39,14 +40,15 @@
     <header class="hero hero-lab">
       <div class="wrap">
         <span class="eyebrow">Participant activity guide</span>
-        <h1 class="h1-lab">Lab — from a hand-deployed VM to AKS</h1>
+        <h1 class="h1-lab">Lab — from source code to AKS operations</h1>
         <p class="lede">
-          The journey from classic servers to AKS, sliced into 10–20 minute activities across eight phases:
-          <b>classic → containerize → Kubernetes → AKS</b>. Each activity has a
+          You already know how code is promoted through configured dev, test, UAT, and production environments.
+          This lab starts with code-complete software and covers nine phases:
+          <b>container contract → image → registry → Kubernetes → AKS → operations</b>. Each activity has a
           <b>pre-check</b> (baseline what you know), the <b>steps</b> to run, a <b>validation</b> gate, and a
           <b>post-check</b> (validate the result). Every phase also has a scored <b>knowledge check</b> — a
           baseline quiz before and a measured quiz after to record changes in understanding.
-          Earn points as you go, and switch to <b>Instructor-led</b> for trainer talk tracks and demo cues.
+          The guide records activity and assessment scores. Switch to <b>Instructor-led</b> to display trainer talk tracks and demo cues.
         </p>
 
         <div class="note warn">
@@ -60,12 +62,12 @@
             <button class="active" type="button" data-mode="self" aria-pressed="true">Self-paced</button>
             <button type="button" data-mode="led" aria-pressed="false">Instructor-led</button>
           </div>
-          <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">26</span> activities · <span id="pct">0%</span> ·
+          <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">29</span> activities · <span id="pct">0%</span> ·
             <span class="pts" id="ptsCount">0</span> pts ·
             <a href="#" id="resetBtn">Reset</a></span>
         </div>
         <div class="note info" id="modeHelp" aria-live="polite">
-          Self-paced mode: plan 12–14 hours — the hands-on activities plus the required reading, knowledge checks, and reflection.
+          Self-paced mode: plan 14–16 hours — the hands-on activities plus the required reading, knowledge checks, and operational reflection.
           Follow each participant step, validation, and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.
         </div>
       </div>
@@ -76,8 +78,8 @@
       <!-- ============ PHASE 0 ============ -->
       <section id="p0" class="phase-block first">
         <div class="phase-head">
-          <h2>Phase 0 — Setup &amp; the legacy baseline</h2>
-          <span class="sub">Get the tools, get the sample, and document how it ships today.</span>
+          <h2>Phase 0 — Orient from the model you know</h2>
+          <span class="sub">Verify the code-complete release, then contrast configured environments with immutable-image promotion.</span>
           <span class="count" data-phase="0">0/2</span>
         </div>
 
@@ -85,41 +87,42 @@
         <details class="activity" id="a0-1">
           <summary>
             <span class="aid">0.1</span>
-            <span class="atitle">Install the container toolchain and verify it</span>
+            <span class="atitle">Verify the release and container toolchain</span>
             <span class="atime">~15 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check — baseline: Confident / Fuzzy / No idea</h5>
               <ul>
+                <li>What evidence tells you a code-complete release is ready to enter promotion?</li>
+                <li>Which runtime dependencies are currently supplied by the target environment?</li>
                 <li>What is the difference between a container <em>image</em> and a running <em>container</em>?</li>
-                <li>What does a container runtime give you that a plain OS process does not?</li>
-                <li>Where does <code>docker build</code> get its instructions, and what is a build context?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Install a container engine (Docker Desktop, Podman, or Rancher Desktop) and Git.</li>
-                <li>Confirm the daemon is up and you can pull and run a trivial image.</li>
-                <li>Confirm you can build a local image from a one-line Dockerfile.</li>
+                <li>Run the supplied unit and integration tests for the code-complete Skybridge release.</li>
+                <li>Confirm Git and the supported container engine are installed and the daemon is available.</li>
+                <li>Pull and run a known image, then build a minimal local image to verify the complete tool path.</li>
               </ol>
-<pre><code>docker version
+<pre><code>./scripts/test-release.sh
+docker version
 docker run --rm hello-world
 docker run --rm -d -p 8080:80 nginx   <span class="cmt"># open http://localhost:8080</span>
 echo 'FROM alpine' &gt; Dockerfile.test
-docker build -t aks-foundations-check:1 -f Dockerfile.test .</code></pre>
+docker build -t aks-workshop-check:1 -f Dockerfile.test .</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p><code>hello-world</code> prints its greeting, nginx serves on <code>:8080</code>, and <code>aks-foundations-check:1</code> appears in <code>docker images</code>.</p>
+              <p>The supplied release tests pass, <code>hello-world</code> prints its greeting, nginx serves on <code>:8080</code>, and <code>aks-workshop-check:1</code> appears in <code>docker images</code>.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check — if not "Confident" on every line, flag it before moving on</h5>
               <ul>
+                <li>Which release artifacts are code complete, and which environment assumptions remain external?</li>
                 <li>You ran two containers from the same nginx image — how many images were pulled?</li>
-                <li>Why did <code>--rm</code> matter, and what would you have left behind without it?</li>
-                <li>What is the smallest thing that has to be true for "build once, run anywhere" to hold?</li>
+                <li>What must be captured before "build once, promote many" can be true?</li>
               </ul>
             </div>
           </div>
@@ -129,39 +132,39 @@ docker build -t aks-foundations-check:1 -f Dockerfile.test .</code></pre>
         <details class="activity" id="a0-2">
           <summary>
             <span class="aid">0.2</span>
-            <span class="atitle">Get the sample and document the legacy deployment</span>
+            <span class="atitle">Contrast environment promotion with image promotion</span>
             <span class="atime">~10 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>Name three ways a long-lived, hand-patched host drifts from its supposed twin.</li>
-                <li>What is a "runbook", and why is a runbook a liability as well as an asset?</li>
-                <li>Why is a manually configured server difficult to reproduce?</li>
+                <li>Between dev, test, UAT, and production, what changes besides application code?</li>
+                <li>Which environment differences have caused a release to behave differently after promotion?</li>
+                <li>What would it mean to promote exactly the same runtime and dependency set?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Clone the Skybridge sample repo (gateway-java, parser-cpp, ops-console, plus a Postgres schema).</li>
-                <li>Read <code>legacy/DEPLOY-RUNBOOK.md</code> — the current hand-deployment procedure.</li>
-                <li>In <code>BASELINE.md</code>, list every manual step, every place a setting lives, and every host assumption.</li>
+                <li>Review the supplied release manifest and the dev, test, UAT, and production environment profiles.</li>
+                <li>In <code>PROMOTION-BASELINE.md</code>, classify what currently travels with the release and what each environment supplies.</li>
+                <li>Write the proposed invariant: one immutable image reference plus injected environment configuration produces each stage deployment.</li>
               </ol>
-<pre><code>git clone &lt;your-fork&gt;/skybridge-zero-to-hero.git
-cd skybridge-zero-to-hero
-sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
+<pre><code>./scripts/show-release-manifest.sh
+diff environments/dev.env environments/test.env
+git rev-parse HEAD</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>Your <code>BASELINE.md</code> names at least five manual steps and at least three separate places configuration currently lives (files on the box, env of a shell, a hard-coded default, etc.).</p>
+              <p><code>PROMOTION-BASELINE.md</code> identifies the release artifact, runtime dependencies, configuration ownership, secret boundary, and exact values that vary by stage.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Which manual step creates the greatest continuity risk if its owner is unavailable?</li>
-                <li>If you had to stand up an identical host from scratch today, what could you not reproduce?</li>
-                <li>Which concern has the highest business impact — patch reliability, idle capacity, or release time?</li>
+                <li>Which current environment responsibility should move into the image?</li>
+                <li>Which values must remain outside the image, and why?</li>
+                <li>How will an immutable image reduce uncertainty without eliminating environment-specific configuration?</li>
               </ul>
             </div>
           </div>
@@ -171,51 +174,50 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
       <!-- ============ PHASE 1 ============ -->
       <section id="p1" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 1 — Deploy it the classic way</h2>
-          <span class="sub">Deploy with the existing process, then introduce a representative configuration failure.</span>
+          <h2>Phase 1 — Derive the container contract</h2>
+          <span class="sub">Make the release's runtime assumptions explicit before writing a Dockerfile.</span>
           <span class="count" data-phase="1">0/3</span>
         </div>
-        <div class="success-banner">Checkpoint — identify the limitations of the existing deployment process</div>
+        <div class="success-banner">Checkpoint — define what the image carries and what the platform supplies</div>
 
         <!-- 1.1 -->
         <details class="activity" id="a1-1">
           <summary>
             <span class="aid">1.1</span>
-            <span class="atitle">Run the app on a "VM" with systemd and a runbook</span>
+            <span class="atitle">Inventory runtime dependencies and process behavior</span>
             <span class="atime">~20 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What does <code>systemd</code> manage, and what does it not manage?</li>
-                <li>When you copy a JAR onto a host and start it, what carries the runtime version — the host or the artifact?</li>
-                <li>Why is "it started on my box" weak evidence that it will start on the next box?</li>
+                <li>What does the application need from an operating system before its main process can start?</li>
+                <li>Which Java, native-library, certificate, user, filesystem, and network assumptions are implicit today?</li>
+                <li>How should the process react to startup failure and an operating-system termination signal?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Start a throwaway RHEL-like container to act as your "bare VM" (no Docker inside — treat it as a host).</li>
-                <li>Follow <code>legacy/DEPLOY-RUNBOOK.md</code>: install the JVM and toolchain, copy artifacts, drop a <code>systemd</code> unit, start the gateway.</li>
-                <li>Confirm the gateway process is up and listening on its socket port.</li>
+                <li>Inspect the release manifest, launch scripts, linked libraries, and existing environment documentation.</li>
+                <li>Record build-time dependencies separately from runtime dependencies for the Java gateway and C++ parser.</li>
+                <li>Define the entrypoint, working directory, user, writable paths, ports, and termination behavior in <code>CONTAINER-CONTRACT.md</code>.</li>
               </ol>
-<pre><code>docker run -it --name legacy-vm -p 4561:4561 redhat/ubi9 bash
-<span class="cmt"># inside the "VM": follow the runbook by hand —</span>
-<span class="cmt"># dnf install, scp-equivalent copy, write /etc/systemd/system/gateway.service,</span>
-<span class="cmt"># systemctl daemon-reload &amp;&amp; systemctl start gateway</span></code></pre>
-              <div class="note info">The point is not to master systemd — it is to notice how many hand steps stand between "source" and "running", and how none of them are written down as code.</div>
+<pre><code>./scripts/inspect-runtime.sh gateway-java
+./scripts/inspect-runtime.sh parser-cpp
+ldd build/parser-cpp/skybridge-parser</code></pre>
+              <div class="note info">The Dockerfile will be an executable implementation of this contract. Do not begin with a base image and guess backward.</div>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>The gateway answers on <code>:4561</code> from your host. Record each manual command required by the runbook.</p>
+              <p><code>CONTAINER-CONTRACT.md</code> names every build-time and runtime dependency and defines how each component starts, runs, writes files, exposes ports, and terminates.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>How many discrete manual commands did it take? Which are the most error-prone?</li>
-                <li>Where did the runtime version get pinned — and could the next engineer accidentally pick a different one?</li>
-                <li>If this host rebooted, what would <em>not</em> come back automatically?</li>
+                <li>Which dependencies belong in a build stage but not in the runtime image?</li>
+                <li>Which host assumptions must become explicit image instructions?</li>
+                <li>What state would be lost when the container is replaced?</li>
               </ul>
             </div>
           </div>
@@ -225,40 +227,38 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
         <details class="activity" id="a1-2">
           <summary>
             <span class="aid">1.2</span>
-            <span class="atitle">Reproduce config drift between two "identical" hosts</span>
+            <span class="atitle">Define configuration, secrets, health, and observability</span>
             <span class="atime">~12 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>Define configuration drift in one sentence.</li>
-                <li>Why do two hosts built from "the same runbook" still end up different?</li>
-                <li>What class of bug only appears on one host in a pair and not the other?</li>
+                <li>Which values vary by deployment stage and therefore cannot be baked into the image?</li>
+                <li>What is the difference between process liveness and readiness to receive traffic?</li>
+                <li>What must be emitted to standard output so a platform can collect useful logs?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Stand up a second "VM" from the same runbook with one configuration difference (a different package version, a hand-edited timeout, or a missing environment variable).</li>
-                <li>Point the same smoke test at both hosts.</li>
-                <li>Record the divergent behaviour and trace it back to the config difference.</li>
+                <li>Classify every setting as invariant, stage configuration, or secret; define its name, format, default policy, and missing-value behavior.</li>
+                <li>Define startup, readiness, and liveness signals plus the structured fields required in logs.</li>
+                <li>Add configuration, secret, health, and telemetry sections to <code>CONTAINER-CONTRACT.md</code>.</li>
               </ol>
-<pre><code>docker run -it --name legacy-vm-2 -p 4562:4561 redhat/ubi9 bash
-<span class="cmt"># follow the runbook again — but change one thing, as humans do</span>
-./scripts/smoke.sh 127.0.0.1 4561   <span class="cmt"># host 1</span>
-./scripts/smoke.sh 127.0.0.1 4562   <span class="cmt"># host 2 — different result</span></code></pre>
+<pre><code>./scripts/inventory-config.sh
+./scripts/validate-contract.sh CONTAINER-CONTRACT.md</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>The two hosts behave differently, and you can name the exact configuration difference that caused it.</p>
+              <p>The contract accounts for every stage-specific setting and secret, defines fail-fast behavior for required values, and names machine-testable health and telemetry signals.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>How long did it take to <em>find</em> the difference versus <em>cause</em> it?</li>
-                <li>What artifact, if it existed, would have made the two hosts provably identical?</li>
-                <li>Which of Skybridge's board-level pains does drift feed most directly?</li>
+                <li>Which configuration values may safely have defaults, and which must fail startup when absent?</li>
+                <li>How will a platform distinguish "process exists" from "safe to route traffic"?</li>
+                <li>Which log fields let you connect a request, image revision, Pod, and failure?</li>
               </ul>
             </div>
           </div>
@@ -268,36 +268,36 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
         <details class="activity" id="a1-3">
           <summary>
             <span class="aid">1.3</span>
-            <span class="atitle">Attempt a rollback the classic way</span>
+            <span class="atitle">Set resource, security, and promotion acceptance criteria</span>
             <span class="atime">~13 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>In a copy-the-binary deployment, what artifact and state do you roll <em>back to</em>?</li>
-                <li>Why is "keep the old JAR next to the new one" a fragile rollback plan?</li>
-                <li>What state, besides the binary, might a rollback need to also revert?</li>
+                <li>Why does a scheduler need CPU and memory expectations before placing a workload?</li>
+                <li>What privileges and Linux capabilities does this application actually require?</li>
+                <li>What evidence should permit the same image digest to advance to the next stage?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Deploy a "bad" build of the gateway onto host 1 by following the runbook's upgrade path.</li>
-                <li>Roll back to the previous build using only what the runbook and host preserved.</li>
-                <li>Time it, from "we need to roll back" to "traffic is healthy again".</li>
+                <li>Record initial CPU and memory requests, limits, expected concurrency, and shutdown grace period.</li>
+                <li>Require a non-root user, read-only runtime where possible, minimal capabilities, and no embedded credentials.</li>
+                <li>Define test, scan, health, performance, provenance, and rollback gates for promotion of one immutable digest.</li>
               </ol>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>Record the rollback duration and whether it left stale configuration, a partially applied migration, or an orphaned process.</p>
+              <p>The completed contract is specific enough to implement as a Dockerfile, Compose service, and Kubernetes container specification without rediscovering runtime requirements.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>What made the rollback slow or risky — the binary, the config, or the human coordination?</li>
-                <li>If the unit of deployment were an immutable, versioned image, how would this step change?</li>
-                <li>Write the one sentence you'd tell the board about today's release risk.</li>
+                <li>Which contract fields belong to the image, and which belong to the deployment platform?</li>
+                <li>Which digest will verify that the image tested is the image deployed to UAT?</li>
+                <li>What evidence will trigger rollback rather than further tuning?</li>
               </ul>
             </div>
           </div>
@@ -307,8 +307,8 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
       <!-- ============ PHASE 2 ============ -->
       <section id="p2" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 2 — Configuration management</h2>
-          <span class="sub">Pull settings and secrets out of the box and make config a first-class, declarative thing.</span>
+          <h2>Phase 2 — Separate image from environment</h2>
+          <span class="sub">Externalize stage configuration so one immutable build can move through dev, test, UAT, and production.</span>
           <span class="count" data-phase="2">0/3</span>
         </div>
 
@@ -356,7 +356,7 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
         <details class="activity" id="a2-2">
           <summary>
             <span class="aid">2.2</span>
-            <span class="atitle">Externalize config to the environment (12-factor)</span>
+            <span class="atitle">Run one build with multiple stage configurations</span>
             <span class="atime">~20 min</span>
           </summary>
           <div class="body">
@@ -373,14 +373,16 @@ sed -n '1,80p' legacy/DEPLOY-RUNBOOK.md</code></pre>
               <ol>
                 <li>Refactor each component to read every per-environment setting from an environment variable, with a safe default only where it's truly universal.</li>
                 <li>Add a committed <code>.env.example</code> documenting each variable; keep the real <code>.env</code> git-ignored.</li>
-                <li>Run the app twice from the <em>same</em> build with two different env files and watch behaviour change with no rebuild.</li>
+                <li>Run the app from the <em>same</em> build with the supplied dev, test, and UAT profiles and observe only the intended configuration differences.</li>
               </ol>
-<pre><code>GATEWAY_PORT=4561 PARSER_URL=http://parser:8080 \
-DB_DSN='postgres://app@db:5432/skybridge' ./run-gateway.sh</code></pre>
+<pre><code>./scripts/run-release.sh --env environments/dev.env
+./scripts/run-release.sh --env environments/test.env
+./scripts/run-release.sh --env environments/uat.env
+git diff --exit-code                       <span class="cmt"># no rebuild or source edit</span></code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>One build, two environments, two behaviours — driven entirely by env vars. No setting requires editing source or rebuilding to change.</p>
+              <p>One build runs under dev, test, and UAT profiles with the intended behavior in each stage. No source edit or rebuild is required to promote it.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
@@ -438,8 +440,8 @@ DB_DSN='postgres://app@db:5432/skybridge' ./run-gateway.sh</code></pre>
       <!-- ============ PHASE 3 ============ -->
       <section id="p3" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 3 — Containerize the components</h2>
-          <span class="sub">One Dockerfile per component. Small, reproducible, non-root, immutable.</span>
+          <h2>Phase 3 — Build and operate the containers</h2>
+          <span class="sub">Implement the container contract, then inspect and constrain each running component.</span>
           <span class="count" data-phase="3">0/4</span>
         </div>
         <div class="success-banner">Checkpoint — the estate runs from images rather than a runbook</div>
@@ -575,7 +577,7 @@ docker run --rm -p 3000:80 -e API_BASE=http://localhost:8080 ops-console:0.1.0
         <details class="activity" id="a3-4">
           <summary>
             <span class="aid">3.4</span>
-            <span class="atitle">Harden the images: size, scan, and a .dockerignore</span>
+            <span class="atitle">Harden, inspect, and constrain the running containers</span>
             <span class="atime">~14 min</span>
           </summary>
           <div class="body">
@@ -584,29 +586,32 @@ docker run --rm -p 3000:80 -e API_BASE=http://localhost:8080 ops-console:0.1.0
               <ul>
                 <li>What kinds of files should a <code>.dockerignore</code> keep out of the build context, and why?</li>
                 <li>What does an image vulnerability scan inspect?</li>
-                <li>Why is a smaller image a security property, not just a speed one?</li>
+                <li>What happens when a process exceeds a container memory limit?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
                 <li>Add a <code>.dockerignore</code> to each component so build context excludes VCS, local env, and build junk.</li>
-                <li>Scan each image for known CVEs and note the highest severity.</li>
-                <li>Trim obvious bloat (dev tooling, caches) from the runtime stages.</li>
+                <li>Scan each image for known CVEs and trim obvious bloat from the runtime stages.</li>
+                <li>Run the gateway under controlled CPU and memory limits; inspect its logs, process list, network, mounts, and live resource use.</li>
               </ol>
 <pre><code>docker scout cves gateway-java:0.1.0   <span class="cmt"># or: trivy image gateway-java:0.1.0</span>
-docker image ls | grep -E 'gateway-java|parser-cpp|ops-console'</code></pre>
+docker run -d --name gateway-limited --cpus 1 --memory 512m gateway-java:0.1.0
+docker logs gateway-limited
+docker stats --no-stream gateway-limited
+docker inspect gateway-limited</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>Each image has a <code>.dockerignore</code>, a recorded scan result, and a runtime size you're prepared to defend. No secret and no <code>.git</code> directory is present in any layer.</p>
+              <p>Each image has a <code>.dockerignore</code> and recorded scan result, contains no secret or VCS data, and runs under explicit CPU and memory limits while exposing useful logs and resource evidence.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
                 <li>A High CVE sits in a base image. What should you do, and what should you <em>not</em> do?</li>
                 <li>Which image had the largest attack surface, and what drove it?</li>
-                <li>Where in a pipeline should this scan run — before push, after push, or both?</li>
+                <li>Which signal would distinguish CPU saturation, memory pressure, and an application failure?</li>
               </ul>
             </div>
           </div>
@@ -616,8 +621,8 @@ docker image ls | grep -E 'gateway-java|parser-cpp|ops-console'</code></pre>
       <!-- ============ PHASE 4 ============ -->
       <section id="p4" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 4 — Compose the system &amp; publish images</h2>
-          <span class="sub">Run the whole estate locally with one command, then version and push it.</span>
+          <h2>Phase 4 — Run the system with Compose</h2>
+          <span class="sub">Run, observe, and troubleshoot the complete code-complete release as cooperating containers.</span>
           <span class="count" data-phase="4">0/3</span>
         </div>
         <div class="success-banner">Checkpoint — one <code>compose up</code> starts the estate</div>
@@ -668,39 +673,41 @@ docker compose ps
         <details class="activity" id="a4-2">
           <summary>
             <span class="aid">4.2</span>
-            <span class="atitle">Tag by semver and by commit SHA</span>
+            <span class="atitle">Observe and diagnose the composed system</span>
             <span class="atime">~15 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What does an image tag commit you to operationally, versus an image digest?</li>
-                <li>Why tag by git SHA in addition to a human-friendly semver?</li>
-                <li>What is a mutable tag, and what breaks when a mutable tag is retagged over a running version?</li>
+                <li>Where do you look when one healthy container cannot reach another?</li>
+                <li>How do container logs, health state, DNS, and resource usage narrow different failure classes?</li>
+                <li>Why should one controlled change be made between diagnostic runs?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Retag each image with both a semver (<code>0.1.0</code>) and the short commit SHA (<code>sha-abc1234</code>).</li>
-                <li>Record the digest of each build.</li>
-                <li>Decide, in <code>RELEASING.md</code>, which tag is your promotion handle and which is your provenance handle.</li>
+                <li>Generate controlled traffic and record baseline latency, throughput, CPU, memory, health, and log error counts.</li>
+                <li>Inject one broken service hostname, use Compose state/log/network evidence to diagnose it, then restore the configuration.</li>
+                <li>Apply a CPU or memory constraint to one component and explain the resulting runtime signal.</li>
               </ol>
-<pre><code>SHA=$(git rev-parse --short HEAD)
-docker tag gateway-java:0.1.0 gateway-java:sha-$SHA
-docker image inspect gateway-java:0.1.0 --format '{{index .RepoDigests 0}}'</code></pre>
+<pre><code>./scripts/load.sh --duration 60s
+docker compose ps
+docker compose logs --since 5m gateway parser
+docker compose exec gateway getent hosts parser
+docker stats --no-stream</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>Every component carries a semver tag and a SHA tag, and you can state which tag you'd reference in a deploy and which you'd use to trace provenance.</p>
+              <p><code>COMPOSE-BASELINE.md</code> records measured behavior, the injected symptom, evidence used to isolate it, the corrective change, and the passing retest.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Why is deploying by digest more deterministic than deploying by tag?</li>
-                <li>What OCI labels (commit, build id, semver) would make later A/B analysis easier?</li>
-                <li>How does SHA-tagging pre-answer "which commit is in prod right now?"</li>
+                <li>Which evidence showed whether the failure was image, configuration, network, or dependency related?</li>
+                <li>How did the constrained component affect end-to-end behavior?</li>
+                <li>Which measurements must be preserved for comparison on Kubernetes and AKS?</li>
               </ul>
             </div>
           </div>
@@ -710,41 +717,41 @@ docker image inspect gateway-java:0.1.0 --format '{{index .RepoDigests 0}}'</cod
         <details class="activity" id="a4-3">
           <summary>
             <span class="aid">4.3</span>
-            <span class="atitle">Push versioned images to a registry</span>
+            <span class="atitle">Verify the same images across stage profiles</span>
             <span class="atime">~18 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What is a container registry, and what is a repository within it?</li>
-                <li>Why is "build in CI and push" preferable to "build on a laptop and push"?</li>
-                <li>What does immutability at the registry level protect you from?</li>
+                <li>Which Compose fields describe the application, and which describe a deployment stage?</li>
+                <li>Why must stage promotion change configuration but not rebuild an image?</li>
+                <li>How can you verify that two stages use the same image content?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Log in to a registry (any OCI registry — a local one, GHCR, Docker Hub, or an Azure Container Registry).</li>
-                <li>Push each image with both tags.</li>
-                <li>Pull them on a clean machine (or after a local prune) to validate portability.</li>
+                <li>Parameterize Compose with the supplied dev, test, and UAT environment profiles.</li>
+                <li>Run the end-to-end test in each profile without invoking an image build.</li>
+                <li>Record each container's image ID and verify it remains unchanged across the three runs.</li>
               </ol>
-<pre><code>docker login &lt;registry&gt;
-docker tag gateway-java:0.1.0 &lt;registry&gt;/gateway-java:0.1.0
-docker push &lt;registry&gt;/gateway-java:0.1.0
-docker push &lt;registry&gt;/gateway-java:sha-$SHA</code></pre>
-              <div class="note info">If you're using Azure Container Registry, <code>az acr build</code> can build server-side and push in one step — but plain <code>docker push</code> to any registry is enough to satisfy this activity.</div>
+<pre><code>docker compose --env-file environments/dev.env up -d --no-build
+./scripts/smoke.sh 127.0.0.1 4561
+docker compose images
+docker compose --env-file environments/uat.env up -d --no-build</code></pre>
+              <div class="note info">Environment configuration changes at deployment time. The image ID must not change during promotion.</div>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>All three components exist in the registry with semver and SHA tags, and you pulled at least one back successfully from a clean state.</p>
+              <p>Dev, test, and UAT pass with the expected stage configuration while every application container retains the same image ID.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>How does a consumer pull by digest vs by tag, and which is more deterministic?</li>
-                <li>Where should CVE scanning sit relative to the push — before, after, or both?</li>
-                <li>If a pull fails with "not found", what are the two most likely causes?</li>
+                <li>Which profile values changed application behavior?</li>
+                <li>Which invariant would be violated if CI rebuilt for UAT?</li>
+                <li>What identifier should the registry provide so this proof survives beyond one local engine?</li>
               </ul>
             </div>
           </div>
@@ -754,8 +761,8 @@ docker push &lt;registry&gt;/gateway-java:sha-$SHA</code></pre>
       <!-- ============ PHASE 5 ============ -->
       <section id="p5" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 5 — A container-based development lifecycle</h2>
-          <span class="sub">Automate the build and close the inner/outer loop before you hand the images to an orchestrator.</span>
+          <h2>Phase 5 — Register and automate</h2>
+          <span class="sub">Turn tested local images into traceable, immutable promotion artifacts an orchestrator can pull.</span>
           <span class="count" data-phase="5">0/3</span>
         </div>
         <div class="success-banner">Checkpoint — each commit produces a scanned, versioned, published image</div>
@@ -806,36 +813,41 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
         <details class="activity" id="a5-2">
           <summary>
             <span class="aid">5.2</span>
-            <span class="atitle">Close the inner loop: dev against the same images</span>
+            <span class="atitle">Label, scan, attest, and publish immutable images</span>
             <span class="atime">~15 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What is the "inner loop" vs the "outer loop" in development?</li>
-                <li>Why is it valuable that your local Compose stack uses the same images CI builds?</li>
-                <li>What is the risk if dev and CI build images differently?</li>
+                <li>What does an image tag commit you to operationally, versus an image digest?</li>
+                <li>Which metadata connects an image to source revision, build, and dependency inventory?</li>
+                <li>Why must promotion consume an existing digest rather than invoke another build?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Make a small code change to the parser, rebuild locally, and run it under Compose with a fast edit-run cycle.</li>
-                <li>Confirm the identical Dockerfile drives both your local build and the CI build.</li>
-                <li>Note your edit-to-running time and what dominates it (build vs restart).</li>
+                <li>Add OCI source/revision/version labels, tag each CI-built image by semantic version and commit SHA, and generate an SBOM.</li>
+                <li>Apply the vulnerability policy, push passing images, and record the registry digest returned for each component.</li>
+                <li>Pull by digest into a clean environment and run the end-to-end smoke test without rebuilding.</li>
               </ol>
             </div>
+<pre><code>SHA=$(git rev-parse --short HEAD)
+docker scout cves gateway-java:sha-$SHA
+docker sbom gateway-java:sha-$SHA
+docker push &lt;registry&gt;/gateway-java:sha-$SHA
+docker pull &lt;registry&gt;/gateway-java@sha256:&lt;digest&gt;</code></pre>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>You changed code and ran it under Compose using the same Dockerfile as CI. Sharing the build definition reduces differences between development and CI.</p>
+              <p>Every component has source and revision labels, a stored scan and SBOM, immutable registry digest, and recorded results from a clean pull and smoke test.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>What dominated your inner-loop time, and what one change would halve it?</li>
-                <li>How does using the same Dockerfile reduce differences between local and CI builds?</li>
-                <li>How would you keep the inner loop fast without letting it diverge from the outer loop?</li>
+                <li>Why is deploying by digest more deterministic than deploying by tag?</li>
+                <li>Which evidence lets an operator map a running container back to source and dependencies?</li>
+                <li>What should happen when the vulnerability policy fails after an image has been built?</li>
               </ul>
             </div>
           </div>
@@ -845,7 +857,7 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
         <details class="activity" id="a5-3">
           <summary>
             <span class="aid">5.3</span>
-            <span class="atitle">Define the run contract each image needs</span>
+            <span class="atitle">Bind the container contract to promotion evidence</span>
             <span class="atime">~15 min</span>
           </summary>
           <div class="body">
@@ -860,14 +872,14 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Write a one-page <code>RUN-CONTRACT.md</code>: for each component, its image name, tags, exposed ports, required env vars, secret contract, and health endpoint.</li>
-                <li>Confirm the registry holds current images and CI is green.</li>
-                <li>Note which fields will map one-to-one onto an orchestrator's manifest — you're about to use them.</li>
+                <li>Update <code>CONTAINER-CONTRACT.md</code> with each component's registry digest, ports, required env vars, secret inputs, health endpoints, resource baseline, and shutdown behavior.</li>
+                <li>Record test, scan, SBOM, provenance, and promotion-gate evidence in <code>RELEASE-EVIDENCE.md</code>.</li>
+                <li>Map each runtime field to the Kubernetes object or container-spec field that will satisfy it next.</li>
               </ol>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p><code>RUN-CONTRACT.md</code> describes how to start each component from its image with only environment inputs — everything a scheduler will ask for next.</p>
+              <p>The contract names immutable registry digests and everything a scheduler must supply; <code>RELEASE-EVIDENCE.md</code> records the promotion-gate results for those artifacts.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
@@ -882,7 +894,7 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
 
         <div class="note info">
           <b>Phase boundary.</b> Containerization is complete: reproducible images, configuration from the environment,
-          a registry, and CI. Compose proved the pieces fit — but it won't self-heal, scale, or roll out safely.
+          operational evidence, immutable registry digests, and CI. Compose validated the components together, but it does not reconcile desired state, schedule replicas across nodes, or coordinate rolling updates.
           That is an orchestrator's job. Next you trade Compose for Kubernetes, then let Azure run Kubernetes for you.
         </div>
       </section>
@@ -890,8 +902,8 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
       <!-- ============ PHASE 6 ============ -->
       <section id="p6" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 6 — Kubernetes: orchestrate the containers</h2>
-          <span class="sub">Trade Compose for a Kubernetes scheduler on a local cluster, with reconciliation, scaling, and rolling updates.</span>
+          <h2>Phase 6 — Kubernetes: Pods, Deployments, and Services</h2>
+          <span class="sub">Express the container contract on a local cluster, then practice reconciliation, rollout, and diagnosis.</span>
           <span class="count" data-phase="6">0/4</span>
         </div>
         <div class="success-banner">Checkpoint — the estate runs on Kubernetes with workload reconciliation</div>
@@ -941,7 +953,7 @@ kubectl get nodes -o wide</code></pre>
         <details class="activity" id="a6-2">
           <summary>
             <span class="aid">6.2</span>
-            <span class="atitle">Translate Compose into Deployments and Services</span>
+            <span class="atitle">Translate the container contract into Kubernetes workloads</span>
             <span class="atime">~20 min</span>
           </summary>
           <div class="body">
@@ -956,9 +968,9 @@ kubectl get nodes -o wide</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Write a Deployment + Service for the gateway and the parser, plus a dev-grade Deployment + Service + volume for Postgres.</li>
-                <li>Reference the images from your registry (from Phase 4).</li>
-                <li>Apply everything, watch the Pods come up, and smoke-test through the in-cluster Service.</li>
+                <li>Write a Deployment + Service for the gateway and parser, plus a dev-grade StatefulSet + Service + persistent volume claim for Postgres.</li>
+                <li>Reference immutable registry digests and implement startup/readiness/liveness probes, CPU/memory requests and limits, graceful termination, and a non-root security context.</li>
+                <li>Apply everything, watch the Pods become Ready, and smoke-test through in-cluster Service DNS.</li>
               </ol>
 <pre><code>kubectl apply -f k8s/
 kubectl get pods,svc
@@ -967,7 +979,7 @@ kubectl port-forward svc/gateway 4561:4561 &amp;
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>All Pods are <code>Running</code>, and a message travels client → gateway → parser → Postgres through in-cluster Service DNS.</p>
+              <p>All Pods are <code>Ready</code>, run as non-root with declared resources and probes, and carry a message gateway → parser → Postgres through in-cluster Service DNS.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
@@ -1027,7 +1039,7 @@ kubectl rollout status deploy/gateway</code></pre>
         <details class="activity" id="a6-4">
           <summary>
             <span class="aid">6.4</span>
-            <span class="atitle">Self-heal, scale, roll out, and roll back</span>
+            <span class="atitle">Replace failed Pods, diagnose, scale, roll out, and roll back</span>
             <span class="atime">~18 min</span>
           </summary>
           <div class="body">
@@ -1042,23 +1054,29 @@ kubectl rollout status deploy/gateway</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Delete a parser Pod and watch the Deployment replace it.</li>
-                <li>Scale the parser to 3 replicas.</li>
-                <li>Roll out a new image tag, then roll the Deployment back.</li>
+                <li>Delete a parser Pod and watch the Deployment replace it, then scale the parser to 3 replicas.</li>
+                <li>Inject a broken image reference or readiness path and diagnose it using workload state, events, description, logs, and metrics.</li>
+                <li>Restore the immutable digest, verify readiness, then roll out a new digest and undo the rollout.</li>
               </ol>
-<pre><code>kubectl delete pod -l app=parser          <span class="cmt"># watch it self-heal</span>
+<pre><code>kubectl delete pod -l app=parser          <span class="cmt"># watch the Deployment replace it</span>
 kubectl scale deploy/parser --replicas=3
-kubectl set image deploy/parser parser=&lt;registry&gt;/parser-cpp:sha-$SHA
+./scripts/inject-k8s-failure.sh bad-readiness
+kubectl get pods
+kubectl describe pod -l app=parser
+kubectl events --for deployment/parser
+kubectl logs deploy/parser --all-pods
+kubectl top pod -l app=parser
+./scripts/reset-k8s-failure.sh
 kubectl rollout undo deploy/parser</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>The killed Pod is replaced automatically, the replica count changes on demand, and a rollout can be undone in a single command.</p>
+              <p>The killed Pod is replaced, the injected failure is diagnosed from recorded evidence, the replica count changes on demand, and a rollout can be restored and undone.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Compare this rollback to your hand-run rollback in 1.3 — what changed about speed and confidence?</li>
+                <li>Compare this rollback to your hand-run rollback in 1.3 — what changed in the steps and elapsed time?</li>
                 <li>What did the controller do that no runbook could?</li>
                 <li>Why do probes have to be right <em>before</em> you trust a rolling update?</li>
               </ul>
@@ -1070,8 +1088,8 @@ kubectl rollout undo deploy/parser</code></pre>
       <!-- ============ PHASE 7 ============ -->
       <section id="p7" class="phase-block">
         <div class="phase-head">
-          <h2>Phase 7 — Deploy to AKS (managed Kubernetes)</h2>
-          <span class="sub">Apply the same manifests to an Azure-managed cluster.</span>
+          <h2>Phase 7 — Deploy the workload to AKS</h2>
+          <span class="sub">Deploy the same immutable images and workload contract to an Azure-managed cluster.</span>
           <span class="count" data-phase="7">0/4</span>
         </div>
         <div class="success-banner">Checkpoint — the workload is running on AKS</div>
@@ -1095,11 +1113,12 @@ kubectl rollout undo deploy/parser</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Create a resource group and a small AKS cluster.</li>
+                <li>Verify Azure sign-in, active subscription, regional quota, and required permissions; then create a resource group and training AKS cluster.</li>
                 <li>Merge its credentials into your kubeconfig.</li>
                 <li>Confirm the nodes are Ready and your context now points at AKS.</li>
               </ol>
-<pre><code>az group create -n rg-z2h -l eastus
+<pre><code>az account show
+az group create -n rg-z2h -l eastus
 az aks create -g rg-z2h -n aks-z2h --node-count 2 --generate-ssh-keys
 az aks get-credentials -g rg-z2h -n aks-z2h
 kubectl get nodes -o wide</code></pre>
@@ -1139,13 +1158,16 @@ kubectl get nodes -o wide</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Create (or reuse) an ACR.</li>
-                <li>Build and push the three images to it — <code>az acr build</code> does both server-side.</li>
+                <li>Create an ACR using a globally unique name.</li>
+                <li>Build and push the gateway, parser, and console images to it — <code>az acr build</code> does both server-side.</li>
                 <li>Attach the ACR to the cluster so nodes can pull without a pull secret.</li>
               </ol>
-<pre><code>az acr create -g rg-z2h -n acrz2h --sku Basic
-az acr build -r acrz2h -t gateway-java:0.1.0 apps/gateway-java/
-az aks update -g rg-z2h -n aks-z2h --attach-acr acrz2h</code></pre>
+<pre><code>ACR_NAME="acrz2h${RANDOM}${RANDOM}"
+az acr create -g rg-z2h -n "$ACR_NAME" --sku Basic
+az acr build -r "$ACR_NAME" -t gateway-java:sha-$SHA apps/gateway-java/
+az acr build -r "$ACR_NAME" -t parser-cpp:sha-$SHA apps/parser-cpp/
+az acr build -r "$ACR_NAME" -t ops-console:sha-$SHA apps/ops-console/
+az aks update -g rg-z2h -n aks-z2h --attach-acr "$ACR_NAME"</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -1209,49 +1231,203 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         <details class="activity" id="a7-4">
           <summary>
             <span class="aid">7.4</span>
-            <span class="atitle">Document the boundary with the replatform workshop</span>
+            <span class="atitle">Compare local Kubernetes with managed AKS</span>
             <span class="atime">~15 min</span>
           </summary>
           <div class="body">
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What is the difference between "deployed on AKS" and "configured for production on AKS"?</li>
-                <li>Which of your artifacts becomes the source of truth a GitOps flow will later watch?</li>
-                <li>Why does this workshop stop at a public, single-pool cluster?</li>
+                <li>Which Kubernetes concepts and workload artifacts remained unchanged between kind and AKS?</li>
+                <li>Which capabilities appeared because AKS integrates Kubernetes with Azure?</li>
+                <li>Where does responsibility divide between Azure's managed control plane and your workload team?</li>
               </ul>
             </div>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Capture the cluster and app facts (cluster name, node pool, ACR, image tags, Service IP) in <code>HANDOFF.md</code>.</li>
-                <li>List what is covered here (classic → container → Kubernetes → AKS) versus what the replatform configures (Day-0 architecture, private API, zones, workload identity, mesh, GitOps rings, autoscaling, and DR).</li>
-                <li>Tear down or keep the cluster per your cost plan: <code>az group delete -n rg-z2h</code>.</li>
+                <li>Capture cluster, node-pool, ACR, image-digest, Service, and identity facts in <code>AKS-BASELINE.md</code>.</li>
+                <li>Map the managed control plane, node pool, Azure Load Balancer, ACR authorization, and workload objects to their owners.</li>
+                <li>Keep the cluster running for Phase 8; record the cleanup command and current estimated hourly cost.</li>
               </ol>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p><code>HANDOFF.md</code> shows the workload running on AKS from CI-built images, with a clear list separating "done here" from "next workshop".</p>
+              <p><code>AKS-BASELINE.md</code> records the workload contract running on AKS and separates Azure-managed platform responsibilities from application-team responsibilities.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
               <ul>
-                <li>Which Phase 0 limitation is addressed, and which requires additional production configuration?</li>
-                <li>Which Day-0 question in the replatform workshop can you now evaluate?</li>
-                <li>If you keep the cluster running, roughly what is it costing you per day idle?</li>
+                <li>What did AKS remove from your operational responsibility, and what remained yours?</li>
+                <li>Which failure would you investigate in Kubernetes, and which in Azure resource state?</li>
+                <li>Which Day-0 question in the replatform workshop can you now evaluate with experience?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <div class="note info">
+          <b>Phase boundary.</b> The workload is reachable on AKS, but reachability is not operability.
+          Keep the cluster running: Phase 8 establishes evidence under load, diagnoses controlled failures,
+          and compares a resource or runtime change with the baseline before cleanup.
+        </div>
+
+        <div class="hero-cta mt-20">
+          <a class="btn btn-primary" href="#p8">Operate the workload on AKS →</a>
+        </div>
+      </section>
+
+      <!-- ============ PHASE 8 ============ -->
+      <section id="p8" class="phase-block">
+        <div class="phase-head">
+          <h2>Phase 8 — Observe, diagnose, and optimize on AKS</h2>
+          <span class="sub">Use evidence under load to find a fault, improve one constraint, and verify the result.</span>
+          <span class="count" data-phase="8">0/3</span>
+        </div>
+        <div class="success-banner">Checkpoint — collect workload evidence under load</div>
+
+        <!-- 8.1 -->
+        <details class="activity" id="a8-1">
+          <summary>
+            <span class="aid">8.1</span>
+            <span class="atitle">Establish an AKS workload baseline under load</span>
+            <span class="atime">~25 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>Which signals describe demand, saturation, errors, and latency for this workload?</li>
+                <li>What can Kubernetes metrics show that application logs cannot, and vice versa?</li>
+                <li>Why must an optimization begin with a repeatable baseline?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Run the supplied load profile against the AKS gateway and record request rate, latency percentiles, errors, CPU, memory, restarts, and replica readiness.</li>
+                <li>Correlate application logs with Pod identity and immutable image revision; inspect workload state, events, and node placement.</li>
+                <li>Save the load parameters and observations in <code>AKS-OPERATIONS-REPORT.md</code> so the exact test can be repeated.</li>
+              </ol>
+<pre><code>./scripts/load.sh --target "$IP:4561" --profile baseline --duration 5m
+kubectl get pods -o wide
+kubectl top pods
+kubectl get events --sort-by=.lastTimestamp
+kubectl logs -l app=gateway --all-containers --since=10m --prefix</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p>The report contains a repeatable load profile and timestamped baseline for throughput, p50/p95/p99 latency, errors, CPU, memory, restarts, and Ready replicas.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Which component saturated first, and what evidence supports that conclusion?</li>
+                <li>Can every log line be tied to a Pod and image revision?</li>
+                <li>Which baseline metric is closest to violating the container contract?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 8.2 -->
+        <details class="activity" id="a8-2">
+          <summary>
+            <span class="aid">8.2</span>
+            <span class="atitle">Diagnose controlled AKS workload failures</span>
+            <span class="atime">~25 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>How do <code>CrashLoopBackOff</code>, failed readiness, and <code>OOMKilled</code> differ?</li>
+                <li>When should you inspect a Kubernetes event before an application log?</li>
+                <li>Which evidence distinguishes a workload defect from an AKS platform-health issue?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Inject the assigned failure: missing configuration, failed readiness, or memory pressure.</li>
+                <li>Follow the diagnostic sequence without skipping steps: get state → describe → events → previous/current logs → metrics → Azure resource health.</li>
+                <li>State one falsifiable hypothesis, restore the workload, rerun the load profile, and record the evidence that confirmed or rejected the hypothesis.</li>
+              </ol>
+<pre><code>./scripts/inject-aks-failure.sh assigned
+kubectl get pods
+kubectl describe pod -l app=gateway
+kubectl get events --sort-by=.lastTimestamp
+kubectl logs deploy/gateway --all-pods --previous
+kubectl top pods
+az aks show -g rg-z2h -n aks-z2h --query provisioningState -o tsv
+./scripts/reset-aks-failure.sh</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p>The report records symptom, evidence, hypothesis, root cause, corrective action, and the results of a passing post-recovery load run for the assigned failure.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Which single piece of evidence most strongly identified the root cause?</li>
+                <li>Which signals were symptoms rather than causes?</li>
+                <li>Would the same diagnostic sequence work on local Kubernetes? What AKS evidence was additional?</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <!-- 8.3 -->
+        <details class="activity" id="a8-3">
+          <summary>
+            <span class="aid">8.3</span>
+            <span class="atitle">Change one constraint and compare the result</span>
+            <span class="atime">~25 min</span>
+          </summary>
+          <div class="body">
+            <div class="step-block precheck">
+              <h5>◆ Pre-check</h5>
+              <ul>
+                <li>Why should tuning change one controlled variable at a time?</li>
+                <li>How can increasing a resource limit hide rather than solve a defect?</li>
+                <li>What result would cause you to reject a proposed optimization?</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do</h5>
+              <ol>
+                <li>Choose one evidence-backed change: resource request/limit, JVM container setting, parser concurrency, probe threshold, or replica count.</li>
+                <li>Apply only that change, wait for a healthy rollout, and repeat the exact baseline load profile.</li>
+                <li>Compare before/after latency, throughput, errors, CPU, memory, and cost implication; update the container contract and clean up the Azure resource group.</li>
+              </ol>
+<pre><code>kubectl apply -f k8s/
+kubectl rollout status deploy/gateway
+./scripts/load.sh --target "$IP:4561" --profile baseline --duration 5m
+./scripts/compare-runs.sh baseline optimized
+az group delete -n rg-z2h --yes --no-wait</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Validation</h5>
+              <p><code>AKS-OPERATIONS-REPORT.md</code> contains comparable before/after evidence, accepts or rejects the change, updates the contract, and records Azure cleanup.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Post-check</h5>
+              <ul>
+                <li>Did the change improve the target without degrading another contract measure?</li>
+                <li>What did the change do to expected cost and capacity?</li>
+                <li>What new evidence should feed the technical design and the production replatform workshop?</li>
               </ul>
             </div>
           </div>
         </details>
 
         <div class="hand-off">
-          <h3>The workload is deployed on AKS. Production configuration follows.</h3>
+          <h3>Phase 8 complete</h3>
           <p>
-            Your estate has gone from classic deployment → containers → Kubernetes → AKS and is running on a managed cluster
-            from CI-built images. The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>,
-            adds production architecture: Day-0 decisions, a private
-            zone-redundant cluster, workload identity, the Istio mesh, GitOps rings with gated promotion,
-            controlled chaos, and cross-region failover.
+            You promoted code-complete software as immutable images, expressed the container contract as Kubernetes
+            workloads, deployed those workloads to AKS, diagnosed a failure from evidence, and compared measurements
+            before and after a configuration change. The next workshop adds production architecture: Day-0 decisions, private networking,
+            zones, workload identity, service mesh, GitOps rings, autoscaling, and cross-region recovery.
           </p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Continue: Replatforming to AKS ↗</a>
@@ -1264,15 +1440,14 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
       <section id="finish" class="phase-block">
         <div class="phase-head">
           <h2>Finished the lab?</h2>
-          <span class="sub">Claim your completion and see whether you cleared the 80% bar.</span>
+          <span class="sub">Check activity, knowledge, and operational-evidence completion.</span>
         </div>
         <div class="hand-off">
           <h3>Complete the assessment</h3>
           <p>
-            Complete every activity and pass each phase's knowledge check (a measured lift of at least
-            10 points, or a qualifying baseline score). Meet 80% across activities <em>and</em> knowledge checks and
-            the completion page issues your certificate, then links to the next workshop:
-            the production AKS replatform.
+            Complete at least 80% of activities, including the Phase 8 operational report, and pass each phase's
+            knowledge check (an increase of at least 10 points, or a qualifying baseline score). The completion
+            page reports whether the activity and knowledge thresholds are met and links to the AKS replatform workshop.
           </p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="complete.html">Check my completion →</a>
@@ -1286,7 +1461,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
   <footer>
     <div class="wrap">
-      <span>AKS Migration Foundations · lab guide · an introduction to <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
+      <span>Containerization and AKS Workshop · lab guide · prerequisite for <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
       <span>Progress is saved in this browser only.</span>
     </div>
   </footer>
@@ -1324,7 +1499,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
       }
 
       // ---- Storage ----
-      var K_PROG = "z2h-progress", K_MODE = "z2h-mode", K_KC = "z2h-kc", K_META = "z2h-meta";
+      var K_PROG = "z2h-v2-progress", K_MODE = "z2h-mode", K_KC = "z2h-v2-kc", K_META = "z2h-v2-meta";
       function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
       function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
       var prog = load(K_PROG);
@@ -1334,45 +1509,45 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
       // ---- Knowledge-check question banks (one topic per phase) ----
       var KC = {
-        "0": { topic: "Images, containers & the legacy baseline", questions: [
+        "0": { topic: "Code complete & the promotion-model contrast", questions: [
           { q: "What best distinguishes a container image from a running container?", options: [
             "An image is a running process; a container is a saved file",
             "An image is an immutable, layered template; a container is a running instance of it",
             "They are two words for the same thing",
             "A container is built at compile time; an image at runtime"], a: 1,
             why: "An image is a read-only, layered artifact; a container is a runnable instance created from it." },
-          { q: "A manually configured server is difficult to reproduce mainly because:", options: [
-            "It uses too much disk",
-            "Its exact state was reached by hand and cannot be reliably reproduced",
-            "It cannot run containers",
-            "It has no runbook"], a: 1,
-            why: "Manual, undocumented changes make rebuilding an equivalent host unreliable." },
-          { q: "\u201CBuild once, run anywhere\u201D holds only if:", options: [
-            "Every host has the same public IP",
-            "The image carries its own runtime and dependencies, not the host",
-            "You rebuild the image on each host",
-            "The app is written in Go"], a: 1,
-            why: "Portability comes from the image bundling its runtime; the host only provides the engine." }
+          { q: "In environment-based promotion, application behavior can change because:", options: [
+            "Every stage always rebuilds identical servers",
+            "Each stage supplies its own runtime, dependencies, configuration, and accumulated state",
+            "Source control prevents configuration changes",
+            "The application artifact contains the entire environment"], a: 1,
+            why: "A classic stage contributes runtime and configuration state that can differ from the previous stage." },
+          { q: "The desired container-promotion invariant is:", options: [
+            "Rebuild one image for each environment",
+            "Promote one immutable image while injecting stage-specific configuration",
+            "Bake production secrets into the image",
+            "Copy changed files into a running container"], a: 1,
+            why: "The same immutable image is promoted; only external deployment configuration changes by stage." }
         ]},
-        "1": { topic: "The cost of hand-managed hosts", questions: [
-          { q: "Config drift between two \u201Cidentical\u201D hosts most directly causes:", options: [
-            "Faster deploys",
-            "\u201CWorks on one box, fails on the other\u201D inconsistencies",
-            "Lower memory usage",
-            "Immutable infrastructure"], a: 1,
-            why: "Divergent manual state makes behaviour differ between supposedly-identical hosts." },
-          { q: "With a classic runbook deploy, a rollback typically means:", options: [
-            "Pointing at a previous immutable image tag",
-            "Re-running a prior manual procedure and hoping the state matches",
-            "kubectl rollout undo",
-            "Nothing is needed"], a: 1,
-            why: "Runbook rollback re-executes manual steps with no guarantee the prior state is restored." },
-          { q: "The core liability of a long-lived, hand-patched host is:", options: [
-            "It is too cheap",
-            "Accumulated, undocumented change that no one can reproduce",
-            "It cannot be monitored",
-            "It runs systemd"], a: 1,
-            why: "Long-lived hosts accumulate manual drift, making their state difficult to reproduce." }
+        "1": { topic: "Deriving the container contract", questions: [
+          { q: "A container contract should be derived before the Dockerfile because:", options: [
+            "Dockerfiles cannot install dependencies",
+            "Runtime, health, security, and resource requirements should drive the image and platform specification",
+            "The base image determines the business requirements",
+            "Kubernetes writes the Dockerfile later"], a: 1,
+            why: "The contract makes implicit runtime assumptions explicit before they are implemented." },
+          { q: "Which value belongs outside an immutable image?", options: [
+            "The required Java runtime",
+            "The compiled application artifact",
+            "A UAT database endpoint and credential",
+            "A required native runtime library"], a: 2,
+            why: "Stage configuration and secrets are injected at deployment time rather than baked into image content." },
+          { q: "A scheduler needs the container contract to include:", options: [
+            "Only the image name",
+            "Ports, health, resources, configuration, security, and shutdown behavior",
+            "Only the source repository URL",
+            "The developer workstation specification"], a: 1,
+            why: "Those fields tell the platform how to place, configure, probe, secure, and terminate the workload." }
         ]},
         "2": { topic: "Configuration & 12-factor", questions: [
           { q: "The 12-factor \u201Cconfig in the environment\u201D rule means:", options: [
@@ -1390,7 +1565,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           { q: "If dev and prod differ only by environment, then:", options: [
             "You must build a separate image per environment",
             "The same image is promoted; only injected config changes",
-            "Config drift is guaranteed",
+            "External configuration is ignored",
             "You cannot use containers"], a: 1,
             why: "Environment parity means one artifact, differing only by external config." }
         ]},
@@ -1457,10 +1632,10 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         "6": { topic: "Kubernetes orchestration", questions: [
           { q: "A Kubernetes Deployment gives you over a bare Pod:", options: [
             "Nothing",
-            "Declarative replicas, self-healing, and rolling updates",
+            "Declarative replicas, replacement of failed Pods, and rolling updates",
             "A public IP by default",
             "Persistent storage automatically"], a: 1,
-            why: "Deployments manage ReplicaSets to hold the desired count and roll out changes safely." },
+            why: "Deployments manage ReplicaSets to maintain the desired count and apply rolling updates according to the deployment strategy." },
           { q: "In-cluster, two Pods find each other via:", options: [
             "Hard-coded Pod IPs",
             "A Service name resolved by cluster DNS",
@@ -1474,7 +1649,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             "Never mountable"], a: 1,
             why: "A Kubernetes Secret is only base64-encoded at the object level, not encrypted; enable encryption-at-rest to protect it. On AKS, etcd is encrypted at rest by the platform." }
         ]},
-        "7": { topic: "Landing on AKS", questions: [
+        "7": { topic: "Deploying the workload to AKS", questions: [
           { q: "Compared with a local kind cluster, AKS additionally operates:", options: [
             "Your laptop",
             "The managed control plane (API server, etcd, scheduler)",
@@ -1492,20 +1667,41 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             "Attach the ACR (grant the kubelet identity AcrPull)",
             "Copy images to each node by hand",
             "Disable RBAC"], a: 1,
-            why: "--attach-acr grants the cluster identity AcrPull so nodes pull seamlessly." }
+            why: "--attach-acr grants AcrPull to the cluster identity so nodes can pull images without an image pull secret." }
+        ]},
+        "8": { topic: "Observe, diagnose & optimize on AKS", questions: [
+          { q: "A defensible optimization starts with:", options: [
+            "Increasing every resource limit",
+            "A repeatable load profile and measured baseline",
+            "Adding replicas without observing demand",
+            "Changing several variables together"], a: 1,
+            why: "A repeatable baseline makes before/after comparison and causal reasoning possible." },
+          { q: "The most useful first sequence for a failing Pod is:", options: [
+            "Delete the cluster immediately",
+            "Get state, describe, inspect events, logs, and metrics, then form a hypothesis",
+            "Increase node count",
+            "Rebuild every image"], a: 1,
+            why: "The sequence moves from workload state to increasingly specific evidence before changing the system." },
+          { q: "An optimization is demonstrated when:", options: [
+            "The manifest changed",
+            "The same test shows the target improved without unacceptable regression elsewhere",
+            "The Pod restarted successfully",
+            "The resource limit is larger"], a: 1,
+            why: "Comparable evidence must show improvement against the contract while exposing tradeoffs such as cost or regressions." }
         ]}
       };
 
       // ---- Facilitator talk tracks (shown only in Instructor-led mode) ----
       var LED = {
-        "0": "<span class=\"tt-label\">Talk track</span> Ask whether participants have managed a server with undocumented configuration. <b>Demo cue:</b> run <code>docker run hello-world</code> and explain image pull versus container run. Timebox the baseline check to ~3 min and do <b>not</b> reveal answers yet.",
-        "1": "<span class=\"tt-label\">Talk track</span> Deploy with the existing process, introduce configuration drift, and ask participants to predict the failure. <b>Demo cue:</b> change configuration on one \u201Chost\u201D only, run the smoke test, and observe the failure.",
+        "0": "<span class=\"tt-label\">Talk track</span> Acknowledge that participants already live environment-based promotion every day. Contrast what travels with a release today with the invariant of one immutable image plus injected stage configuration. <b>Demo cue:</b> run the release tests, then show image versus container with <code>docker run hello-world</code>.",
+        "1": "<span class=\"tt-label\">Talk track</span> Treat the container contract as the bridge from technical specification to runtime platform. <b>Demo cue:</b> trace one implicit JVM, native-library, health, and configuration assumption into an explicit contract field.",
         "2": "<span class=\"tt-label\">Talk track</span> Frame 12-factor as \u201Cone artifact, many environments.\u201D <b>Demo cue:</b> show the same image reading two different <code>.env</code> files and behaving differently with no rebuild.",
         "3": "<span class=\"tt-label\">Talk track</span> Explain that multi-stage builds reduce runtime image size and non-root execution limits privileges. <b>Demo cue:</b> use <code>docker history</code> to compare the build-stage and runtime images.",
-        "4": "<span class=\"tt-label\">Talk track</span> Compose supports local development; the registry supplies images to CI and deployment systems. <b>Demo cue:</b> run <code>docker compose up</code>, trace a message end to end, then push and display a SHA-tagged image.",
-        "5": "<span class=\"tt-label\">Talk track</span> CI produces the artifacts that a later GitOps process consumes. <b>Demo cue:</b> open a one-line PR and observe the pipeline build, scan, and tag by SHA. Explain how the run contract supplies inputs to orchestration.",
+        "4": "<span class=\"tt-label\">Talk track</span> Compose runs all workshop components and provides a local environment for multi-container diagnostics. <b>Demo cue:</b> run controlled load, break service discovery, diagnose from logs and DNS, then run the same image IDs with another stage profile.",
+        "5": "<span class=\"tt-label\">Talk track</span> CI turns a local image into a registered promotion artifact with evidence. <b>Demo cue:</b> show scan, SBOM, source labels, SHA tag, registry digest, and a clean pull by digest.",
         "6": "<span class=\"tt-label\">Talk track</span> Compose does not provide workload reconciliation. <b>Demo cue:</b> run <code>kubectl delete pod</code>, observe replacement, then scale to 3 and roll back an invalid tag.",
-        "7": "<span class=\"tt-label\">Talk track</span> Same manifests, a cluster Azure runs for you. <b>Demo cue:</b> <code>az aks create</code> is slow \u2014 cover ACR-attach and LoadBalancer concepts while it provisions, then hit the external IP together as a cohort."
+        "7": "<span class=\"tt-label\">Talk track</span> Same images and workload contract, now on a cluster Azure operates. <b>Demo cue:</b> compare kind and AKS objects, then show ACR authorization and the Azure Load Balancer created for the Service.",
+        "8": "<span class=\"tt-label\">Talk track</span> Require evidence before changing the workload. <b>Demo cue:</b> run the baseline load, inject one failure, follow get → describe → events → logs → metrics, change one constraint, and compare the repeated run."
       };
 
       // ---- Delivery mode ----
@@ -1525,8 +1721,8 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
         });
         if (modeHelp) {
           modeHelp.textContent = mode === "led"
-            ? "Instructor-led mode: plan about 7 hours of guided hands-on activity with a trainer. Phase talk tracks and demo cues are visible. Participant progress is saved in this browser only."
-            : "Self-paced mode: plan 12–14 hours — the hands-on activities plus the required reading, knowledge checks, and reflection. Follow each participant step, validation, and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.";
+            ? "Instructor-led mode: plan about 9 hours of guided hands-on activity with a trainer. Phase talk tracks and demo cues are visible. Participant progress is saved in this browser only."
+            : "Self-paced mode: plan 14–16 hours — the hands-on activities plus the required reading, knowledge checks, and operational reflection. Follow each participant step, validation, and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.";
         }
         localStorage.setItem(K_MODE, mode);
         if (updateUrl && window.history && window.history.replaceState) {

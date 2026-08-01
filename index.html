@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AKS Migration Foundations — from legacy VMs to AKS</title>
-  <meta name="description" content="A workshop that moves the Skybridge legacy estate from classic VM deployment, hand-managed configuration, and manual release to AKS through containers and Kubernetes." />
+  <title>Containerization and AKS Workshop</title>
+  <meta name="description" content="Starting with code-complete Java and C++ software, build, register, deploy, observe, diagnose, and optimize containers locally, on Kubernetes, and on AKS." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,7 +14,7 @@
     <div class="nav-inner">
       <span class="brand">
         <span class="dot">AKS</span>
-        AKS&nbsp;Migration Foundations <small>· introductory workshop</small>
+        Containerization and AKS <small>· workshop</small>
       </span>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
@@ -23,7 +23,7 @@
         <a href="#modes">Modes</a>
         <a href="#reading">Reading</a>
         <a href="#scenario">Scenario</a>
-        <a href="#journey">The journey</a>
+        <a href="#comparison">Comparison</a>
         <a href="#phases">Phases</a>
         <a href="#outcomes">Outcomes</a>
         <a href="#handoff">Hand-off</a>
@@ -37,24 +37,24 @@
     <!-- HERO -->
     <header class="hero">
       <div class="wrap">
-        <span class="eyebrow">Self-paced or instructor-led · L100 → L300</span>
-        <h1>From classic servers to AKS.</h1>
+        <span class="eyebrow">Self-paced or instructor-led</span>
+        <h1>Containerization and deployment to AKS</h1>
         <p class="lede">
-          <b>AKS Migration Foundations</b> moves the Skybridge messaging estate — a Java socket gateway,
-          a C/C++ parser, and PostgreSQL — from manually managed VMs through
-          <b>classic → containers → Kubernetes → AKS</b>. The workshop ends with the workload running on a
-          managed AKS cluster. The production replatform workshop then covers production architecture.
+            You already know how to promote code-complete software through configured dev, test, UAT, and
+            production environments. This workshop implements the same release objective with containers:
+            derive a container contract, build and register one immutable image, promote it through
+            <b>containers → Kubernetes → AKS</b>, then observe, diagnose, and optimize the running workload.
         </p>
         <div class="hero-cta">
           <a class="btn btn-primary" href="#modes">Choose a delivery mode →</a>
-          <a class="btn btn-ghost" href="#journey">See the before &amp; after</a>
+          <a class="btn btn-ghost" href="#comparison">Compare delivery models</a>
         </div>
 
         <div class="stat-row">
           <div class="stat"><b>2</b><span>delivery modes</span></div>
-          <div class="stat"><b>~7 hr</b><span>instructor-led</span></div>
-          <div class="stat"><b>~12–14 hr</b><span>self-paced</span></div>
-          <div class="stat"><b>8</b><span>phases, servers → AKS</span></div>
+          <div class="stat"><b>~9 hr</b><span>instructor-led</span></div>
+          <div class="stat"><b>~14–16 hr</b><span>self-paced</span></div>
+          <div class="stat"><b>9</b><span>phases, image → AKS operations</span></div>
         </div>
       </div>
     </header>
@@ -63,7 +63,7 @@
     <section id="modes">
       <div class="wrap">
         <span class="kicker">Delivery modes</span>
-        <h2 class="sec">Choose how you will complete the workshop</h2>
+        <h2 class="sec">Select a delivery mode</h2>
         <p class="sec-lede">
           Both modes use the same activities, validation steps, progress tracking, and knowledge checks.
           The selected mode is saved in this browser and can be changed from the lab guide.
@@ -71,21 +71,21 @@
 
         <div class="grid grid-2 mode-grid">
           <div class="card mode-card">
-            <span class="idx">INDEPENDENT · ~12–14 HOURS</span>
+            <span class="idx">INDEPENDENT · ~14–16 HOURS</span>
             <h3>Self-paced</h3>
             <p>
               Work through each phase independently. Participant instructions, checks, and reference links
-              remain visible; trainer talk tracks and demo cues stay hidden. Plan 12–14 hours — the hands-on
-              activities plus the required reading, knowledge checks, and reflection.
+              remain visible; trainer talk tracks and demo cues stay hidden. Plan 14–16 hours — the hands-on
+              activities plus the required reading, knowledge checks, and operational reflection.
             </p>
             <a class="btn btn-primary" href="lab.html?mode=self">Start self-paced →</a>
           </div>
           <div class="card mode-card">
-            <span class="idx">COHORT · ~7 HOURS</span>
+            <span class="idx">COHORT · ~9 HOURS</span>
             <h3>Instructor-led</h3>
             <p>
               Use the same lab with trainer framing. Each phase includes an instructor-only talk track,
-              discussion prompt, or demo cue to support cohort delivery. Plan about 7 hours of guided hands-on activity.
+              discussion prompt, or demo cue to support cohort delivery. Plan about 9 hours of guided hands-on activity.
             </p>
             <a class="btn btn-primary" href="lab.html?mode=led">Start instructor-led →</a>
           </div>
@@ -99,8 +99,8 @@
         <span class="kicker">Before you begin</span>
         <h2 class="sec">Workshop reading</h2>
         <p class="sec-lede">
-          Complete the required reading before starting the workshop — it orients you to the cloud-native
-          patterns and Azure end-state concepts (such as landing zones) that frame this journey, some of which
+          Complete the required reading before starting the workshop. It covers cloud-native
+          patterns and Azure concepts such as landing zones, some of which
           are configured only in the follow-on replatform workshop. The recommended articles provide
           additional context for organizing application architecture around cohesive features and modules.
         </p>
@@ -117,7 +117,7 @@
           </div>
           <div class="card">
             <span class="idx">RECOMMENDED READING</span>
-            <h3>Explore for deeper context</h3>
+            <h3>Additional reading</h3>
             <ul>
               <li><a href="https://learn.microsoft.com/en-us/shows/on-dotnet/on-dotnet-live-clean-architecture-vertical-slices-and-modular-monoliths-oh-my" target="_blank" rel="noopener noreferrer">On .NET Live: Clean Architecture, Vertical Slices, and Modular Monoliths (Oh My!)</a></li>
               <li><a href="https://learn.microsoft.com/en-us/archive/msdn-magazine/2016/september/asp-net-core-feature-slices-for-asp-net-core-mvc" target="_blank" rel="noopener noreferrer">ASP.NET Core: Feature Slices for ASP.NET Core MVC</a></li>
@@ -130,22 +130,22 @@
     <!-- SCENARIO -->
     <section id="scenario">
       <div class="wrap">
-        <span class="kicker">The brief</span>
-        <h2 class="sec">The same estate, one chapter earlier</h2>
+        <span class="kicker">Scenario</span>
+        <h2 class="sec">Code-complete release promotion</h2>
         <p class="sec-lede">
-          Skybridge Messaging Services runs a real-time bus over persistent TCP sockets. In the main
-          workshop it runs in production on AKS. This workshop starts with the system on RHEL VMs, scaled
-          vertically, patched in place, and released manually, then moves it to an AKS cluster.
+          Skybridge Messaging Services is a code-complete real-time bus over persistent TCP sockets. Its
+          Java gateway, C/C++ parser, operations console, and database integration have passed development.
+          The next objective is to test and promote that release through the configured deployment stages.
         </p>
 
         <div class="grid grid-2">
           <div class="card">
-            <span class="idx">TODAY · THE LEGACY ESTATE</span>
-            <h3>How it ships now</h3>
+            <span class="idx">ENVIRONMENT DELIVERY MODEL</span>
+            <h3>Environment-based promotion</h3>
             <p>
-              A Java 8 / Netty gateway holds long-lived sockets, a C/C++ parser decodes the wire format,
-              and PostgreSQL 11 stores routing tables and journals — all on handcrafted RHEL 7/8 hosts,
-              one HA pair per region, deployed with <code>scp</code>, <code>systemd</code>, and a runbook.
+              A build artifact moves through dev, test, UAT, and production. Each long-lived environment
+              supplies installed runtimes, dependencies, configuration, and accumulated state. The workshop
+              uses this process as the comparison point rather than repeating its deployment steps.
             </p>
             <div>
               <span class="tag">Java 8 · Netty</span>
@@ -156,12 +156,12 @@
             </div>
           </div>
           <div class="card">
-            <span class="idx">THE GOAL OF THIS PREQUEL</span>
-            <h3>Where you finish</h3>
+            <span class="idx">CONTAINER DELIVERY MODEL</span>
+            <h3>Immutable-image promotion</h3>
             <p>
-              The same three components, unchanged in behaviour, are packaged as immutable images,
-              configured from the environment, orchestrated by Kubernetes, and run on a managed <b>AKS</b>
-              cluster behind a load balancer. The application source is not rewritten.
+              Runtime and dependencies travel with each component in an immutable image. Environment-specific
+              configuration is injected at runtime. The same registered image is exercised locally, promoted
+              to Kubernetes, and operated on <b>AKS</b> without rebuilding between stages.
             </p>
             <div>
               <span class="tag accent">Dockerfiles</span>
@@ -174,59 +174,59 @@
         </div>
 
         <div class="note info mt-20">
-          <b>Containerize before refactoring.</b> The Java gateway and C++ parser are packaged in containers
-          with <em>no source rewrite</em>. This establishes reproducible artifacts before Kubernetes orchestration
-          is introduced.
+          <b>Scope.</b> The workshop allocates approximately 80% of its time to container, Kubernetes, and
+          AKS practice. The remaining 20% connects those mechanics to cloud-native design thinking. Application
+          decomposition and vertical-slice implementation are prerequisites, not workshop exercises.
         </div>
       </div>
     </section>
 
-    <!-- JOURNEY / BEFORE-AFTER -->
-    <section id="journey">
+    <!-- DELIVERY MODEL COMPARISON -->
+    <section id="comparison">
       <div class="wrap">
-        <span class="kicker">The lift</span>
-        <h2 class="sec">Four habits change on this journey</h2>
+        <span class="kicker">Comparison</span>
+        <h2 class="sec">The unit of promotion changes</h2>
         <p class="sec-lede">
           The workshop covers changes in four operational areas —
           in <b>deployment</b>, <b>configuration</b>, the <b>development lifecycle</b>, and <b>operations</b> —
-          with their cloud-native equivalents, ending on a cluster Azure runs for you.
+          with their container and Kubernetes equivalents, ending on an AKS cluster.
         </p>
 
         <div class="compare">
           <div class="col before">
-            <h4><span class="pill bad">Before</span> Deployment</h4>
+            <h4><span class="pill bad">Environment model</span> Deployment</h4>
             <ul>
               <li>Artifacts copied onto a long-lived host with <code>scp</code> and a runbook</li>
               <li>The host is maintained in place and can drift from its peer</li>
-              <li>"Works on my machine" — because the machine is unique</li>
-              <li>Rollback means re-running yesterday's runbook, if you kept it</li>
+              <li>Results depend on the runtime and dependencies installed on each host</li>
+              <li>Rollback repeats the deployment procedure with an earlier artifact</li>
             </ul>
           </div>
           <div class="col after">
-            <h4><span class="pill good">After</span> Deployment</h4>
+            <h4><span class="pill good">Container model</span> Deployment</h4>
             <ul>
-              <li>An immutable image is the unit of deployment, built once, run anywhere</li>
+              <li>An immutable image is the unit of promotion, built once and tested repeatedly</li>
               <li>Hosts are replaceable; the image carries its own runtime</li>
-              <li>"Works on my machine" is the point — the machine is the image</li>
-              <li>Rollback is pointing at the previous image tag</li>
+              <li>The image provides a consistent runtime and dependency set</li>
+              <li>Rollback selects the previous immutable image reference</li>
             </ul>
           </div>
         </div>
 
         <div class="compare mt-16">
           <div class="col before">
-            <h4><span class="pill bad">Before</span> Configuration</h4>
+            <h4><span class="pill bad">Environment model</span> Configuration</h4>
             <ul>
               <li>Settings hand-edited in files on each box, secrets in plaintext</li>
               <li>Environment differences are difficult to track</li>
-              <li>A config change is a manual, unaudited login</li>
+              <li>A configuration change requires a host login unless the process is automated</li>
             </ul>
           </div>
           <div class="col after">
-            <h4><span class="pill good">After</span> Configuration</h4>
+            <h4><span class="pill good">Container model</span> Configuration</h4>
             <ul>
-              <li>Config comes from the environment (12-factor), never baked into the image</li>
-              <li>One image promotes across dev → prod; only the environment differs</li>
+              <li>Configuration comes from the environment rather than the image</li>
+              <li>The same image can use different configuration at each stage</li>
               <li>Secrets are injected, not committed; config is declarative and reviewable</li>
             </ul>
           </div>
@@ -234,18 +234,18 @@
 
         <div class="compare mt-16">
           <div class="col before">
-            <h4><span class="pill bad">Before</span> Dev lifecycle</h4>
+            <h4><span class="pill bad">Environment model</span> Development lifecycle</h4>
             <ul>
-              <li>Build on a laptop, ship the binary, hope the deps match</li>
-              <li>Manual test, manual scan (if any), manual promotion</li>
-              <li>No provenance: which commit is in prod right now?</li>
+              <li>The build and target host may have different dependency versions</li>
+              <li>Testing, scanning, and promotion can require separate manual steps</li>
+              <li>Artifact provenance depends on the release records</li>
             </ul>
           </div>
           <div class="col after">
-            <h4><span class="pill good">After</span> Dev lifecycle</h4>
+            <h4><span class="pill good">Container model</span> Development lifecycle</h4>
             <ul>
               <li>A pipeline builds, tests, scans, and pushes an image on every commit</li>
-              <li>Images are tagged by commit SHA — provenance is built in</li>
+              <li>Commit SHA tags associate images with source revisions</li>
               <li>The inner loop (Compose) mirrors the outer loop (registry + CI)</li>
             </ul>
           </div>
@@ -253,19 +253,19 @@
 
         <div class="compare mt-16">
           <div class="col before">
-            <h4><span class="pill bad">Before</span> Operations</h4>
+            <h4><span class="pill bad">Environment model</span> Operations</h4>
             <ul>
-              <li>A handcrafted HA pair per region, failed over by hand</li>
-              <li>A crash at 3&nbsp;a.m. waits for a human to notice and restart it</li>
-              <li>Scaling means a bigger VM and a maintenance window</li>
+              <li>Regional high-availability pairs require host-level configuration and failover procedures</li>
+              <li>Process monitoring and restart behavior depend on host automation</li>
+              <li>Vertical scaling can require VM replacement or a maintenance window</li>
             </ul>
           </div>
           <div class="col after">
-            <h4><span class="pill good">After</span> Operations</h4>
+            <h4><span class="pill good">Kubernetes model</span> Operations</h4>
             <ul>
-              <li>Kubernetes reconciles desired state — it self-heals and rolls out safely</li>
-              <li>Scaling is a replica count, not a hardware order</li>
-              <li>On <b>AKS</b>, Azure runs the control plane; you run manifests, not machines</li>
+              <li>Kubernetes replaces failed Pods and manages rolling updates according to the workload specification</li>
+              <li>Horizontal scaling changes the requested replica count</li>
+              <li>On <b>AKS</b>, Azure manages the Kubernetes control plane</li>
             </ul>
           </div>
         </div>
@@ -275,78 +275,85 @@
     <!-- PHASES -->
     <section id="phases">
       <div class="wrap">
-        <span class="kicker">The path</span>
-        <h2 class="sec">Eight phases, servers to AKS</h2>
+        <span class="kicker">Workshop phases</span>
+        <h2 class="sec">Nine phases from source code to AKS operations</h2>
         <p class="sec-lede">
           Each phase is a short, hands-on block sliced into 15–20 minute activities. Every activity has a
-          pre-check, steps to run, a validation gate, and a post-check — the same rhythm you'll meet in the
-          replatform lab, so the process remains consistent.
+          pre-check, steps to run, a validation gate, and a post-check. The replatform lab uses the same structure.
         </p>
 
         <div class="phase-list">
           <div class="phase">
             <div class="num">0</div>
             <div>
-              <h3>Setup &amp; the legacy baseline</h3>
-              <p>Install the toolchain, get the Skybridge sample, and document how it deploys today.</p>
+              <h3>Orient from the model you know</h3>
+              <p>Verify the code-complete release and contrast configured-environment promotion with immutable-image promotion.</p>
             </div>
             <div class="meta">~25 min · 2 activities</div>
           </div>
           <div class="phase">
             <div class="num">1</div>
             <div>
-              <h3>Deploy it using the existing process</h3>
-              <p>Stand up the app on a "VM" with systemd and a runbook. Then break it with config drift and a version skew.</p>
+              <h3>Derive the container contract</h3>
+              <p>Turn familiar runtime assumptions into explicit image, configuration, health, security, and resource requirements.</p>
             </div>
             <div class="meta">~45 min · 3 activities</div>
           </div>
           <div class="phase">
             <div class="num">2</div>
             <div>
-              <h3>Configuration management</h3>
-              <p>From hand-edited files to declarative config: externalize settings, pull secrets out of code, adopt 12-factor.</p>
+              <h3>Separate image from environment</h3>
+              <p>Externalize settings and secrets, then run one build with dev, test, and UAT configuration.</p>
             </div>
             <div class="meta">~50 min · 3 activities</div>
           </div>
           <div class="phase">
             <div class="num">3</div>
             <div>
-              <h3>Containerize the components</h3>
-              <p>Write Dockerfiles for the gateway, parser, and console. Understand images, layers, and immutability.</p>
+              <h3>Build and operate the containers</h3>
+              <p>Build minimal, non-root Java, C/C++, and console images; inspect their logs, processes, networks, and resource behavior.</p>
             </div>
             <div class="meta">~60 min · 4 activities</div>
           </div>
           <div class="phase">
             <div class="num">4</div>
             <div>
-              <h3>Compose the system &amp; publish images</h3>
-              <p>Run gateway + parser + Postgres together with Compose, then push versioned images to a registry.</p>
+              <h3>Run the system with Compose</h3>
+              <p>Run gateway, parser, console, and Postgres together; validate health, discovery, persistence, and end-to-end behavior.</p>
             </div>
             <div class="meta">~55 min · 3 activities</div>
           </div>
           <div class="phase">
             <div class="num">5</div>
             <div>
-              <h3>A container-based development lifecycle</h3>
-              <p>Wire a pipeline that builds, tests, scans, and pushes on every commit — then write the run contract each image needs.</p>
+              <h3>Register and automate</h3>
+              <p>Test, scan, label, tag, publish, and pull immutable images through CI; record the contract each runtime must satisfy.</p>
             </div>
             <div class="meta">~50 min · 3 activities</div>
           </div>
           <div class="phase">
             <div class="num">6</div>
             <div>
-              <h3>Kubernetes: orchestrate the containers</h3>
-              <p>Trade Compose for a local cluster: Deployments, Services, ConfigMaps and Secrets, plus self-heal, scale, and rollback.</p>
+              <h3>Kubernetes: Pods, Deployments, and Services</h3>
+              <p>Move the containers to a local cluster with configuration, probes, resources, reconciliation, rollout, and rollback.</p>
             </div>
             <div class="meta">~68 min · 4 activities</div>
           </div>
           <div class="phase">
             <div class="num">7</div>
             <div>
-              <h3>Deploy to AKS (managed Kubernetes)</h3>
-              <p>Provision AKS, push images to ACR, deploy the same manifests, and expose the workload.</p>
+              <h3>Deploy the workload to AKS</h3>
+              <p>Provision AKS, integrate ACR, deploy the same workload definitions, and expose the gateway.</p>
             </div>
             <div class="meta">~73 min · 4 activities</div>
+          </div>
+          <div class="phase">
+            <div class="num">8</div>
+            <div>
+              <h3>Observe, diagnose, and optimize on AKS</h3>
+              <p>Measure under load, investigate failures with logs, events, and metrics, tune one constraint, and compare the measurements.</p>
+            </div>
+            <div class="meta">~75 min · 3 activities</div>
           </div>
         </div>
       </div>
@@ -355,19 +362,19 @@
     <!-- OUTCOMES -->
     <section id="outcomes">
       <div class="wrap">
-        <span class="kicker">What you leave with</span>
-        <h2 class="sec">By the end, you can…</h2>
+        <span class="kicker">Learning objectives</span>
+        <h2 class="sec">Workshop objectives</h2>
         <div class="grid grid-3">
           <div class="card">
             <h3>Explain the cost of manually managed hosts</h3>
-            <p>Articulate, from experience, why hand-managed hosts create patch fragility, config drift, and slow, risky releases.</p>
+            <p>Identify how host patching, configuration drift, and manual release steps affect deployment consistency.</p>
           </div>
           <div class="card">
             <h3>Externalize all config</h3>
-            <p>Take a legacy app whose config lives on the box and make it read every setting from its environment — no rebuild to reconfigure.</p>
+            <p>Change an application that stores configuration on the host to read per-environment settings at runtime.</p>
           </div>
           <div class="card">
-            <h3>Write production-oriented Dockerfiles</h3>
+            <h3>Write Dockerfiles for the workshop components</h3>
             <p>Produce small, layer-cached, non-root images for a JVM service, a compiled C++ binary, and a static site.</p>
           </div>
           <div class="card">
@@ -380,15 +387,19 @@
           </div>
           <div class="card">
             <h3>Automate the build</h3>
-            <p>Stand up CI that builds, tests, scans, and publishes an image per commit — the outer loop that GitOps will later consume.</p>
+            <p>Configure CI to build, test, scan, and publish an image for each commit.</p>
           </div>
           <div class="card">
             <h3>Orchestrate on Kubernetes</h3>
-            <p>Turn Compose services into Deployments and Services with externalized config, and watch the cluster self-heal, scale, and roll back.</p>
+            <p>Turn Compose services into Deployments and Services with externalized configuration, then test replacement, scaling, and rollback behavior.</p>
           </div>
           <div class="card">
-            <h3>Land it on AKS</h3>
+            <h3>Deploy to AKS</h3>
             <p>Provision a managed cluster, push images to ACR, deploy the same manifests, and serve traffic through an AKS load balancer.</p>
+          </div>
+          <div class="card">
+            <h3>Operate with evidence</h3>
+            <p>Use workload state, logs, events, metrics, and controlled load to diagnose a failure and compare a configuration change with the baseline.</p>
           </div>
         </div>
       </div>
@@ -397,16 +408,17 @@
     <!-- HANDOFF -->
     <section id="handoff">
       <div class="wrap">
-        <span class="kicker">The boundary</span>
+        <span class="kicker">Scope boundary</span>
         <h2 class="sec">Where this workshop ends and the replatform begins</h2>
         <p class="sec-lede">
-          This workshop deploys the three components to a managed cluster using images built by CI and pulled
-          from ACR. It does <em>not</em> configure the cluster for production. The following replatform workshop
+          This workshop deploys the components to a managed cluster using images built by CI and pulled
+          from ACR, then covers observation, diagnosis, and resource tuning. It does
+          <em>not</em> configure the cluster for production. The following replatform workshop
           starts from a public, single-pool, manually applied deployment.
         </p>
 
         <div class="hand-off">
-          <h3>The workload is deployed to AKS</h3>
+          <h3>Starting point for the replatform workshop</h3>
           <p>
             The next workshop, <b>Replatforming a Real-Time Messaging System to AKS</b>, takes your working
             deployment and re-architects it for production: Day-0 decisions, a private zone-redundant cluster,
@@ -414,8 +426,8 @@
             failover. It assumes a workload already runs on AKS, as configured in this workshop.
           </p>
           <div class="hero-cta">
-            <a class="btn btn-primary" href="lab.html">Do the lab first →</a>
-            <a class="btn btn-ghost" href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Then continue to the AKS replatform ↗</a>
+            <a class="btn btn-primary" href="lab.html">Open the lab →</a>
+            <a class="btn btn-ghost" href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Open the AKS replatform workshop ↗</a>
           </div>
         </div>
 
@@ -430,7 +442,7 @@
 
   <footer>
     <div class="wrap">
-      <span>AKS Migration Foundations · an introduction to <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a>.</span>
+      <span>Containerization and AKS Workshop · prerequisite for <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a>.</span>
       <span>Sample content for instructor-led training. Not configured for production. MIT-style use.</span>
     </div>
   </footer>
