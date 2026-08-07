@@ -42,7 +42,7 @@ errors_file="$temp_dir/errors"
 
 worker() {
     local worker_id=$1 deadline=$2 sequence=0 started ended elapsed response payload
-    while (( $(date +%s) < deadline )); do
+  while (( sequence == 0 || $(date +%s) < deadline )); do
         sequence=$((sequence + 1))
         payload="QU/DEST0001/ORIG0001/HDR001/PAYLOAD/$worker_id-$sequence"
         started=$(date +%s%N)

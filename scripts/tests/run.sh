@@ -36,6 +36,44 @@ expect_failure() {
 mapfile -t scripts < <(find "$SCRIPT_DIR" -type f -name '*.sh' | sort)
 expect_success 'all shell scripts parse' bash -n "${scripts[@]}"
 
+expect_success 'repository hyperlinks satisfy the external-link policy' "$SCRIPT_DIR/validate-links.sh"
+link_fixture="$tmp/links"
+mkdir -p "$link_fixture"
+cat > "$link_fixture/allowed.md" <<'EOF'
+[Microsoft Learn](https://learn.microsoft.com/en-us/azure/aks/)
+[Repository page](https://chadhage.github.io/aks-zero-to-hero-with-labs/lab.html)
+[Local lab](lab.html)
+EOF
+expect_success 'Microsoft and repository hyperlinks are allowed' env WORKSHOP_REPO_ROOT="$link_fixture" "$SCRIPT_DIR/validate-links.sh"
+printf '[Third party](%s://%s/guide)\n' 'https' 'example.com' > "$link_fixture/disallowed.md"
+expect_failure 'third-party hyperlinks are rejected' env WORKSHOP_REPO_ROOT="$link_fixture" "$SCRIPT_DIR/validate-links.sh"
+
+for path in \
+  apps/gateway-java/src/SkybridgeGateway.java \
+  apps/gateway-java/Dockerfile \
+  apps/parser-cpp/src/main.cpp \
+  apps/parser-cpp/CMakeLists.txt \
+  apps/parser-cpp/Dockerfile \
+  apps/ops-console/src/index.html \
+  apps/ops-console/server.js \
+  apps/ops-console/Dockerfile; do
+  [[ -f "$REPO_ROOT/$path" ]] || { printf '[FAIL] Missing starter application file: %s\n' "$path" >&2; exit 1; }
+done
+grep -q 'GATEWAY_PORT.*4561' "$REPO_ROOT/apps/gateway-java/src/SkybridgeGateway.java"
+grep -q 'PARSER_URL' "$REPO_ROOT/apps/gateway-java/src/SkybridgeGateway.java"
+grep -q 'SKYBRIDGE READY' "$REPO_ROOT/apps/gateway-java/src/SkybridgeGateway.java"
+grep -q 'ACK id=' "$REPO_ROOT/apps/gateway-java/src/SkybridgeGateway.java"
+grep -q 'POST /parse' "$REPO_ROOT/apps/parser-cpp/src/main.cpp"
+grep -q 'GET /healthz' "$REPO_ROOT/apps/parser-cpp/src/main.cpp"
+grep -q 'GET /ready' "$REPO_ROOT/apps/parser-cpp/src/main.cpp"
+grep -q 'PARSER_PORT' "$REPO_ROOT/apps/parser-cpp/src/main.cpp"
+grep -q 'API_BASE' "$REPO_ROOT/apps/ops-console/server.js"
+grep -q '^USER 10001$' "$REPO_ROOT/apps/gateway-java/Dockerfile"
+grep -q '^USER 10001$' "$REPO_ROOT/apps/parser-cpp/Dockerfile"
+grep -q '^USER nginx$' "$REPO_ROOT/apps/ops-console/Dockerfile"
+pass 'starter application protocol and container contracts are present'
+expect_success 'operations console runtime contract passes' "$REPO_ROOT/apps/ops-console/test.sh"
+
 cat > "$tmp/contract.md" <<'EOF'
 # Container contract
 Runtime and artifact; port and configuration; secret handling; health with readiness and liveness;
@@ -123,10 +161,12 @@ grep -q 'mock.azurecr.io/gateway-java@sha256:' "$fixture/k8s/aks/workloads.yaml"
 pass 'rendered workload contains the resolved ACR digest'
 
 expect_failure 'prerequisite gate detects missing starter assets' "$SCRIPT_DIR/verify-prerequisites.sh"
-expect_failure 'release tests reject missing application source' "$SCRIPT_DIR/test-release.sh"
-expect_failure 'release manifest rejects missing application source' "$SCRIPT_DIR/show-release-manifest.sh"
-expect_failure 'runtime inspection rejects missing component source' "$SCRIPT_DIR/inspect-runtime.sh" gateway-java
-expect_failure 'config inventory rejects missing application source' "$SCRIPT_DIR/inventory-config.sh"
+missing_fixture="$tmp/missing-repo"
+mkdir -p "$missing_fixture"
+expect_failure 'release tests reject missing application source' env WORKSHOP_REPO_ROOT="$missing_fixture" "$SCRIPT_DIR/test-release.sh"
+expect_failure 'release manifest rejects missing application source' env WORKSHOP_REPO_ROOT="$missing_fixture" "$SCRIPT_DIR/show-release-manifest.sh"
+expect_failure 'runtime inspection rejects missing component source' env WORKSHOP_REPO_ROOT="$missing_fixture" "$SCRIPT_DIR/inspect-runtime.sh" gateway-java
+expect_failure 'config inventory rejects missing application source' env WORKSHOP_REPO_ROOT="$missing_fixture" "$SCRIPT_DIR/inventory-config.sh"
 expect_failure 'release runner rejects missing environment profile' "$SCRIPT_DIR/run-release.sh" --env environments/dev.env
 expect_failure 'manifest validation rejects missing k8s directory' "$SCRIPT_DIR/validate-k8s-manifests.sh" k8s/
 expect_failure 'local failure injection rejects wrong kubectl context' "$SCRIPT_DIR/inject-k8s-failure.sh" bad-readiness

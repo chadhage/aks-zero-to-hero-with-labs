@@ -42,9 +42,10 @@ Recommended reading:
 | [`index.html`](index.html) | Overview — scenario, delivery-model comparison, phase list, and scope boundary. |
 | [`lab.html`](lab.html) | Participant activity guide — nine phases, each activity with a pre-check, steps, validation, and post-check, plus browser-saved progress tracking. |
 | [`styles.css`](styles.css) | Shared theme (dark default, light toggle). No external dependencies. |
+| [`apps/`](apps/) | Runnable Java gateway, C++ parser, and operations-console starter implementations used by the labs. |
 | [`scripts/`](scripts/) | Discovery, validation, smoke/load, promotion, and reversible failure-injection helpers referenced by the lab. |
 
-Run `./scripts/verify-prerequisites.sh` before Phase 0. The gate verifies the local toolchain and the instructor-provided Skybridge application source, environment profiles, Kubernetes manifests, and CI workflow required by the implementation phases.
+Run `./scripts/verify-prerequisites.sh` before Phase 0. The gate verifies the local toolchain, the included Skybridge application source, and the environment profiles, Kubernetes manifests, and CI workflow required by later implementation phases.
 
 ## The nine phases
 

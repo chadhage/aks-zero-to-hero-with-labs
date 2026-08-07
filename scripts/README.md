@@ -14,14 +14,17 @@ The supported minimums are Git 2.40, Docker Engine 24, Docker Compose 2.20,
 Docker Scout 1.0, Azure CLI 2.60, kubectl 1.30, and kind 0.23.
 
 The prerequisite gate validates both local tools and required starter assets.
-This website repository contains the workshop guide and scripts, but not the
-Skybridge application source, environment profiles, Kubernetes manifests, or CI
-workflow. Asset-dependent scripts therefore fail with an actionable message
-until those materials are added at the paths documented by the lab.
+This repository includes the workshop guide, scripts, and runnable Skybridge
+starter applications. Environment profiles, Compose and Kubernetes manifests,
+and a CI workflow remain later-phase inputs. Asset-dependent scripts fail with
+an actionable message until those materials are added at the paths documented
+by the lab.
 
 ## Safety behavior
 
 - Discovery and validation scripts are read-only.
+- `validate-links.sh` rejects external hyperlinks unless they target official
+  Microsoft content or this repository's GitHub source and Pages site.
 - `run-release.sh` records local PIDs and replaces only processes it previously
   started.
 - Failure injection requires the expected `kind-z2h` or `aks-z2h` kubectl
