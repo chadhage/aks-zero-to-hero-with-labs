@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+case "${1:-}" in
+  config)
+    printf '%s\n' "${MOCK_KUBE_CONTEXT:-kind-z2h}"
+    ;;
+  get)
+    printf '{"kind":"Deployment","metadata":{"name":"%s"}}\n' "${3:-workload}"
+    ;;
+  apply|patch|set|rollout)
+    exit 0
+    ;;
+  kustomize)
+    awk '
+      /newName:/ { name=$2 }
+      /digest:/ { printf "        image: %s@%s\n", name, $2 }
+    ' "$2/kustomization.yaml"
+    ;;
+  *)
+    printf 'Unexpected mocked kubectl invocation: %s\n' "$*" >&2
+    exit 1
+    ;;
+esac
