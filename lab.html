@@ -13,13 +13,14 @@
   <nav class="nav">
     <div class="nav-inner">
       <span class="brand">
-        <span class="dot">AKS</span>
+        <img class="brand-logo" src="aks-logo.svg" alt="" width="32" height="32" />
         Containerization to AKS <small>· lab guide</small>
       </span>
-      <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
-      <span class="nav-links" id="navLinks">
+      <div class="nav-links" id="navLinks" aria-label="Site navigation">
+        <div class="drawer-heading">Navigate</div>
         <a class="mobile-nav" href="index.html">Overview</a>
         <a href="#p0">Phase 0</a>
         <a href="#p1">Phase 1</a>
@@ -32,9 +33,10 @@
         <a href="#p8">Phase 8</a>
         <a class="mobile-nav" href="complete.html">Finish ✓</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-      </span>
+      </div>
     </div>
   </nav>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
 
   <main id="main">
     <header class="hero hero-lab">
@@ -1483,17 +1485,26 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
 
       var navToggle = document.getElementById("navToggle");
       var navLinks = document.getElementById("navLinks");
+      var navBackdrop = document.getElementById("navBackdrop");
       if (navToggle && navLinks) {
-        navToggle.addEventListener("click", function () {
-          var open = navLinks.classList.toggle("open");
+        function setMenu(open) {
+          navLinks.classList.toggle("open", open);
           navToggle.classList.toggle("open", open);
+          body.classList.toggle("drawer-open", open);
           navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+          navToggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
+        }
+        navToggle.addEventListener("click", function () {
+          setMenu(!navLinks.classList.contains("open"));
         });
         navLinks.addEventListener("click", function (e) {
-          if (e.target.closest("a")) {
-            navLinks.classList.remove("open");
-            navToggle.classList.remove("open");
-            navToggle.setAttribute("aria-expanded", "false");
+          if (e.target.closest("a")) setMenu(false);
+        });
+        if (navBackdrop) navBackdrop.addEventListener("click", function () { setMenu(false); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && navLinks.classList.contains("open")) {
+            setMenu(false);
+            navToggle.focus();
           }
         });
       }

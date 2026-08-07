@@ -13,13 +13,14 @@
   <nav class="nav">
     <div class="nav-inner">
       <span class="brand">
-        <span class="dot">AKS</span>
+        <img class="brand-logo" src="aks-logo.svg" alt="" width="32" height="32" />
         Containerization and AKS <small>· workshop</small>
       </span>
-      <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
-      <span class="nav-links" id="navLinks">
+      <div class="nav-links" id="navLinks" aria-label="Site navigation">
+        <div class="drawer-heading">Navigate</div>
         <a href="#modes">Modes</a>
         <a href="#reading">Reading</a>
         <a href="#scenario">Scenario</a>
@@ -29,9 +30,10 @@
         <a href="#handoff">Hand-off</a>
         <a class="cta mobile-nav" href="#modes">Choose a mode</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-      </span>
+      </div>
     </div>
   </nav>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
 
   <main id="main">
     <!-- HERO -->
@@ -191,6 +193,159 @@
           in <b>deployment</b>, <b>configuration</b>, the <b>development lifecycle</b>, and <b>operations</b> —
           with their container and Kubernetes equivalents, ending on an AKS cluster.
         </p>
+
+        <figure class="architecture-diagram" aria-labelledby="generic-architecture-title">
+          <figcaption>
+            <span class="diagram-order">01 · Cloud agnostic</span>
+            <h3 id="generic-architecture-title">The workflow changes before the cloud does</h3>
+            <p>Source and validation remain. What changes is the promoted unit, where runtime dependencies live, and who maintains the running state.</p>
+          </figcaption>
+
+          <div class="workflow-stack">
+            <div class="workflow-row classic-flow">
+              <div class="workflow-label">
+                <span class="flow-number">1</span>
+                <div><b>Classic deployment</b><small>Promote an application artifact</small></div>
+              </div>
+              <div class="flow-steps" aria-label="Source code to build artifact to configured host">
+                <div class="flow-node">
+                  <img src="icons/code.svg" alt="" width="44" height="44" />
+                  <b>Source</b><small>Application code</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-node">
+                  <img src="icons/builds.svg" alt="" width="44" height="44" />
+                  <b>Build artifact</b><small>JAR, binary, package</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-node emphasis-bad">
+                  <img src="icons/virtual-machine.svg" alt="" width="44" height="44" />
+                  <b>Configured host</b><small>Runtime and dependencies installed here</small>
+                </div>
+              </div>
+              <div class="flow-insight"><b>Operations own the host.</b> Patching, drift, process restart, and scaling remain host-level concerns.</div>
+            </div>
+
+            <div class="workflow-row container-flow">
+              <div class="workflow-label">
+                <span class="flow-number">2</span>
+                <div><b>Container deployment</b><small>Promote an immutable image</small></div>
+              </div>
+              <div class="flow-steps" aria-label="Source code to container image to registry to container runtime">
+                <div class="flow-node">
+                  <img src="icons/code.svg" alt="" width="44" height="44" />
+                  <b>Source + definition</b><small>Code and Dockerfile</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-node">
+                  <img src="icons/builds.svg" alt="" width="44" height="44" />
+                  <b>Image</b><small>App, runtime, dependencies</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-node">
+                  <img src="icons/container-registry.svg" alt="" width="44" height="44" />
+                  <b>Registry</b><small>Versioned image store</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-node emphasis-good">
+                  <img src="icons/container-instances.svg" alt="" width="44" height="44" />
+                  <b>Container runtime</b><small>Runs the image with injected config</small>
+                </div>
+              </div>
+              <div class="flow-insight"><b>The image owns the runtime.</b> Hosts become replaceable, but scheduling, health, and scale still need a platform or operator.</div>
+            </div>
+
+            <div class="workflow-row orchestrated-flow">
+              <div class="workflow-label">
+                <span class="flow-number">3</span>
+                <div><b>Kubernetes deployment</b><small>Promote image + desired state</small></div>
+              </div>
+              <div class="flow-steps" aria-label="Source code to image in registry to Kubernetes desired state and cluster">
+                <div class="flow-node">
+                  <img src="icons/code.svg" alt="" width="44" height="44" />
+                  <b>Source + manifests</b><small>Code and workload specification</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-node">
+                  <img src="icons/container-registry.svg" alt="" width="44" height="44" />
+                  <b>Immutable image</b><small>Same registry contract</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-node emphasis-aks">
+                  <img src="aks-logo.svg" alt="" width="44" height="44" />
+                  <b>Cluster desired state</b><small>Schedule, heal, roll out, and scale Pods</small>
+                </div>
+              </div>
+              <div class="flow-insight"><b>The orchestrator owns convergence.</b> Controllers continuously reconcile the declared workload with the running workload.</div>
+            </div>
+          </div>
+        </figure>
+
+        <figure class="architecture-diagram azure-diagram" aria-labelledby="azure-architecture-title">
+          <figcaption>
+            <span class="diagram-order">02 · Azure centric</span>
+            <h3 id="azure-architecture-title">The same promotion models mapped to Azure</h3>
+            <p>Azure supplies managed services at each stage. Containerization standardizes the deployable unit; AKS adds managed Kubernetes orchestration.</p>
+          </figcaption>
+
+          <div class="azure-source">
+            <div class="azure-source-node">
+              <img src="icons/azure-devops.svg" alt="" width="50" height="50" />
+              <div><b>Azure Repos + Pipelines</b><small>Commit, test, build, scan, and release</small></div>
+            </div>
+            <div class="branch-line" aria-hidden="true"></div>
+          </div>
+
+          <div class="azure-paths">
+            <div class="azure-path classic-path">
+              <span class="path-label">Classic on Azure</span>
+              <div class="service-node">
+                <img src="icons/builds.svg" alt="" width="48" height="48" />
+                <b>Application artifact</b><small>Pipeline output</small>
+              </div>
+              <span class="path-arrow" aria-hidden="true">↓</span>
+              <div class="service-node">
+                <img src="icons/virtual-machine.svg" alt="" width="48" height="48" />
+                <b>Azure Virtual Machines</b><small>You manage OS, runtime, process, patching, and scale</small>
+              </div>
+              <span class="ownership customer">Customer-managed runtime</span>
+            </div>
+
+            <div class="azure-path container-path">
+              <span class="path-label">Containers on Azure</span>
+              <div class="service-node">
+                <img src="icons/container-registry.svg" alt="" width="48" height="48" />
+                <b>Azure Container Registry</b><small>Stores the immutable image</small>
+              </div>
+              <span class="path-arrow" aria-hidden="true">↓</span>
+              <div class="service-node">
+                <img src="icons/container-instances.svg" alt="" width="48" height="48" />
+                <b>Azure Container Instances</b><small>Runs containers without cluster management</small>
+              </div>
+              <span class="ownership shared">Managed compute, app-directed lifecycle</span>
+            </div>
+
+            <div class="azure-path aks-path">
+              <span class="path-label">Containers with AKS</span>
+              <div class="service-node">
+                <img src="icons/container-registry.svg" alt="" width="48" height="48" />
+                <b>Azure Container Registry</b><small>Same immutable image contract</small>
+              </div>
+              <span class="path-arrow" aria-hidden="true">↓</span>
+              <div class="service-node">
+                <img src="aks-logo.svg" alt="" width="48" height="48" />
+                <b>Azure Kubernetes Service</b><small>Managed control plane; Kubernetes schedules and reconciles workloads</small>
+              </div>
+              <span class="ownership managed">Managed orchestration, declarative workloads</span>
+            </div>
+          </div>
+
+          <div class="diagram-legend" aria-label="Key similarities and differences">
+            <div><span class="legend-mark same"></span><b>Same:</b> source control, CI validation, versioned releases, external configuration, and observable applications.</div>
+            <div><span class="legend-mark container"></span><b>Container-specific:</b> one image carries the application runtime and dependencies through every environment.</div>
+            <div><span class="legend-mark aks"></span><b>AKS-specific:</b> Kubernetes desired state, scheduling, service discovery, rolling updates, self-healing, and horizontal scaling.</div>
+          </div>
+        </figure>
 
         <div class="compare">
           <div class="col before">
@@ -462,17 +617,26 @@
       }
       var navToggle = document.getElementById("navToggle");
       var navLinks = document.getElementById("navLinks");
+      var navBackdrop = document.getElementById("navBackdrop");
       if (navToggle && navLinks) {
-        navToggle.addEventListener("click", function () {
-          var open = navLinks.classList.toggle("open");
+        function setMenu(open) {
+          navLinks.classList.toggle("open", open);
           navToggle.classList.toggle("open", open);
+          document.body.classList.toggle("drawer-open", open);
           navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+          navToggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
+        }
+        navToggle.addEventListener("click", function () {
+          setMenu(!navLinks.classList.contains("open"));
         });
         navLinks.addEventListener("click", function (e) {
-          if (e.target.closest("a")) {
-            navLinks.classList.remove("open");
-            navToggle.classList.remove("open");
-            navToggle.setAttribute("aria-expanded", "false");
+          if (e.target.closest("a")) setMenu(false);
+        });
+        if (navBackdrop) navBackdrop.addEventListener("click", function () { setMenu(false); });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && navLinks.classList.contains("open")) {
+            setMenu(false);
+            navToggle.focus();
           }
         });
       }
