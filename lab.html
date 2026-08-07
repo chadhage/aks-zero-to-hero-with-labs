@@ -88,8 +88,24 @@
           </div>
           <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">34</span> activities · <span id="pct">0%</span> ·
             <span class="pts" id="ptsCount">0</span> pts ·
-            <a href="#" id="resetBtn">Reset</a></span>
+            <button class="reset-progress" type="button" id="resetBtn">Reset progress</button></span>
         </div>
+        <section class="game-panel" aria-labelledby="gameTitle">
+          <div class="game-level">
+            <span class="game-kicker" id="gameTitle">Workshop rank</span>
+            <strong id="levelName">Explorer</strong>
+            <span id="levelProgressText">0 points to Builder</span>
+          </div>
+          <div class="game-track" role="progressbar" aria-label="Progress to next workshop rank" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0" id="levelProgress">
+            <span id="levelProgressBar"></span>
+          </div>
+          <div class="achievement-list" id="achievementList" aria-label="Workshop achievements"></div>
+          <details class="points-guide">
+            <summary>How points work</summary>
+            <span>Activity +10 · baseline +5 · correct follow-up answer +10 · passed phase +25</span>
+          </details>
+          <p class="sr-only" id="achievementAnnouncement" aria-live="polite"></p>
+        </section>
         <div class="note info" id="modeHelp" aria-live="polite">
           Self-paced mode: plan 16–18 hours — the foundation labs, implementation activities, required reading, knowledge checks, and operational reflection.
           Complete and confirm one numbered step at a time, then finish the validation and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.
@@ -2374,20 +2390,76 @@ az group exists --name rg-z2h             <span class="cmt"># must return false<
       function phaseOf(box) { var c = box.closest(".phase-block").querySelector(".count"); return c ? c.getAttribute("data-phase") : null; }
 
       // ---- Points ----
+      var LEVELS = [
+        { name: "Explorer", min: 0 },
+        { name: "Builder", min: 150 },
+        { name: "Orchestrator", min: 350 },
+        { name: "AKS Operator", min: 600 },
+        { name: "Cloud Native", min: 800 }
+      ];
+      var ACHIEVEMENTS = [
+        { id: "first-step", label: "First Step", hint: "Complete one activity", test: function (s) { return s.actDone >= 1; } },
+        { id: "momentum", label: "Momentum", hint: "Complete five activities", test: function (s) { return s.actDone >= 5; } },
+        { id: "halfway", label: "Halfway", hint: "Complete half the activities", test: function (s) { return s.actDone >= Math.ceil(boxes.length / 2); } },
+        { id: "knowledge", label: "Knowledge Seeker", hint: "Record a baseline", test: function (s) { return s.baselines >= 1; } },
+        { id: "concept", label: "Concept Climber", hint: "Pass a phase check", test: function (s) { return s.phasesPassed >= 1; } },
+        { id: "finisher", label: "Lab Finisher", hint: "Complete every activity", test: function (s) { return boxes.length > 0 && s.actDone === boxes.length; } }
+      ];
+      var renderedAchievements = {};
       function computePoints() {
-        var pts = 0, actDone = 0;
+        var pts = 0, actDone = 0, baselines = 0, phasesPassed = 0;
         boxes.forEach(function (b) { if (b.checked) { pts += 10; actDone++; } });
         Object.keys(kc).forEach(function (p) {
           var r = kc[p] || {};
-          if (typeof r.preCorrect === "number") pts += 5;
+          if (typeof r.preCorrect === "number") { pts += 5; baselines++; }
           if (typeof r.postCorrect === "number") pts += r.postCorrect * 10;
-          if (r.passed) pts += 25;
+          if (r.passed) { pts += 25; phasesPassed++; }
         });
-        return { pts: pts, actDone: actDone };
+        return { pts: pts, actDone: actDone, baselines: baselines, phasesPassed: phasesPassed };
       }
       function renderPoints() {
+        var score = computePoints();
         var el = document.getElementById("ptsCount");
-        if (el) el.textContent = computePoints().pts;
+        if (el) el.textContent = score.pts;
+        var levelIndex = 0;
+        LEVELS.forEach(function (level, index) { if (score.pts >= level.min) levelIndex = index; });
+        var level = LEVELS[levelIndex], next = LEVELS[levelIndex + 1];
+        document.getElementById("levelName").textContent = level.name;
+        var progress = document.getElementById("levelProgress");
+        var progressBar = document.getElementById("levelProgressBar");
+        var progressText = document.getElementById("levelProgressText");
+        if (next) {
+          var range = next.min - level.min;
+          var earned = Math.min(range, score.pts - level.min);
+          progress.setAttribute("aria-valuemin", level.min);
+          progress.setAttribute("aria-valuemax", next.min);
+          progress.setAttribute("aria-valuenow", score.pts);
+          progressBar.style.width = Math.round(earned / range * 100) + "%";
+          progressText.textContent = (next.min - score.pts) + " points to " + next.name;
+        } else {
+          progress.setAttribute("aria-valuemin", LEVELS[LEVELS.length - 1].min);
+          progress.setAttribute("aria-valuemax", LEVELS[LEVELS.length - 1].min);
+          progress.setAttribute("aria-valuenow", score.pts);
+          progressBar.style.width = "100%";
+          progressText.textContent = "Highest rank reached";
+        }
+        var achievementList = document.getElementById("achievementList");
+        achievementList.innerHTML = "";
+        var newlyUnlocked = [];
+        ACHIEVEMENTS.forEach(function (achievement) {
+          var unlocked = achievement.test(score);
+          var badge = document.createElement("span");
+          badge.className = "achievement" + (unlocked ? " unlocked" : "");
+          badge.title = achievement.hint;
+          badge.setAttribute("aria-label", achievement.label + ": " + (unlocked ? "unlocked" : achievement.hint));
+          badge.textContent = (unlocked ? "\u2713 " : "") + achievement.label;
+          achievementList.appendChild(badge);
+          if (unlocked && renderedAchievements[achievement.id] === false) newlyUnlocked.push(achievement.label);
+          renderedAchievements[achievement.id] = unlocked;
+        });
+        if (newlyUnlocked.length) {
+          document.getElementById("achievementAnnouncement").textContent = "Achievement unlocked: " + newlyUnlocked.join(", ");
+        }
         save(K_META, { actTotal: boxes.length, phases: phaseIds });
       }
 
@@ -2420,8 +2492,7 @@ az group exists --name rg-z2h             <span class="cmt"># must return false<
 
       var reset = document.getElementById("resetBtn");
       if (reset) reset.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (!window.confirm("Reset all activity progress, knowledge-check results, and points in this browser?")) return;
+        if (!window.confirm("Start this workshop over? This permanently clears all activity steps, knowledge-check results, achievements, and points saved in this browser.")) return;
         localStorage.removeItem(K_PROG); localStorage.removeItem(K_KC); localStorage.removeItem(K_META); localStorage.removeItem(K_STEPS);
         location.reload();
       });
