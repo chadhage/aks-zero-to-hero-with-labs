@@ -1,6 +1,6 @@
 # Containerization and AKS Workshop
 
-An introductory workshop for [Replatforming a Real-Time Messaging System to AKS](https://chadhage.github.io/aks-irl/index.html).
+An introductory containerization and Azure Kubernetes Service (AKS) workshop grounded in [official AKS documentation](https://learn.microsoft.com/en-us/azure/aks/).
 
 It starts with the code-complete **Skybridge** estate — a Java socket gateway, a C/C++ parser,
 an operations console, and PostgreSQL — ready to be tested and promoted. Participants already know
@@ -17,8 +17,8 @@ events, metrics, and controlled load to diagnose and improve runtime behavior.
 
 The workshop offers the same activities and assessments in two modes:
 
-- **Self-paced** — independent completion in approximately 14–16 hours (hands-on activities, required reading, knowledge checks, and operational reflection). Trainer talk tracks and demo cues are hidden.
-- **Instructor-led** — cohort delivery in approximately 9 hours of guided hands-on activity. The lab displays phase-level trainer talk tracks and demo cues.
+- **Self-paced** — independent completion in approximately 16–18 hours (foundation labs, implementation activities, required reading, knowledge checks, and operational reflection). Trainer talk tracks and demo cues are hidden.
+- **Instructor-led** — cohort delivery in approximately 11–12 hours of guided hands-on activity. The lab displays phase-level trainer talk tracks and demo cues.
 
 Choose a mode on the landing page or open `lab.html?mode=self` or `lab.html?mode=led` directly. The selection and participant progress are saved in the browser, and the mode can be changed from the lab guide.
 
@@ -28,7 +28,7 @@ Complete the required reading before starting. It covers cloud-native patterns a
 
 - [Cloud Design Patterns — Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/patterns/)
 - [What is an Azure landing zone?](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
-- [Azure Samples: Cloud Design Patterns](https://github.com/Azure-Samples/cloud-design-patterns)
+- [AKS architecture fundamentals](https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/containers/aks-start-here)
 
 Recommended reading:
 

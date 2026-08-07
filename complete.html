@@ -23,7 +23,7 @@
         <div class="drawer-heading">Navigate</div>
         <a class="mobile-nav" href="index.html">Overview</a>
         <a class="mobile-nav" href="lab.html">Lab guide</a>
-        <a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">AKS replatform ↗</a>
+        <a href="https://learn.microsoft.com/en-us/azure/aks/" target="_blank" rel="noopener noreferrer">AKS documentation ↗</a>
         <button class="theme-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
       </div>
     </div>
@@ -52,7 +52,7 @@
 
   <footer>
     <div class="wrap">
-      <span>Containerization and AKS Workshop · completion status · prerequisite for <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
+      <span>Containerization and AKS Workshop · completion status · continue with <a href="https://learn.microsoft.com/en-us/azure/aks/" target="_blank" rel="noopener noreferrer">official AKS documentation</a>.</span>
       <span>Progress is saved in this browser only.</span>
     </div>
   </footer>
@@ -101,7 +101,7 @@
       var meta = load("z2h-v2-meta");
       var GATE = 80, THRESH = 10;
 
-      var actTotal = meta.actTotal || 29;
+      var actTotal = meta.actTotal || 34;
       var phases = (meta.phases && meta.phases.length) ? meta.phases : ["0", "1", "2", "3", "4", "5", "6", "7", "8"];
 
       var actDone = 0;
@@ -148,14 +148,14 @@
           + scoreGrid()
           + '<p class="meta">Issued ' + today + ' · Measurement: post-check minus baseline on the same question set, ≥' + THRESH + '-point increase or a qualifying baseline score per phase.</p>'
           + '<div class="hero-cta no-print" style="justify-content:center;margin-top:8px">'
-          + '<a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Next workshop: Replatforming to AKS ↗</a>'
+          + '<a class="btn btn-primary" href="https://learn.microsoft.com/en-us/azure/aks/best-practices" target="_blank" rel="noopener noreferrer">Continue with AKS best practices ↗</a>'
           + '<button class="btn btn-ghost" id="printBtn" type="button">Save / print record</button>'
           + '</div>'
           + '</div>'
-          + '<div class="note good mt-20"><b>Next workshop.</b> The workload is deployed on AKS. The '
-          + '<a href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Replatforming a Real-Time Messaging System to AKS</a> '
-          + 'workshop covers production configuration: Day-0 architecture, a private '
-          + 'zone-redundant cluster, workload identity, the Istio mesh, GitOps rings, autoscaling, and cross-region failover.</div>';
+          + '<div class="note good mt-20"><b>Next step.</b> The workload is deployed on AKS. Use the '
+          + '<a href="https://learn.microsoft.com/en-us/azure/aks/best-practices" target="_blank" rel="noopener noreferrer">official AKS best-practices documentation</a> '
+          + 'to evaluate production configuration: Day-0 architecture, private networking, '
+          + 'zone resilience, workload identity, policy, observability, autoscaling, upgrades, and disaster recovery.</div>';
 
         var nameInput = document.getElementById("nameInput");
         var whoLine = document.getElementById("whoLine");

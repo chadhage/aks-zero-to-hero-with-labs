@@ -22,6 +22,7 @@
       <div class="nav-links" id="navLinks" aria-label="Site navigation">
         <div class="drawer-heading">Navigate</div>
         <a class="mobile-nav" href="index.html">Overview</a>
+        <a href="#foundations">Foundation labs</a>
         <a href="#p0">Phase 0</a>
         <a href="#p1">Phase 1</a>
         <a href="#p2">Phase 2</a>
@@ -57,6 +58,27 @@
           <b>Before starting:</b> complete the <a href="index.html#reading">required workshop reading</a>.
           Recommended resources are listed there for deeper architectural context.
         </div>
+        <div class="note info">
+          <b>Workshop files:</b> Foundation labs F1–F5 use this site and your own <code>workshop-notes</code> folder.
+          Phases 0–8 require the instructor-provided Skybridge starter repository, including its
+          <code>scripts</code>, <code>environments</code>, application source, and deployment templates. Confirm that repository is open in VS Code before Phase 0.
+          Commands in this guide use a Bash-compatible VS Code terminal (Git Bash, WSL, macOS, or Linux); do not run them unchanged in PowerShell.
+        </div>
+        <div class="note warn">
+          <b>Required gate before Phase 0:</b> run <code>./scripts/verify-prerequisites.sh</code> from the starter-repository root.
+          Continue only when it confirms the required source, scripts, environment profiles, Dockerfiles, Compose template, Kubernetes templates,
+          Git, <code>curl</code>, Docker Engine with the Compose and Scout plugins, Azure CLI, <code>kubectl</code>, and <code>kind</code> at the supported versions.
+          Missing starter files cannot be recreated from this guide; obtain a complete bundle from the instructor.
+        </div>
+        <div class="note info">
+          <b>Official technical references:</b>
+          <a href="https://learn.microsoft.com/en-us/dotnet/architecture/microservices/container-docker-introduction/" target="_blank" rel="noopener noreferrer">containers and Docker</a> ·
+          <a href="https://learn.microsoft.com/en-us/azure/container-registry/container-registry-get-started-docker-cli" target="_blank" rel="noopener noreferrer">push images to ACR</a> ·
+          <a href="https://learn.microsoft.com/en-us/azure/aks/concepts-clusters-workloads" target="_blank" rel="noopener noreferrer">Kubernetes concepts for AKS</a> ·
+          <a href="https://learn.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli" target="_blank" rel="noopener noreferrer">AKS CLI quickstart</a> ·
+          <a href="https://learn.microsoft.com/en-us/azure/aks/cluster-container-registry-integration" target="_blank" rel="noopener noreferrer">AKS and ACR integration</a> ·
+          <a href="https://learn.microsoft.com/en-us/azure/aks/monitor-aks" target="_blank" rel="noopener noreferrer">monitor AKS</a>.
+        </div>
 
         <div class="mode-bar">
           <span class="mode-label">Mode</span>
@@ -64,21 +86,297 @@
             <button class="active" type="button" data-mode="self" aria-pressed="true">Self-paced</button>
             <button type="button" data-mode="led" aria-pressed="false">Instructor-led</button>
           </div>
-          <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">29</span> activities · <span id="pct">0%</span> ·
+          <span class="progress-txt"><span id="doneCount">0</span> / <span id="totalCount">34</span> activities · <span id="pct">0%</span> ·
             <span class="pts" id="ptsCount">0</span> pts ·
             <a href="#" id="resetBtn">Reset</a></span>
         </div>
         <div class="note info" id="modeHelp" aria-live="polite">
-          Self-paced mode: plan 14–16 hours — the hands-on activities plus the required reading, knowledge checks, and operational reflection.
-          Follow each participant step, validation, and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.
+          Self-paced mode: plan 16–18 hours — the foundation labs, implementation activities, required reading, knowledge checks, and operational reflection.
+          Complete and confirm one numbered step at a time, then finish the validation and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.
         </div>
       </div>
     </header>
 
     <div class="wrap">
 
+      <!-- ============ FOUNDATION LABS ============ -->
+      <section id="foundations" class="phase-block first foundation-block">
+        <div class="phase-head">
+          <h2>Foundation labs — turn the reading into evidence</h2>
+          <span class="sub">Five guided exercises connect the reading, architecture diagrams, and Skybridge scenario to the implementation phases.</span>
+        </div>
+
+        <div class="lab-start">
+          <div>
+            <span class="idx">START HERE</span>
+            <h3>Create your workshop notebook</h3>
+            <p>Open the workshop folder in VS Code. Create a folder named <code>workshop-notes</code>. Each foundation lab adds one Markdown file to that folder; later phases refine those files with measured evidence.</p>
+          </div>
+          <div class="lab-prereqs">
+            <b>Before you begin</b>
+            <span>VS Code, Git, and a Bash-compatible terminal installed</span>
+            <span>Docker Engine running with Compose and Scout plugins</span>
+            <span>Azure CLI installed; an Azure subscription is needed for F2 and Phases 7–8</span>
+          </div>
+        </div>
+
+        <details class="activity foundation-activity" id="f1">
+          <summary>
+            <span class="aid">F1</span>
+            <span class="atitle">Reading lab — recognize cloud design patterns</span>
+            <span class="atime">~25 min</span>
+          </summary>
+          <div class="body">
+            <div class="lab-goal"><b>Outcome</b><span>A pattern decision record that connects Retry, Health Endpoint Monitoring, and Competing Consumers to this workshop.</span></div>
+            <div class="step-block precheck">
+              <h5>◆ Read and predict</h5>
+              <ul>
+                <li>Open the Microsoft Learn <a href="https://learn.microsoft.com/en-us/azure/architecture/patterns/" target="_blank" rel="noopener noreferrer">Cloud Design Patterns</a> catalog.</li>
+                <li>Before reading the three patterns, write one sentence predicting where each might apply to a messaging gateway.</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do in VS Code</h5>
+              <ol>
+                <li>Create <code>workshop-notes/PATTERN-DECISIONS.md</code> with the table below.</li>
+                <li>Read <b>Retry</b>, <b>Health Endpoint Monitoring</b>, and <b>Competing Consumers</b>. For each, record the problem, trigger, benefit, and one risk.</li>
+                <li>For one pattern, follow the official Microsoft Learn example or guidance linked from its pattern page and cite that page in your notes.</li>
+                <li>Mark each pattern <b>use now</b>, <b>defer to replatform</b>, or <b>not applicable</b>. Defend the decision in one sentence.</li>
+              </ol>
+<pre><code>| Pattern | Problem in Skybridge | Trigger/evidence | Decision | Risk |
+| --- | --- | --- | --- | --- |
+| Retry | | | | |
+| Health Endpoint Monitoring | | | | |
+| Competing Consumers | | | | |</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Check your work</h5>
+              <p>The file has three completed rows, one Microsoft Learn citation, and decisions that distinguish application resilience from platform orchestration. You can explain why retries require limits and backoff.</p>
+            </div>
+            <div class="step-block help">
+              <h5>Need help?</h5>
+              <p>If a pattern feels abstract, write the failure first: “the parser is temporarily unavailable.” Then ask whether the caller retries, a health probe removes traffic, or multiple consumers share queued work.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Reflect</h5>
+              <ul><li>Which behavior belongs in application code, and which can Kubernetes provide?</li><li>What evidence would prove the pattern is helping rather than amplifying a failure?</li></ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="activity foundation-activity" id="f2">
+          <summary>
+            <span class="aid">F2</span>
+            <span class="atitle">Reading lab — inspect an Azure landing-zone boundary</span>
+            <span class="atime">~25 min</span>
+          </summary>
+          <div class="body">
+            <div class="lab-goal"><b>Outcome</b><span>An Azure context record that separates platform governance from this workload deployment.</span></div>
+            <div class="note warn"><b>Azure cost and safety.</b> The first commands are read-only. Creating a resource group has no charge, but resources placed inside it may. Use a training subscription, follow organizational policy, and delete the lab group at the end.</div>
+            <div class="step-block precheck">
+              <h5>◆ Read and predict</h5>
+              <ul>
+                <li>Read <a href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/" target="_blank" rel="noopener noreferrer">What is an Azure landing zone?</a>.</li>
+                <li>Predict which controls belong to the platform team and which belong to the Skybridge workload team.</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do in the VS Code terminal</h5>
+              <ol>
+                <li>Sign in and confirm the subscription displayed by Azure CLI. Stop if it is not your intended training subscription.</li>
+                <li>List available regions, then choose the instructor-approved region.</li>
+                <li>Create a tagged resource group as the workload lifecycle boundary and inspect its tags.</li>
+                <li>Create <code>workshop-notes/AZURE-CONTEXT.md</code>. Record subscription name only, tenant ID suffix only, region, resource group, required tags, and who owns identity, policy, networking, cost, and workload configuration.</li>
+              </ol>
+<pre><code>az login
+az account show --query "{subscription:name, tenant:tenantId}" -o table
+az account list-locations --query "[?metadata.regionType=='Physical'].{name:name,display:displayName}" -o table
+
+az group create --name rg-aks-workshop --location &lt;approved-region&gt; --tags purpose=training owner=&lt;your-alias&gt; expires=&lt;YYYY-MM-DD&gt;
+az group show --name rg-aks-workshop --query "{name:name,location:location,tags:tags}"</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Check your work</h5>
+              <p>The active subscription is intentional, the resource group has all three tags, and <code>AZURE-CONTEXT.md</code> distinguishes landing-zone responsibilities from workload responsibilities.</p>
+            </div>
+            <div class="step-block help">
+              <h5>Need help?</h5>
+              <p>If <code>az login</code> cannot open a browser, use <code>az login --use-device-code</code>. If resource-group creation is denied, record the policy or RBAC error and use an instructor-provided group; do not try to bypass the control.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Clean up and reflect</h5>
+              <p>Delete the empty group with <code>az group delete --name rg-aks-workshop --yes --no-wait</code>, then verify completion with <code>az group wait --name rg-aks-workshop --deleted</code> and <code>az group exists --name rg-aks-workshop</code> (expect <code>false</code>). Which landing-zone controls must exist before an AKS workload is production-ready?</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="activity foundation-activity" id="f3">
+          <summary>
+            <span class="aid">F3</span>
+            <span class="atitle">Reading lab — draw cohesive application boundaries</span>
+            <span class="atime">~25 min</span>
+          </summary>
+          <div class="body">
+            <div class="lab-goal"><b>Outcome</b><span>A component map that separates business boundaries from deployment boundaries without forcing a microservices redesign.</span></div>
+            <div class="step-block precheck">
+              <h5>◆ Read and predict</h5>
+              <ul>
+                <li>Review the recommended feature-slice and modular-monolith readings from the <a href="index.html#reading">overview</a>.</li>
+                <li>Write down whether “one module” must mean “one container.” Keep the answer for comparison after the exercise.</li>
+              </ul>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do in VS Code</h5>
+              <ol>
+                <li>Create <code>workshop-notes/BOUNDARY-MAP.md</code> and add the Mermaid diagram below.</li>
+                <li>For gateway, parser, operations console, and PostgreSQL, record responsibility, inbound/outbound protocol, owned data, scaling trigger, and failure impact.</li>
+                <li>Draw a solid boundary around components that must deploy together today. Use a dashed boundary for a possible future separation.</li>
+                <li>Use VS Code Markdown Preview to confirm the diagram renders. Record one reason to keep the current boundary and one evidence-based reason that might justify splitting it later.</li>
+              </ol>
+<pre><code>```mermaid
+flowchart LR
+  Client -- TCP --> Gateway
+  Gateway --> Parser
+  Gateway --> Database[(PostgreSQL)]
+  Console -- HTTPS --> Gateway
+```</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Check your work</h5>
+              <p>The diagram has four components, labeled protocols, data ownership, failure impact, and at least one explicit deployment boundary. No boundary is justified only by “microservices are better.”</p>
+            </div>
+            <div class="step-block help">
+              <h5>Need help?</h5>
+              <p>If Mermaid preview is unavailable, use a Markdown table instead. The evidence matters more than the drawing tool.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Reflect</h5>
+              <ul><li>Which components can scale independently?</li><li>Which boundary changes the container contract, and which changes only deployment topology?</li></ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="activity foundation-activity" id="f4">
+          <summary>
+            <span class="aid">F4</span>
+            <span class="atitle">Concept lab — compare classic, container, and Kubernetes workflows</span>
+            <span class="atime">~30 min</span>
+          </summary>
+          <div class="body">
+            <div class="lab-goal"><b>Outcome</b><span>A tested comparison showing what remains constant and what changes as responsibility moves from host to image to orchestrator.</span></div>
+            <div class="step-block precheck">
+              <h5>◆ Observe</h5>
+              <p>Study both diagrams in <a href="index.html#comparison">The unit of promotion changes</a>. Without looking back, name the promoted unit and runtime owner in each workflow.</p>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do in the VS Code terminal</h5>
+              <ol>
+                <li>Run nginx as a conventional local process if available, or inspect an existing host process. Record who supplies its runtime and configuration.</li>
+                <li>Run nginx as a container. Inspect the image ID, environment, ports, process, and read-only image layers.</li>
+                <li>Stop and replace the container from the same image. Confirm the image ID remains constant while the container ID changes.</li>
+                <li>Create <code>workshop-notes/WORKFLOW-COMPARISON.md</code> with columns for promoted unit, runtime owner, configuration source, health/restart owner, scale mechanism, and rollback mechanism.</li>
+              </ol>
+<pre><code>docker pull nginx:alpine
+docker image inspect nginx:alpine --format "image={{.Id}}"
+docker run --name workflow-demo -d -p 8080:80 nginx:alpine
+docker inspect workflow-demo --format "container={{.Id}} image={{.Image}}"
+docker rm -f workflow-demo
+docker run --name workflow-demo-2 -d -p 8080:80 nginx:alpine
+docker inspect workflow-demo-2 --format "container={{.Id}} image={{.Image}}"
+docker rm -f workflow-demo-2</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Check your work</h5>
+              <p>The two container IDs differ, both report the same image ID, and the comparison file correctly states that containers package runtime dependencies while Kubernetes adds desired-state reconciliation.</p>
+            </div>
+            <div class="step-block help">
+              <h5>Need help?</h5>
+              <p>If port 8080 is busy, replace both occurrences of <code>8080:80</code> with <code>8081:80</code>. If the container exits, run <code>docker logs workflow-demo</code> before removing it.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Reflect</h5>
+              <ul><li>What did containerization solve in this test?</li><li>What remains unsolved until a scheduler continuously maintains desired state?</li></ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="activity foundation-activity" id="f5">
+          <summary>
+            <span class="aid">F5</span>
+            <span class="atitle">Scenario lab — establish the Skybridge promotion baseline</span>
+            <span class="atime">~35 min</span>
+          </summary>
+          <div class="body">
+            <div class="lab-goal"><b>Outcome</b><span>A scenario baseline that makes assumptions explicit before any Dockerfile or Kubernetes manifest is written.</span></div>
+            <div class="step-block precheck">
+              <h5>◆ Frame the scenario</h5>
+              <p>Re-read <a href="index.html#scenario">Code-complete release promotion</a>. Treat the listed Java gateway, C/C++ parser, operations console, PostgreSQL integration, and RHEL hosts as discovery inputs, not yet as container designs.</p>
+            </div>
+            <div class="step-block do">
+              <h5>▶ Do in VS Code</h5>
+              <ol>
+                <li>Create <code>workshop-notes/PROMOTION-BASELINE.md</code> from the template below.</li>
+                <li>For each component, classify every dependency as <b>travels with release</b>, <b>supplied by host</b>, or <b>supplied by environment</b>.</li>
+                <li>Define dev, test, UAT, and production rows. Record what must remain identical and what may vary.</li>
+                <li>Add one likely drift failure and the command or evidence that would detect it.</li>
+                <li>Write the target invariant in your own words: one immutable image reference plus external stage configuration produces each deployment.</li>
+              </ol>
+<pre><code>## Component inventory
+| Component | Artifact | Runtime | Port/protocol | Config | Secret | Writable data |
+| --- | --- | --- | --- | --- | --- | --- |
+| Gateway | JAR | Java 8 / Netty | TCP 4561 | | | |
+| Parser | Native binary | RHEL-compatible libs | Internal | | | |
+| Console | Static files | Web server | HTTP 80 | | | |
+
+## Promotion stages
+| Stage | Immutable input | Allowed variation | Validation gate | Rollback |
+| --- | --- | --- | --- | --- |
+| Dev | | | | |
+| Test | | | | |
+| UAT | | | | |
+| Production | | | | |</code></pre>
+            </div>
+            <div class="step-block validation">
+              <h5>✓ Check your work</h5>
+              <p>Every scenario component has an artifact, runtime, interface, configuration source, secret boundary, and writable-data decision. Every stage names an immutable input and validation gate.</p>
+            </div>
+            <div class="step-block help">
+              <h5>Need help?</h5>
+              <p>Unknown values are valid discovery results. Write <code>UNKNOWN — owner: &lt;role&gt; — resolve before Phase 1</code> instead of guessing.</p>
+            </div>
+            <div class="step-block postcheck">
+              <h5>◇ Reflect</h5>
+              <ul><li>Which host responsibility should move into an image?</li><li>Which values must stay outside every image?</li><li>What would prevent “build once, promote many” today?</li></ul>
+            </div>
+          </div>
+        </details>
+
+        <div class="coverage-map">
+          <div class="coverage-head">
+            <span class="idx">COVERAGE MAP</span>
+            <h3>Where every workshop concept becomes hands-on</h3>
+            <p>Use this map when a concept feels abstract or when you want to repeat its practical exercise.</p>
+          </div>
+          <div class="coverage-grid">
+            <a href="#f1"><b>Cloud design patterns</b><span>F1 · Pattern decision record</span></a>
+            <a href="#f2"><b>Azure landing zones</b><span>F2 · Governance boundary</span></a>
+            <a href="#f3"><b>Feature slices and modules</b><span>F3 · Boundary map</span></a>
+            <a href="#f4"><b>Classic vs containers vs AKS</b><span>F4 · Runtime comparison</span></a>
+            <a href="#f5"><b>Skybridge scenario</b><span>F5 and 0.2 · Promotion baseline</span></a>
+            <a href="#p1"><b>Container contract</b><span>Phase 1 · Explicit runtime needs</span></a>
+            <a href="#p2"><b>External configuration</b><span>Phase 2 · One image, many stages</span></a>
+            <a href="#p3"><b>Image construction and security</b><span>Phase 3 · Build and inspect</span></a>
+            <a href="#p4"><b>Multi-container runtime</b><span>Phase 4 · Compose and diagnose</span></a>
+            <a href="#p5"><b>Registry and CI/CD</b><span>Phase 5 · Scan, tag, and publish</span></a>
+            <a href="#p6"><b>Kubernetes orchestration</b><span>Phase 6 · Reconcile and roll back</span></a>
+            <a href="#p7"><b>Azure containerization</b><span>Phase 7 · ACR, AKS, Load Balancer</span></a>
+            <a href="#p8"><b>Evidence-based operations</b><span>Phase 8 · Diagnose and optimize</span></a>
+          </div>
+        </div>
+      </section>
+
       <!-- ============ PHASE 0 ============ -->
-      <section id="p0" class="phase-block first">
+      <section id="p0" class="phase-block">
         <div class="phase-head">
           <h2>Phase 0 — Orient from the model you know</h2>
           <span class="sub">Verify the code-complete release, then contrast configured environments with immutable-image promotion.</span>
@@ -111,9 +409,12 @@
 <pre><code>./scripts/test-release.sh
 docker version
 docker run --rm hello-world
-docker run --rm -d -p 8080:80 nginx   <span class="cmt"># open http://localhost:8080</span>
+docker run --name workshop-nginx -d -p 8080:80 nginx:alpine
+curl --fail http://localhost:8080/
+docker rm -f workshop-nginx
 echo 'FROM alpine' &gt; Dockerfile.test
-docker build -t aks-workshop-check:1 -f Dockerfile.test .</code></pre>
+docker build -t aks-workshop-check:1 -f Dockerfile.test .
+rm Dockerfile.test</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -325,7 +626,7 @@ ldd build/parser-cpp/skybridge-parser</code></pre>
             <div class="step-block precheck">
               <h5>◆ Pre-check</h5>
               <ul>
-                <li>What are the three factors of the "config" factor in the twelve-factor app?</li>
+                <li>What makes a value deployment configuration rather than invariant application code?</li>
                 <li>What is the difference between config that <em>varies by environment</em> and config that is <em>the same everywhere</em>?</li>
                 <li>Why should a hard-coded default in source count as configuration too?</li>
               </ul>
@@ -337,7 +638,7 @@ ldd build/parser-cpp/skybridge-parser</code></pre>
                 <li>Sort each into <em>per-environment</em> vs <em>constant</em>, and flag any secret.</li>
                 <li>Capture the result as a config table in <code>CONFIG.md</code>.</li>
               </ol>
-<pre><code>grep -rniE 'password|secret|host|port|timeout|url|dsn' apps/ legacy/</code></pre>
+<pre><code>git grep -nEI 'password|secret|host|port|timeout|url|dsn' -- apps legacy</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -377,10 +678,13 @@ ldd build/parser-cpp/skybridge-parser</code></pre>
                 <li>Add a committed <code>.env.example</code> documenting each variable; keep the real <code>.env</code> git-ignored.</li>
                 <li>Run the app from the <em>same</em> build with the supplied dev, test, and UAT profiles and observe only the intended configuration differences.</li>
               </ol>
-<pre><code>./scripts/run-release.sh --env environments/dev.env
+<pre><code>./scripts/show-release-manifest.sh &gt; workshop-notes/release-before.txt
+./scripts/run-release.sh --env environments/dev.env
 ./scripts/run-release.sh --env environments/test.env
 ./scripts/run-release.sh --env environments/uat.env
-git diff --exit-code                       <span class="cmt"># no rebuild or source edit</span></code></pre>
+./scripts/show-release-manifest.sh &gt; workshop-notes/release-after.txt
+diff workshop-notes/release-before.txt workshop-notes/release-after.txt
+git diff --exit-code -- apps               <span class="cmt"># no source edit</span></code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -420,7 +724,9 @@ git diff --exit-code                       <span class="cmt"># no rebuild or sou
                 <li>Provide secrets at run time only (an injected env var or a mounted file), never in the build.</li>
                 <li>Add a pre-commit secret scan so a credential can't slip back in.</li>
               </ol>
-<pre><code>git ls-files | xargs grep -nE 'password=|secret=|BEGIN .*PRIVATE KEY' || echo 'clean'</code></pre>
+<pre><code>git grep -nEI 'password=|secret=|BEGIN [A-Z ]*PRIVATE KEY' -- . \
+  &amp;&amp; echo 'Review every match above' \
+  || echo 'No matching tracked content found'</code></pre>
               <div class="note warn"><b>Boundary note:</b> a production platform stores these in a managed secret store and injects them at deploy time. The replatform workshop covers that configuration; here, verify the secret is <em>not</em> in the artifact.</div>
             </div>
             <div class="step-block validation">
@@ -473,8 +779,10 @@ git diff --exit-code                       <span class="cmt"># no rebuild or sou
               </ol>
 <pre><code>docker build -t gateway-java:0.1.0 apps/gateway-java/
 docker run --rm -p 4561:4561 \
+  --add-host host.docker.internal:host-gateway \
   -e GATEWAY_PORT=4561 -e PARSER_URL=http://host.docker.internal:8080 \
   gateway-java:0.1.0</code></pre>
+              <div class="note info"><code>host.docker.internal</code> addresses a parser running on the host. The explicit host-gateway mapping makes this work with Docker Engine on Linux as well as Docker Desktop. A dependency-unavailable log is expected until the parser is started in 3.2; the gateway itself must remain healthy and listening.</div>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -515,8 +823,9 @@ docker run --rm -p 4561:4561 \
                 <li>Expose the parser's HTTP port and read its config from the environment.</li>
               </ol>
 <pre><code>docker build -t parser-cpp:0.1.0 apps/parser-cpp/
-docker run --rm -p 8080:8080 parser-cpp:0.1.0
-curl -s localhost:8080/healthz</code></pre>
+docker run --name parser-local -d -p 8080:8080 parser-cpp:0.1.0
+curl --fail http://localhost:8080/healthz
+docker rm -f parser-local</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -553,12 +862,14 @@ curl -s localhost:8080/healthz</code></pre>
               <h5>▶ Do</h5>
               <ol>
                 <li>Multi-stage: build the console assets, then serve them from a minimal static server image.</li>
-                <li>Wire the backend/API base URL from an env var injected at run time.</li>
+                <li>Use the supplied startup script to render a browser-readable <code>config.js</code> from <code>API_BASE</code> before the web server starts. A static nginx image does not substitute environment variables into already-built JavaScript by itself.</li>
                 <li>Run it and load the console in a browser.</li>
               </ol>
 <pre><code>docker build -t ops-console:0.1.0 apps/ops-console/
-docker run --rm -p 3000:80 -e API_BASE=http://localhost:8080 ops-console:0.1.0
-<span class="cmt"># open http://localhost:3000</span></code></pre>
+docker run --name ops-console-local -d -p 3000:80 \
+  -e API_BASE=http://localhost:8080 ops-console:0.1.0
+curl --fail http://localhost:3000/config.js
+docker rm -f ops-console-local</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -598,11 +909,14 @@ docker run --rm -p 3000:80 -e API_BASE=http://localhost:8080 ops-console:0.1.0
                 <li>Scan each image for known CVEs and trim obvious bloat from the runtime stages.</li>
                 <li>Run the gateway under controlled CPU and memory limits; inspect its logs, process list, network, mounts, and live resource use.</li>
               </ol>
-<pre><code>docker scout cves gateway-java:0.1.0   <span class="cmt"># or: trivy image gateway-java:0.1.0</span>
-docker run -d --name gateway-limited --cpus 1 --memory 512m gateway-java:0.1.0
+<pre><code>docker scout cves gateway-java:0.1.0
+docker run -d --name gateway-limited --cpus 1 --memory 512m \
+  -e GATEWAY_PORT=4561 -e PARSER_URL=http://parser.invalid:8080 \
+  gateway-java:0.1.0
 docker logs gateway-limited
 docker stats --no-stream gateway-limited
-docker inspect gateway-limited</code></pre>
+docker inspect gateway-limited
+docker rm -f gateway-limited</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -650,9 +964,10 @@ docker inspect gateway-limited</code></pre>
               <ol>
                 <li>Write <code>compose.yaml</code> with services for gateway, parser, ops-console, and a Postgres instance.</li>
                 <li>Wire them by service name (e.g. <code>PARSER_URL=http://parser:8080</code>, <code>DB_DSN=…@db:5432/…</code>) using the env vars from Phase 2.</li>
-                <li>Add health checks and ordered startup, then bring the whole thing up.</li>
+                <li>Add a named Postgres volume, database initialization, health checks, and <code>depends_on</code> conditions for dependencies that must be healthy; then render and start the stack.</li>
               </ol>
-<pre><code>docker compose up -d
+<pre><code>docker compose config --quiet
+docker compose up -d --wait
 docker compose ps
 ./scripts/smoke.sh 127.0.0.1 4561    <span class="cmt"># end-to-end through the composed stack</span></code></pre>
             </div>
@@ -691,13 +1006,14 @@ docker compose ps
               <h5>▶ Do</h5>
               <ol>
                 <li>Generate controlled traffic and record baseline latency, throughput, CPU, memory, health, and log error counts.</li>
-                <li>Inject one broken service hostname, use Compose state/log/network evidence to diagnose it, then restore the configuration.</li>
+                <li>Inject one broken service hostname, use Compose state, logs, and network inspection to diagnose it, then restore the configuration.</li>
                 <li>Apply a CPU or memory constraint to one component and explain the resulting runtime signal.</li>
               </ol>
 <pre><code>./scripts/load.sh --duration 60s
 docker compose ps
 docker compose logs --since 5m gateway parser
-docker compose exec gateway getent hosts parser
+docker compose config --networks
+docker inspect "$(docker compose ps -q gateway)" --format '{{json .NetworkSettings.Networks}}'
 docker stats --no-stream</code></pre>
             </div>
             <div class="step-block validation">
@@ -738,10 +1054,14 @@ docker stats --no-stream</code></pre>
                 <li>Run the end-to-end test in each profile without invoking an image build.</li>
                 <li>Record each container's image ID and verify it remains unchanged across the three runs.</li>
               </ol>
-<pre><code>docker compose --env-file environments/dev.env up -d --no-build
-./scripts/smoke.sh 127.0.0.1 4561
-docker compose images
-docker compose --env-file environments/uat.env up -d --no-build</code></pre>
+<pre><code>for STAGE in dev test uat; do
+  docker compose --env-file "environments/$STAGE.env" up -d --no-build --wait
+  ./scripts/smoke.sh 127.0.0.1 4561
+  docker compose images --quiet | sort &gt; "workshop-notes/images-$STAGE.txt"
+  docker compose down
+done
+diff workshop-notes/images-dev.txt workshop-notes/images-test.txt
+diff workshop-notes/images-dev.txt workshop-notes/images-uat.txt</code></pre>
               <div class="note info">Environment configuration changes at deployment time. The image ID must not change during promotion.</div>
             </div>
             <div class="step-block validation">
@@ -788,12 +1108,11 @@ docker compose --env-file environments/uat.env up -d --no-build</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Add a workflow (GitHub Actions, or your CI of choice) that, on push: builds each image, runs unit tests, scans for CVEs, and pushes <code>sha-&lt;short&gt;</code> on success.</li>
+                <li>Complete the supplied CI workflow template so a push builds each image, runs unit tests, scans for CVEs, and pushes <code>sha-&lt;short&gt;</code> only on success. Do not start from a non-executable sketch.</li>
                 <li>Open a trivial PR that changes one line, and watch the pipeline run.</li>
                 <li>Confirm the new SHA tag lands in the registry only when checks are green.</li>
               </ol>
-<pre><code><span class="cmt"># .github/workflows/build.yml (sketch)</span>
-<span class="cmt"># on: [push]  ->  build -&gt; test -&gt; scan -&gt; push sha-${{ github.sha }}</span>
+<pre><code>./scripts/validate-ci-workflow.sh .github/workflows/build.yml
 git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
             </div>
             <div class="step-block validation">
@@ -836,10 +1155,15 @@ git commit -am "chore: trivial change" &amp;&amp; git push</code></pre>
               </ol>
             </div>
 <pre><code>SHA=$(git rev-parse --short HEAD)
+REGISTRY=&lt;registry-login-server&gt;
 docker scout cves gateway-java:sha-$SHA
-docker sbom gateway-java:sha-$SHA
-docker push &lt;registry&gt;/gateway-java:sha-$SHA
-docker pull &lt;registry&gt;/gateway-java@sha256:&lt;digest&gt;</code></pre>
+docker scout sbom gateway-java:sha-$SHA
+docker tag gateway-java:sha-$SHA "$REGISTRY/gateway-java:sha-$SHA"
+docker push "$REGISTRY/gateway-java:sha-$SHA"
+DIGEST=$(docker image inspect "$REGISTRY/gateway-java:sha-$SHA" \
+  --format '{{index .RepoDigests 0}}' | cut -d@ -f2)
+test -n "$DIGEST"
+docker pull "$REGISTRY/gateway-java@$DIGEST"</code></pre>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
               <p>Every component has source and revision labels, a stored scan and SBOM, immutable registry digest, and recorded results from a clean pull and smoke test.</p>
@@ -929,10 +1253,13 @@ docker pull &lt;registry&gt;/gateway-java@sha256:&lt;digest&gt;</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Create a throwaway local cluster with <code>kind</code> (or minikube / k3d).</li>
+                <li>Create a throwaway local cluster with <code>kind</code>.</li>
+                <li>Load the exact SHA-tagged local application images into the cluster; a private registry is not automatically authenticated to a local kind cluster.</li>
                 <li>Confirm the node is Ready and inspect your current context.</li>
               </ol>
 <pre><code>kind create cluster --name z2h
+SHA=$(git rev-parse --short HEAD)
+kind load docker-image gateway-java:sha-$SHA parser-cpp:sha-$SHA ops-console:sha-$SHA --name z2h
 kubectl config current-context
 kubectl get nodes -o wide</code></pre>
             </div>
@@ -971,13 +1298,14 @@ kubectl get nodes -o wide</code></pre>
               <h5>▶ Do</h5>
               <ol>
                 <li>Write a Deployment + Service for the gateway and parser, plus a dev-grade StatefulSet + Service + persistent volume claim for Postgres.</li>
-                <li>Reference immutable registry digests and implement startup/readiness/liveness probes, CPU/memory requests and limits, graceful termination, and a non-root security context.</li>
+                <li>For kind, reference the exact loaded <code>sha-&lt;short&gt;</code> tags with <code>imagePullPolicy: IfNotPresent</code>. Implement startup/readiness/liveness probes, CPU/memory requests and limits, graceful termination, and a non-root security context. Phase 7 replaces these local references with ACR digests.</li>
                 <li>Apply everything, watch the Pods become Ready, and smoke-test through in-cluster Service DNS.</li>
               </ol>
-<pre><code>kubectl apply -f k8s/
+<pre><code>./scripts/validate-k8s-manifests.sh k8s/
+kubectl apply -f k8s/
 kubectl get pods,svc
-kubectl port-forward svc/gateway 4561:4561 &amp;
-./scripts/smoke.sh 127.0.0.1 4561</code></pre>
+kubectl port-forward svc/gateway 4561:4561</code></pre>
+              <div class="note info">Keep the port-forward in this terminal, run <code>./scripts/smoke.sh 127.0.0.1 4561</code> in a second terminal, and then press <code>Ctrl+C</code> in the first terminal.</div>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -1017,9 +1345,13 @@ kubectl port-forward svc/gateway 4561:4561 &amp;
                 <li>Reference them from the Deployments via <code>envFrom</code> / <code>valueFrom</code>.</li>
                 <li>Change one value and roll the Deployment — no image rebuild.</li>
               </ol>
-<pre><code>kubectl create configmap gateway-config --from-env-file=.env.example
-kubectl apply -f k8s/
+<pre><code>kubectl create configmap gateway-config --from-env-file=environments/dev.env \
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl create secret generic skybridge-secrets --from-env-file=.env.local \
+  --dry-run=client -o yaml | kubectl apply -f -
+kubectl rollout restart deploy/gateway deploy/parser
 kubectl rollout status deploy/gateway</code></pre>
+              <div class="note warn"><code>.env.local</code> must be git-ignored and contain only disposable local-development credentials. Commands can be retained in shell history; do not pass production secrets as command-line literals.</div>
               <div class="note warn"><b>Boundary note:</b> a production platform injects these from a managed secret store such as Key Vault at deploy time. The replatform workshop covers that configuration; here, verify that configuration lives outside the image.</div>
             </div>
             <div class="step-block validation">
@@ -1058,17 +1390,20 @@ kubectl rollout status deploy/gateway</code></pre>
               <ol>
                 <li>Delete a parser Pod and watch the Deployment replace it, then scale the parser to 3 replicas.</li>
                 <li>Inject a broken image reference or readiness path and diagnose it using workload state, events, description, logs, and metrics.</li>
-                <li>Restore the immutable digest, verify readiness, then roll out a new digest and undo the rollout.</li>
+                <li>Restore the current image, verify readiness, then load and roll out another tested SHA-tagged image and undo the rollout. Registry digests replace these local tags in Phase 7.</li>
               </ol>
 <pre><code>kubectl delete pod -l app=parser          <span class="cmt"># watch the Deployment replace it</span>
 kubectl scale deploy/parser --replicas=3
 ./scripts/inject-k8s-failure.sh bad-readiness
 kubectl get pods
 kubectl describe pod -l app=parser
-kubectl events --for deployment/parser
-kubectl logs deploy/parser --all-pods
-kubectl top pod -l app=parser
+kubectl get events --sort-by=.lastTimestamp
+kubectl logs -l app=parser --all-containers --tail=100
 ./scripts/reset-k8s-failure.sh
+NEXT_SHA=&lt;another-tested-short-sha&gt;
+kind load docker-image parser-cpp:sha-$NEXT_SHA --name z2h
+kubectl set image deploy/parser parser=parser-cpp:sha-$NEXT_SHA
+kubectl rollout status deploy/parser
 kubectl rollout undo deploy/parser</code></pre>
             </div>
             <div class="step-block validation">
@@ -1115,15 +1450,22 @@ kubectl rollout undo deploy/parser</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Verify Azure sign-in, active subscription, regional quota, and required permissions; then create a resource group and training AKS cluster.</li>
+                <li>Set the instructor-approved region, verify Azure sign-in, active subscription, regional compute usage, and required permissions; then create a resource group and disposable training AKS cluster.</li>
                 <li>Merge its credentials into your kubeconfig.</li>
                 <li>Confirm the nodes are Ready and your context now points at AKS.</li>
               </ol>
-<pre><code>az account show
-az group create -n rg-z2h -l eastus
-az aks create -g rg-z2h -n aks-z2h --node-count 2 --generate-ssh-keys
-az aks get-credentials -g rg-z2h -n aks-z2h
+<pre><code>LOCATION=&lt;approved-region&gt;
+az account show --query '{subscription:name,tenant:tenantId}' -o table
+az provider show --namespace Microsoft.ContainerService --query registrationState -o tsv
+az vm list-usage --location "$LOCATION" -o table
+az group create --name rg-z2h --location "$LOCATION" \
+  --tags purpose=training expires=&lt;YYYY-MM-DD&gt;
+az aks create --resource-group rg-z2h --name aks-z2h --location "$LOCATION" \
+  --node-count 1 --tier free --generate-ssh-keys
+az aks get-credentials --resource-group rg-z2h --name aks-z2h --overwrite-existing
+kubectl config current-context
 kubectl get nodes -o wide</code></pre>
+              <div class="note warn">If the provider state is not <code>Registered</code>, run <code>az provider register --namespace Microsoft.ContainerService</code> and wait for registration before creating the cluster. This lab intentionally uses one system-pool node to limit evaluation cost. Production workloads should use a properly sized, resilient system pool and separate user node pools.</div>
               <div class="note warn"><b>Cost note:</b> an AKS cluster bills while it runs. Note the resource group so you can <code>az group delete -n rg-z2h</code> when you're done (see 7.4).</div>
             </div>
             <div class="step-block validation">
@@ -1161,19 +1503,27 @@ kubectl get nodes -o wide</code></pre>
               <h5>▶ Do</h5>
               <ol>
                 <li>Create an ACR using a globally unique name.</li>
-                <li>Build and push the gateway, parser, and console images to it — <code>az acr build</code> does both server-side.</li>
-                <li>Attach the ACR to the cluster so nodes can pull without a pull secret.</li>
+                <li>Tag and push the already-tested local SHA images. Do not rebuild: a new <code>az acr build</code> would create different artifacts and break the promotion proof.</li>
+                <li>Attach the ACR to the cluster so nodes can pull without a pull secret. This operation creates a role assignment and therefore requires permission such as Owner or User Access Administrator at the applicable scope.</li>
               </ol>
 <pre><code>ACR_NAME="acrz2h${RANDOM}${RANDOM}"
-az acr create -g rg-z2h -n "$ACR_NAME" --sku Basic
-az acr build -r "$ACR_NAME" -t gateway-java:sha-$SHA apps/gateway-java/
-az acr build -r "$ACR_NAME" -t parser-cpp:sha-$SHA apps/parser-cpp/
-az acr build -r "$ACR_NAME" -t ops-console:sha-$SHA apps/ops-console/
-az aks update -g rg-z2h -n aks-z2h --attach-acr "$ACR_NAME"</code></pre>
+SHA=$(git rev-parse --short HEAD)
+az acr create --resource-group rg-z2h --name "$ACR_NAME" --sku Basic \
+  --role-assignment-mode rbac
+LOGIN_SERVER=$(az acr show --name "$ACR_NAME" --query loginServer -o tsv)
+az acr login --name "$ACR_NAME"
+for IMAGE in gateway-java parser-cpp ops-console; do
+  docker image inspect "$IMAGE:sha-$SHA" &gt;/dev/null
+  docker tag "$IMAGE:sha-$SHA" "$LOGIN_SERVER/$IMAGE:sha-$SHA"
+  docker push "$LOGIN_SERVER/$IMAGE:sha-$SHA"
+done
+az aks update --resource-group rg-z2h --name aks-z2h --attach-acr "$ACR_NAME"
+./scripts/set-aks-images.sh "$ACR_NAME" "$SHA" k8s/aks/</code></pre>
+              <div class="note warn"><b>ACR authorization mode:</b> <code>--attach-acr</code> is not supported for registries configured for “RBAC Registry + ABAC Repository Permissions.” This lab explicitly creates an RBAC-mode training registry. Production designs should use scoped repository permissions and managed identities.</div>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
-              <p>All three images exist in ACR and the cluster can pull them — no <code>ImagePullBackOff</code>.</p>
+              <p>All three local image IDs were pushed without rebuilding, <code>k8s/aks/</code> contains each ACR digest reference, and the cluster can pull them without an image pull secret or <code>ImagePullBackOff</code>.</p>
             </div>
             <div class="step-block postcheck">
               <h5>◇ Post-check</h5>
@@ -1205,14 +1555,17 @@ az aks update -g rg-z2h -n aks-z2h --attach-acr "$ACR_NAME"</code></pre>
             <div class="step-block do">
               <h5>▶ Do</h5>
               <ol>
-                <li>Repoint the manifests at the ACR image references.</li>
+                <li>Inspect the generated AKS overlay and confirm all three images use fully qualified ACR references pinned by <code>@sha256:</code> digest.</li>
                 <li>Apply them to AKS and expose the gateway with a <code>LoadBalancer</code> Service.</li>
                 <li>Get the external IP and smoke-test the cluster.</li>
               </ol>
-<pre><code>kubectl apply -f k8s/
-kubectl get svc gateway -w        <span class="cmt"># wait for EXTERNAL-IP</span>
+<pre><code>grep -R '@sha256:' k8s/aks/
+kubectl apply -f k8s/aks/
+kubectl rollout status deploy/gateway
+kubectl get svc gateway -w        <span class="cmt"># press Ctrl+C after EXTERNAL-IP appears</span>
 IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-./scripts/smoke.sh $IP 4561</code></pre>
+test -n "$IP"
+./scripts/smoke.sh "$IP" 4561</code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -1250,7 +1603,7 @@ IP=$(kubectl get svc gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
               <ol>
                 <li>Capture cluster, node-pool, ACR, image-digest, Service, and identity facts in <code>AKS-BASELINE.md</code>.</li>
                 <li>Map the managed control plane, node pool, Azure Load Balancer, ACR authorization, and workload objects to their owners.</li>
-                <li>Keep the cluster running for Phase 8; record the cleanup command and current estimated hourly cost.</li>
+                <li>Keep the cluster running for Phase 8; use the <a href="https://azure.microsoft.com/en-us/pricing/calculator/" target="_blank" rel="noopener noreferrer">Azure Pricing Calculator</a> to record a dated estimate and its assumptions. Also record the cleanup command.</li>
               </ol>
             </div>
             <div class="step-block validation">
@@ -1362,6 +1715,8 @@ kubectl get events --sort-by=.lastTimestamp
 kubectl logs deploy/gateway --all-pods --previous
 kubectl top pods
 az aks show -g rg-z2h -n aks-z2h --query provisioningState -o tsv
+az aks nodepool show -g rg-z2h --cluster-name aks-z2h -n nodepool1 \
+  --query '{provisioningState:provisioningState,powerState:powerState.code}' -o table
 ./scripts/reset-aks-failure.sh</code></pre>
             </div>
             <div class="step-block validation">
@@ -1406,7 +1761,9 @@ az aks show -g rg-z2h -n aks-z2h --query provisioningState -o tsv
 kubectl rollout status deploy/gateway
 ./scripts/load.sh --target "$IP:4561" --profile baseline --duration 5m
 ./scripts/compare-runs.sh baseline optimized
-az group delete -n rg-z2h --yes --no-wait</code></pre>
+az group delete -n rg-z2h --yes --no-wait
+az group wait --name rg-z2h --deleted
+az group exists --name rg-z2h             <span class="cmt"># must return false</span></code></pre>
             </div>
             <div class="step-block validation">
               <h5>✓ Validation</h5>
@@ -1428,11 +1785,11 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
           <p>
             You promoted code-complete software as immutable images, expressed the container contract as Kubernetes
             workloads, deployed those workloads to AKS, diagnosed a failure from evidence, and compared measurements
-            before and after a configuration change. The next workshop adds production architecture: Day-0 decisions, private networking,
-            zones, workload identity, service mesh, GitOps rings, autoscaling, and cross-region recovery.
+            before and after a configuration change. A production implementation must additionally address Day-0 decisions, private networking,
+            zones, workload identity, policy, observability, autoscaling, upgrade strategy, and disaster recovery.
           </p>
           <div class="hero-cta">
-            <a class="btn btn-primary" href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">Continue: Replatforming to AKS ↗</a>
+            <a class="btn btn-primary" href="https://learn.microsoft.com/en-us/azure/aks/" target="_blank" rel="noopener noreferrer">Continue with official AKS documentation ↗</a>
             <a class="btn btn-ghost" href="index.html">Back to overview</a>
           </div>
         </div>
@@ -1453,7 +1810,7 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
           </p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="complete.html">Check my completion →</a>
-            <a class="btn btn-ghost" href="https://chadhage.github.io/aks-irl/index.html" target="_blank" rel="noopener">Preview the AKS replatform ↗</a>
+            <a class="btn btn-ghost" href="https://learn.microsoft.com/en-us/azure/aks/best-practices" target="_blank" rel="noopener noreferrer">Review AKS best practices ↗</a>
           </div>
         </div>
       </section>
@@ -1463,7 +1820,7 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
 
   <footer>
     <div class="wrap">
-      <span>Containerization and AKS Workshop · lab guide · prerequisite for <a href="https://chadhage.github.io/aks-irl/lab.html" target="_blank" rel="noopener">the AKS replatform lab</a>.</span>
+      <span>Containerization and AKS Workshop · lab guide · continue with <a href="https://learn.microsoft.com/en-us/azure/aks/" target="_blank" rel="noopener noreferrer">official AKS documentation</a>.</span>
       <span>Progress is saved in this browser only.</span>
     </div>
   </footer>
@@ -1510,11 +1867,12 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
       }
 
       // ---- Storage ----
-      var K_PROG = "z2h-v2-progress", K_MODE = "z2h-mode", K_KC = "z2h-v2-kc", K_META = "z2h-v2-meta";
+      var K_PROG = "z2h-v2-progress", K_MODE = "z2h-mode", K_KC = "z2h-v2-kc", K_META = "z2h-v2-meta", K_STEPS = "z2h-v2-steps";
       function load(k) { try { return JSON.parse(localStorage.getItem(k) || "{}"); } catch (e) { return {}; } }
       function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
       var prog = load(K_PROG);
       var kc = load(K_KC);
+      var stepProg = load(K_STEPS);
       var LIFT_THRESHOLD = 10;
       function pct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
 
@@ -1655,10 +2013,10 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
             why: "A Service provides a stable name/VIP; cluster DNS resolves it to healthy Pods." },
           { q: "A Kubernetes Secret, by default, is:", options: [
             "Encrypted end to end",
-            "Only base64-encoded, not encrypted",
+            "Base64-encoded in the API representation; storage encryption and access controls are separate concerns",
             "Stored inside the image",
             "Never mountable"], a: 1,
-            why: "A Kubernetes Secret is only base64-encoded at the object level, not encrypted; enable encryption-at-rest to protect it. On AKS, etcd is encrypted at rest by the platform." }
+            why: "Base64 is an encoding, not encryption. Protect Secrets with least-privilege RBAC and storage encryption; AKS encrypts etcd data at rest by default." }
         ]},
         "7": { topic: "Deploying the workload to AKS", questions: [
           { q: "Compared with a local kind cluster, AKS additionally operates:", options: [
@@ -1732,8 +2090,8 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
         });
         if (modeHelp) {
           modeHelp.textContent = mode === "led"
-            ? "Instructor-led mode: plan about 9 hours of guided hands-on activity with a trainer. Phase talk tracks and demo cues are visible. Participant progress is saved in this browser only."
-            : "Self-paced mode: plan 14–16 hours — the hands-on activities plus the required reading, knowledge checks, and operational reflection. Follow each participant step, validation, and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.";
+            ? "Instructor-led mode: plan about 11–12 hours of guided hands-on activity with a trainer. Phase talk tracks and demo cues are visible. Participant progress is saved in this browser only."
+            : "Self-paced mode: plan 16–18 hours — the foundation labs, implementation activities, required reading, knowledge checks, and operational reflection. Complete and confirm one numbered step at a time, then finish the validation and knowledge check. Trainer talk tracks and demo cues are hidden. Progress is saved in this browser only.";
         }
         localStorage.setItem(K_MODE, mode);
         if (updateUrl && window.history && window.history.replaceState) {
@@ -1912,13 +2270,105 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
         }
       });
 
-      // ---- Activity completion controls ----
+      // ---- Sequential steps and activity completion controls ----
+      var migratedStepProgress = false;
+      function keyForStep(activityId, text) {
+        var hash = 2166136261;
+        for (var i = 0; i < text.length; i++) {
+          hash ^= text.charCodeAt(i);
+          hash = Math.imul(hash, 16777619);
+        }
+        return activityId + ":" + (hash >>> 0).toString(36);
+      }
       Array.prototype.slice.call(document.querySelectorAll(".activity .body")).forEach(function (bodyEl) {
+        var activity = bodyEl.closest(".activity");
+        var activityId = activity.id;
+        var stepItems = Array.prototype.slice.call(bodyEl.querySelectorAll(".step-block.do > ol > li"));
+        var sequence = document.createElement("div");
+        sequence.className = "step-sequence-note";
+        sequence.setAttribute("role", "status");
+        sequence.setAttribute("aria-live", "polite");
+        sequence.textContent = "Complete Step 1, confirm it, and then continue. Later steps unlock one at a time.";
+        var doBlock = bodyEl.querySelector(".step-block.do");
+        if (doBlock && stepItems.length) bodyEl.insertBefore(sequence, doBlock);
+
+        stepItems.forEach(function (item, index) {
+          var instructionText = item.textContent.trim().replace(/\s+/g, " ");
+          var key = keyForStep(activityId, instructionText);
+          item.classList.add("lab-step");
+          var badge = document.createElement("span");
+          badge.className = "step-number";
+          badge.textContent = "Step " + (index + 1) + " of " + stepItems.length;
+          item.insertBefore(badge, item.firstChild);
+
+          var confirmLabel = document.createElement("label");
+          confirmLabel.className = "step-confirm-row";
+          var confirmBox = document.createElement("input");
+          confirmBox.type = "checkbox";
+          confirmBox.className = "step-confirm";
+          confirmBox.setAttribute("data-step-key", key);
+          var hasSavedStep = Object.prototype.hasOwnProperty.call(stepProg, key);
+          confirmBox.checked = hasSavedStep ? Boolean(stepProg[key]) : Boolean(prog[activityId]);
+          if (!hasSavedStep && prog[activityId]) {
+            stepProg[key] = true;
+            migratedStepProgress = true;
+          }
+          var confirmText = document.createElement("span");
+          confirmText.textContent = "I completed this step and confirmed the expected result";
+          confirmLabel.appendChild(confirmBox);
+          confirmLabel.appendChild(confirmText);
+          item.appendChild(confirmLabel);
+        });
+
         var label = document.createElement("label"); label.className = "done-row";
         var box = document.createElement("input"); box.type = "checkbox"; box.className = "done";
-        var txt = document.createElement("span"); txt.textContent = "Mark this activity complete";
-        label.appendChild(box); label.appendChild(txt); bodyEl.insertBefore(label, bodyEl.firstChild);
+        var txt = document.createElement("span"); txt.textContent = "I completed every step and verified the validation result";
+        label.appendChild(box); label.appendChild(txt); bodyEl.appendChild(label);
+
+        var stepBoxes = Array.prototype.slice.call(bodyEl.querySelectorAll("input.step-confirm"));
+        function updateStepSequence(changedIndex) {
+          if (typeof changedIndex === "number" && !stepBoxes[changedIndex].checked) {
+            stepBoxes.slice(changedIndex + 1).forEach(function (later) {
+              later.checked = false;
+              stepProg[later.getAttribute("data-step-key")] = false;
+            });
+          }
+          stepBoxes.forEach(function (stepBox, index) {
+            var unlocked = index === 0 || stepBoxes[index - 1].checked;
+            stepBox.disabled = !unlocked;
+            var stepItem = stepBox.closest(".lab-step");
+            stepItem.hidden = !unlocked;
+            stepItem.classList.toggle("step-current", unlocked && !stepBox.checked);
+            stepItem.classList.toggle("step-complete", stepBox.checked);
+          });
+          var allConfirmed = !stepBoxes.length || stepBoxes.every(function (stepBox) { return stepBox.checked; });
+          var nextIndex = stepBoxes.findIndex(function (stepBox) { return !stepBox.checked; });
+          sequence.textContent = allConfirmed
+            ? "All " + stepBoxes.length + " steps are confirmed. Review the validation result, then confirm the activity."
+            : "Step " + (nextIndex + 1) + " of " + stepBoxes.length + " is ready. Complete it and confirm the expected result before continuing.";
+          box.disabled = !allConfirmed;
+          label.classList.toggle("completion-locked", !allConfirmed);
+          txt.textContent = allConfirmed
+            ? "I completed every step and verified the validation result"
+            : "Confirm each numbered step to complete this activity";
+          if (!allConfirmed && box.checked) {
+            box.checked = false;
+            prog[activityId] = false;
+            activity.classList.remove("completed");
+            save(K_PROG, prog);
+          }
+        }
+        stepBoxes.forEach(function (stepBox, index) {
+          stepBox.addEventListener("change", function () {
+            stepProg[stepBox.getAttribute("data-step-key")] = stepBox.checked;
+            updateStepSequence(index);
+            save(K_STEPS, stepProg);
+            render();
+          });
+        });
+        updateStepSequence();
       });
+      if (migratedStepProgress) save(K_STEPS, stepProg);
       var boxes = Array.prototype.slice.call(document.querySelectorAll("input.done"));
       function idFor(box) { return box.closest(".activity").id; }
       function phaseOf(box) { var c = box.closest(".phase-block").querySelector(".count"); return c ? c.getAttribute("data-phase") : null; }
@@ -1972,7 +2422,7 @@ az group delete -n rg-z2h --yes --no-wait</code></pre>
       if (reset) reset.addEventListener("click", function (e) {
         e.preventDefault();
         if (!window.confirm("Reset all activity progress, knowledge-check results, and points in this browser?")) return;
-        localStorage.removeItem(K_PROG); localStorage.removeItem(K_KC); localStorage.removeItem(K_META);
+        localStorage.removeItem(K_PROG); localStorage.removeItem(K_KC); localStorage.removeItem(K_META); localStorage.removeItem(K_STEPS);
         location.reload();
       });
 
